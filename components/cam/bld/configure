@@ -280,7 +280,14 @@ OPTIONS
      -crm_dt <n>        CRM's timestep.
      -crm_nx_rad <n>    number of averaged columns for CRM radiation calculation in x direction
      -crm_ny_rad <n>    number of averaged columns for CRM radiation calculation in y direction
-     -MMF_microphysics_scheme <string>   CRM microphysics package name [sam1mom | m2005 ].
+     -crm_nx2 <n>        Nested CRM's x-grid.
+     -crm_ny2 <n>        Nested CRM's y-grid.
+     -crm_nz2 <n>        Nested CRM's z-grid.
+     -crm_dx2 <n>        Nested CRM's horizontal grid spacing.
+     -crm_dy2 <n>        Nested CRM's horizontal grid spacing.
+     -crm_dt2 <n>        Nested CRM's timestep.
+     -crm_nx_rad2 <n>    number of averaged nested columns for CRM radiation calculation in x direction
+     -crm_ny_rad2 <n>    number of averaged nested columns for CRM radiation calculation in y direction
      -use_ECPP          use CRM clouds for vertical transport, aqueous chemistry and wet removable of aerosols 
      -crm_adv           CRM advection scheme [MPDATA | UM5]
      -use_MAML          use multiple atmosphere and multiple land version of MMF
@@ -355,6 +362,14 @@ GetOptions(
     "crm_nx_rad=s"              => \$opts{'crm_nx_rad'},
     "crm_ny_rad=s"              => \$opts{'crm_ny_rad'},
     "MMF_microphysics_scheme=s"     => \$opts{'MMF_microphysics_scheme'},
+    "crm_nx2=s"                  => \$opts{'crm_nx2'},
+    "crm_ny2=s"                  => \$opts{'crm_ny2'},
+    "crm_nz2=s"                  => \$opts{'crm_nz2'},
+    "crm_dx2=s"                  => \$opts{'crm_dx2'},
+    "crm_dy2=s"                  => \$opts{'crm_dy2'},
+    "crm_dt2=s"                  => \$opts{'crm_dt2'},
+    "crm_nx_rad2=s"              => \$opts{'crm_nx_rad2'},
+    "crm_ny_rad2=s"              => \$opts{'crm_ny_rad2'},
     "crm_adv=s"                 => \$opts{'crm_adv'},
     "debug"                     => \$opts{'debug'},
     "rain_evap_to_coarse_aero"  => \$opts{'rain_evap_to_coarse_aero'},
@@ -1333,6 +1348,14 @@ if (defined $opts{'use_MMF'}) {
     if (defined $opts{'crm_nx_rad'}) { $cfg_ref->set('crm_nx_rad', $opts{'crm_nx_rad'}); }
     if (defined $opts{'crm_ny_rad'}) { $cfg_ref->set('crm_ny_rad', $opts{'crm_ny_rad'}); }
     $cfg_ref->set('MMF_microphysics_scheme', $opts{'MMF_microphysics_scheme'});
+    $cfg_ref->set('crm_nx2', $opts{'crm_nx2'});
+    $cfg_ref->set('crm_ny2', $opts{'crm_ny2'});
+    $cfg_ref->set('crm_nz2', $opts{'crm_nz2'});
+    $cfg_ref->set('crm_dx2', $opts{'crm_dx2'});
+    $cfg_ref->set('crm_dy2', $opts{'crm_dy2'});
+    $cfg_ref->set('crm_dt2', $opts{'crm_dt2'});
+    if (defined $opts{'crm_nx_rad2'}) { $cfg_ref->set('crm_nx_rad2', $opts{'crm_nx_rad2'}); }
+    if (defined $opts{'crm_ny_rad2'}) { $cfg_ref->set('crm_ny_rad2', $opts{'crm_ny_rad2'}); }
     $cfg_ref->set('crm_adv', $opts{'crm_adv'});
     # Check that model is not using threading for the MMF 
     if ($nthreads > 1) {
@@ -1909,6 +1932,14 @@ if (defined $opts{'use_MMF'}) {
     my $crm_dt = $cfg_ref->get('crm_dt');
     my $crm_nx_rad = $cfg_ref->get('crm_nx_rad');
     my $crm_ny_rad = $cfg_ref->get('crm_ny_rad');
+    my $crm_nx2 = $cfg_ref->get('crm_nx2');
+    my $crm_ny2 = $cfg_ref->get('crm_ny2');
+    my $crm_nz2 = $cfg_ref->get('crm_nz2');
+    my $crm_dx2 = $cfg_ref->get('crm_dx2');
+    my $crm_dy2 = $cfg_ref->get('crm_dy2');
+    my $crm_dt2 = $cfg_ref->get('crm_dt2');
+    my $crm_nx_rad2 = $cfg_ref->get('crm_nx_rad2');
+    my $crm_ny_rad2 = $cfg_ref->get('crm_ny_rad2');
     my $MMF_microphysics_scheme = $cfg_ref->get('MMF_microphysics_scheme');
     my $crm_adv = $cfg_ref->get('crm_adv');
     my $yes3Dval = 1;
@@ -1927,6 +1958,17 @@ if (defined $opts{'use_MMF'}) {
         $cfg_cppdefs .= " -DCRM_NY_RAD=$crm_ny_rad " 
     } else {
         $cfg_cppdefs .= " -DCRM_NY_RAD=$crm_ny " 
+    }
+
+    if (defined $opts{'crm_nx_rad2'}) {
+    $cfg_cppdefs .= " -DCRM_NX_RAD2=$crm_nx_rad2 "
+    } else {
+    $cfg_cppdefs .= " -DCRM_NX_RAD2=$crm_nx2 "
+    }
+    if (defined $opts{'crm_ny_rad2'}) {
+    $cfg_cppdefs .= " -DCRM_NY_RAD2=$crm_ny_rad2 "
+    } else {
+    $cfg_cppdefs .= " -DCRM_NY_RAD2=$crm_ny2 "
     }
 }
 
