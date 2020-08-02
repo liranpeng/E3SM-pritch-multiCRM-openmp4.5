@@ -2,7 +2,7 @@ module diffuse_scalar2D_mod
   implicit none
 
 contains
-  subroutine diffuse_scalar2D (ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_z,field,fluxb,fluxt,tkh,rho,rhow,flux)
+  subroutine diffuse_scalar2D (ncrms,grdf_x,grdf_z,field,fluxb,fluxt,tkh,rho,rhow,flux)
 
     use grid
     use params
@@ -12,7 +12,6 @@ contains
     implicit none
     integer, intent(in) :: ncrms
     ! input
-    integer :: dimx1_d,dimx2_d,dimy1_d,dimy2_d
     real(crm_rknd) grdf_x(ncrms,nzm)! grid factor for eddy diffusion in x
     real(crm_rknd) grdf_z(ncrms,nzm)! grid factor for eddy diffusion in z
     real(crm_rknd) field(ncrms,dimx1_s:dimx2_s, dimy1_s:dimy2_s, nzm) ! scalar

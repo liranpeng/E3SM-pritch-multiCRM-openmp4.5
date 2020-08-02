@@ -4,14 +4,13 @@ module sgs
   ! module for original SAM subgrid-scale SGS closure (Smagorinsky or 1st-order TKE)
   ! Marat Khairoutdinov, 2012
 
-  use grid, only: nx,nxp1,ny,nyp1,YES3D,nzm,nz,dimx1_s,dimx2_s,dimy1_s,dimy2_s
+  use grid, only: dimx1_d,dimx2_d,dimy1_d,dimy2_d,nx,nxp1,ny,nyp1,YES3D,nzm,nz,dimx1_s,dimx2_s,dimy1_s,dimy2_s
   use params, only: dosgs, crm_rknd, asyncid
   use vars, only: tke2, tk2
   use openacc_utils
   implicit none
-
-  !----------------------------------------------------------------------
-  ! Required definitions:
+  !---------------------------------------------------------------------
+  ! Reuired definitions:
 
   !!! prognostic scalar (need to be advected arround the grid):
 
@@ -21,9 +20,6 @@ module sgs
   !!! sgs diagnostic variables that need to exchange boundary information (via MPI):
 
   integer, parameter :: nsgs_fields_diag = 2   ! total number of diagnostic sgs vars
-
-  ! diagnostic fields' boundaries:
-  integer, parameter :: dimx1_d=0, dimx2_d=nxp1, dimy1_d=1-YES3D, dimy2_d=nyp1
 
   integer, parameter :: flag_sgs3Dout(nsgs_fields) = (/0/)
   integer, parameter :: flag_sgsdiag3Dout(nsgs_fields_diag) = (/0,0/)
@@ -449,7 +445,7 @@ CONTAINS
     implicit none
     integer, intent(in) :: ncrms
 
-    call diffuse_mom(ncrms,grdf_x, grdf_y, grdf_z, dimx1_d, dimx2_d, dimy1_d, dimy2_d, sgs_field_diag(:,:,:,:,1))
+    call diffuse_mom(ncrms,grdf_x, grdf_y, grdf_z, sgs_field_diag(:,:,:,:,1))
   end subroutine sgs_mom
 
   !----------------------------------------------------------------------
@@ -474,10 +470,10 @@ CONTAINS
     !$omp target enter data map(alloc: dummy)
 #endif
 
-    call diffuse_scalar(ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),t,fluxbt,fluxtt,tdiff,twsb)
+    call diffuse_scalar(ncrms,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),t,fluxbt,fluxtt,tdiff,twsb)
 
     if(advect_sgs) then
-      call diffuse_scalar(ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),sgs_field(:,:,:,:,1),fzero,fzero,dummy,dummy)
+      call diffuse_scalar(ncrms,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),sgs_field(:,:,:,:,1),fzero,fzero,dummy,dummy)
     end if
 
     !    diffusion of microphysics prognostics:
@@ -490,7 +486,7 @@ CONTAINS
       if(   k.eq.index_water_vapor             &! transport water-vapor variable no metter what
       .or. docloud.and.flag_precip(k).ne.1    & ! transport non-precipitation vars
       .or. doprecip.and.flag_precip(k).eq.1 ) then
-        call diffuse_scalar(ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),&
+        call diffuse_scalar(ncrms,grdf_x,grdf_y,grdf_z,sgs_field_diag(:,:,:,:,2),&
                             micro_field(:,:,:,:,k),fluxbmk(:,:,:,k),fluxtmk(:,:,:,k),mkdiff(:,:,k),mkwsb(:,:,k))
       end if
     end do
@@ -530,13 +526,14 @@ CONTAINS
 !
 subroutine sgs_proc(ncrms)
   use tke_full_mod, only: tke_full
-  use grid, only: dt,icycle
+  use grid
+  use params, only: dosmoke
   implicit none
   integer, intent(in) :: ncrms
   integer :: icrm, k, j, i
   !    SGS TKE equation:
 
-  if(dosgs) call tke_full(ncrms,dimx1_d, dimx2_d, dimy1_d, dimy2_d, &
+  if(dosgs) call tke_full(ncrms, &
                           grdf_x, grdf_y, grdf_z, dosmagor,   &
                           tkesbdiss, tkesbshear, tkesbbuoy,   &
                           sgs_field(:,:,:,:,1), sgs_field_diag(:,:,:,:,1), sgs_field_diag(:,:,:,:,2))

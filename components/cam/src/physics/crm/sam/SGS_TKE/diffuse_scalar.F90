@@ -5,7 +5,7 @@ module diffuse_scalar_mod
 
 contains
 
-  subroutine diffuse_scalar (ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_y,grdf_z,tkh,f,fluxb,fluxt,fdiff,flux)
+  subroutine diffuse_scalar (ncrms,grdf_x,grdf_y,grdf_z,tkh,f,fluxb,fluxt,fdiff,flux)
     use grid
     use vars, only: rho, rhow
     use params
@@ -15,7 +15,6 @@ contains
     implicit none
     integer, intent(in) :: ncrms
     ! input:
-    integer :: dimx1_d,dimx2_d,dimy1_d,dimy2_d
     real(crm_rknd) grdf_x(ncrms,nzm)! grid factor for eddy diffusion in x
     real(crm_rknd) grdf_y(ncrms,nzm)! grid factor for eddy diffusion in y
     real(crm_rknd) grdf_z(ncrms,nzm)! grid factor for eddy diffusion in z
@@ -52,9 +51,9 @@ contains
     enddo
 
     if(RUN3D) then
-      call diffuse_scalar3D (ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,grdf_y,grdf_z,f,fluxb,fluxt,tkh,rho,rhow,flux)
+      call diffuse_scalar3D (ncrms,grdf_x,grdf_y,grdf_z,f,fluxb,fluxt,tkh,rho,rhow,flux)
     else
-      call diffuse_scalar2D (ncrms,dimx1_d,dimx2_d,dimy1_d,dimy2_d,grdf_x,       grdf_z,f,fluxb,fluxt,tkh,rho,rhow,flux)
+      call diffuse_scalar2D (ncrms,grdf_x,       grdf_z,f,fluxb,fluxt,tkh,rho,rhow,flux)
     endif
 #if defined(_OPENACC)
     !$acc parallel loop collapse(2) async(asyncid)

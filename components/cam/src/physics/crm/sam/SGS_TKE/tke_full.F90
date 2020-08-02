@@ -8,7 +8,7 @@ module tke_full_mod
 
 contains
 
-subroutine tke_full(ncrms,dimx1_d, dimx2_d, dimy1_d, dimy2_d,   &
+subroutine tke_full(ncrms,   &
                     grdf_x, grdf_y, grdf_z, dosmagor,     &
                     tkesbdiss, tkesbshear, tkesbbuoy,     &
                     tke, tk, tkh)
@@ -25,10 +25,6 @@ subroutine tke_full(ncrms,dimx1_d, dimx2_d, dimy1_d, dimy2_d,   &
   integer, intent(in) :: ncrms
   !-----------------------------------------------------------------------
   !!! Interface Arguments
-  integer       , intent(in)                 :: dimx1_d     ! scalar dimension parameter
-  integer       , intent(in)                 :: dimx2_d     ! scalar dimension parameter
-  integer       , intent(in)                 :: dimy1_d     ! scalar dimension parameter
-  integer       , intent(in)                 :: dimy2_d     ! scalar dimension parameter
   real(crm_rknd), intent(in), dimension(ncrms,nzm) :: grdf_x      ! grid length in x direction
   real(crm_rknd), intent(in), dimension(ncrms,nzm) :: grdf_y      ! grid length in y direction
   real(crm_rknd), intent(in), dimension(ncrms,nzm) :: grdf_z      ! grid length in z direction

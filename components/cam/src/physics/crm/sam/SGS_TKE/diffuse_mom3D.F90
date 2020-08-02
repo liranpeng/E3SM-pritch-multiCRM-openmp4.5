@@ -4,7 +4,7 @@ module diffuse_mom3D_mod
 
 contains
 
-  subroutine diffuse_mom3D(ncrms,grdf_x, grdf_y, grdf_z, dimx1_d, dimx2_d, dimy1_d, dimy2_d, tk)
+  subroutine diffuse_mom3D(ncrms,grdf_x, grdf_y, grdf_z, tk)
 
     !        momentum tendency due to SGS diffusion
 
@@ -15,7 +15,6 @@ contains
 #endif
     implicit none
     integer, intent(in) :: ncrms
-    integer :: dimx1_d, dimx2_d, dimy1_d, dimy2_d
     real(crm_rknd) tk(ncrms,dimx1_d:dimx2_d, dimy1_d:dimy2_d, nzm) ! SGS eddy viscosity
     real(crm_rknd) grdf_x(ncrms,nzm)! grid factor for eddy diffusion in x
     real(crm_rknd) grdf_y(ncrms,nzm)! grid factor for eddy diffusion in y
