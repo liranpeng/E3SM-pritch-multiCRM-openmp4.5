@@ -1,6 +1,7 @@
 ! Set the domain dimensionality, size and number of subdomains.
 
 module domain
+  use advection, only: NADV, NADVS
 
   use crmdims
   implicit none
@@ -9,6 +10,14 @@ module domain
   integer, parameter :: nx_gl = crm_nx ! Number of grid points in X
   integer, parameter :: ny_gl = crm_ny ! Number of grid points in Y
   integer, parameter :: nz_gl = crm_nz ! Number of pressure (scalar) levels
+  integer :: YES3D = -1  ! Domain dimensionality: 1 - 3D, 0 - 2D
+  integer :: nx_gl = -1 ! Number of grid points in X
+  integer :: ny_gl = -1 ! Number of grid points in Y
+  integer :: nz_gl = -1 ! Number of pressure (scalar) levels
+
+  real(crm_rknd) :: dx = -1.  ! grid spacing in x direction
+  real(crm_rknd) :: dy = -1.   ! grid spacing in y direction
+  
   integer, parameter :: nsubdomains_x  = 1 ! No of subdomains in x
   integer, parameter :: nsubdomains_y  = 1 ! No of subdomains in y
 
@@ -30,4 +39,13 @@ module domain
   !  * if one processor is used, than  nsubdomains_x = nsubdomains_y = 1;
   !  * if ntracers is > 0, don't forget to set dotracers to .true. in namelist
 
+contains
+
+  subroutine setup_domain_xy(dx_gl_in, dy_gl_in)
+    real(crm_rknd), intent(in) :: dx_gl_in, dy_gl_in
+    real(crm_rknd) :: dx,dy
+       dx = dx_gl_in
+       dy = dy_gl_in
+  end subroutine setup_domain_xy
+  
 end module domain
