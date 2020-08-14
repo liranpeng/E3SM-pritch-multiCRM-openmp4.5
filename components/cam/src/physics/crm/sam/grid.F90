@@ -99,9 +99,6 @@ module grid
 
   !-----------------------------------------
   ! Parameters controled by namelist PARAMETERS
-
-  real(crm_rknd) :: dx =0.   ! grid spacing in x direction
-  real(crm_rknd) :: dy =0.   ! grid spacing in y direction
   real(crm_rknd), allocatable :: dz(:)    ! constant grid spacing in z direction (when dz_constant=.true.)
   logical:: doconstdz = .false.  ! do constant vertical grid spacing set by dz
 
