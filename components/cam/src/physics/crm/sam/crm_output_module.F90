@@ -1,7 +1,7 @@
 
 module crm_output_module
    use params,       only: crm_rknd
-   use crmdims,      only: crm_nx, crm_ny, crm_nz
+   use crmdims
 #if defined(_OPENACC)
    use openacc_utils
 #endif
@@ -142,27 +142,37 @@ contains
    !--------------------------------------------------------------------
    subroutine crm_output_initialize(ncol, nlev) 
       integer, intent(in), optional :: ncol, nlev
+      integer  :: crmnx,crmny,crmnz
       ! Allocate arrays if dimensions are passed as input
       if (present(ncol)) then
+        if (ncol .eq. 1) then
+	  crmnx = crm_nx2
+	  crmny = crm_ny2
+	  crmnz = crm_nz2
+        else
+	  crmnx = crm_nx
+	  crmny = crm_ny
+	  crmnz = crm_nz
+        end if
          ! Allocate instantaneous outputs
-         if (.not. allocated(crm_output_qcl)) allocate(crm_output_qcl(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_qci)) allocate(crm_output_qci(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_qpl)) allocate(crm_output_qpl(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_qpi)) allocate(crm_output_qpi(ncol,crm_nx,crm_ny,crm_nz))
+         if (.not. allocated(crm_output_qcl)) allocate(crm_output_qcl(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_qci)) allocate(crm_output_qci(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_qpl)) allocate(crm_output_qpl(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_qpi)) allocate(crm_output_qpi(ncol,crmnx,crmny,crmnz))
 
-         if (.not. allocated(crm_output_tk )) allocate(crm_output_tk (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_tkh)) allocate(crm_output_tkh(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_prec_crm)) allocate(crm_output_prec_crm(ncol,crm_nx,crm_ny))
+         if (.not. allocated(crm_output_tk )) allocate(crm_output_tk (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_tkh)) allocate(crm_output_tkh(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_prec_crm)) allocate(crm_output_prec_crm(ncol,crmnx,crmny))
 
-         if (.not. allocated(crm_output_wvar)) allocate(crm_output_wvar(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_aut))  allocate(crm_output_aut (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_acc))  allocate(crm_output_acc (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_evpc)) allocate(crm_output_evpc(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_evpr)) allocate(crm_output_evpr(ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_mlt))  allocate(crm_output_mlt (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_sub))  allocate(crm_output_sub (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_dep))  allocate(crm_output_dep (ncol,crm_nx,crm_ny,crm_nz))
-         if (.not. allocated(crm_output_con))  allocate(crm_output_con (ncol,crm_nx,crm_ny,crm_nz))
+         if (.not. allocated(crm_output_wvar)) allocate(crm_output_wvar(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_aut))  allocate(crm_output_aut (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_acc))  allocate(crm_output_acc (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_evpc)) allocate(crm_output_evpc(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_evpr)) allocate(crm_output_evpr(ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_mlt))  allocate(crm_output_mlt (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_sub))  allocate(crm_output_sub (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_dep))  allocate(crm_output_dep (ncol,crmnx,crmny,crmnz))
+         if (.not. allocated(crm_output_con))  allocate(crm_output_con (ncol,crmnx,crmny,crmnz))
 
 
          ! Allocate domain and time-averaged fields
