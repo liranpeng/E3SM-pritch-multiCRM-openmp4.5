@@ -169,7 +169,6 @@ contains
     use openacc_utils
 #endif
     implicit none
-    integer, intent(in) :: ncrms
     integer, intent(in) :: nx_gl_in,ny_gl_in,nz_gl_in,ncrms
     integer :: test_out
     real(crm_rknd) :: zero
@@ -222,7 +221,7 @@ contains
     allocate( q01(ncrms,nz_gl_in-1) )
     allocate( qp0(ncrms,nz_gl_in-1) )
     allocate( qn0(ncrms,nz_gl_in-1) )
-    allocate( tkelebuoy(ncrms,nz_gl_in-1) )
+
     allocate( prespot(ncrms,nz_gl_in-1)   )
     allocate( rho(ncrms,nz_gl_in-1)     )
     allocate( rhow(ncrms,nz_gl_in )    )
