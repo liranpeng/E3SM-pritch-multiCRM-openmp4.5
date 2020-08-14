@@ -6,10 +6,6 @@ module domain
   use crmdims
   implicit none
 
-  integer, parameter :: YES3D = YES3DVAL  ! Domain dimensionality: 1 - 3D, 0 - 2D
-  integer, parameter :: nx_gl = crm_nx ! Number of grid points in X
-  integer, parameter :: ny_gl = crm_ny ! Number of grid points in Y
-  integer, parameter :: nz_gl = crm_nz ! Number of pressure (scalar) levels
   integer :: YES3D = -1  ! Domain dimensionality: 1 - 3D, 0 - 2D
   integer :: nx_gl = -1 ! Number of grid points in X
   integer :: ny_gl = -1 ! Number of grid points in Y
