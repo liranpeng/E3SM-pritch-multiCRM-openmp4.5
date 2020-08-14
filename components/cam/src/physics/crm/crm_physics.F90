@@ -101,7 +101,7 @@ subroutine crm_physics_register()
    dims_gcm_2D2 = (/1, pver/)
    dims_crm_2D2 = (/1, crm_nx2, crm_ny2/)
    dims_crm_3D2 = (/1, crm_nx2, crm_ny2, crm_nz2/)
-   dims_crm_rad2= (/1, crm_nx_rad22, crm_ny_rad2, crm_nz2/)
+   dims_crm_rad2= (/1, crm_nx_rad2, crm_ny_rad2, crm_nz2/)
 
 #ifdef MODAL_AERO
    dims_crm_aer = (/pcols, crm_nx_rad, crm_ny_rad, crm_nz, ntot_amode/)
@@ -136,7 +136,7 @@ subroutine crm_physics_register()
    end if
 
    ! Setup CRM internal parameters
-   call setparm()
+   call setparm(dx_gl_in, dy_gl_in,cdt)
 
    ! Register MMF history variables
    call crm_history_register()
