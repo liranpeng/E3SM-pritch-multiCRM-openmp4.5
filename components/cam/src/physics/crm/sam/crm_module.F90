@@ -338,7 +338,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
 
   crm_state_u_wind      = crm_state%u_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_v_wind      = crm_state%v_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
-  crm_state_w_wind      = crm_state%w_wind(1:ncrms,1:crm_x,1:crmny,1:crmnz)
+  crm_state_w_wind      = crm_state%w_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_temperature = crm_state%temperature(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_qt          = crm_state%qt(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_qp          = crm_state%qp(1:ncrms,1:crmnx,1:crmny,1:crmnz)

@@ -4,7 +4,7 @@ module setparm_mod
 
 contains
 
-  subroutine setparm
+  subroutine setparm(dx_gl_in, dy_gl_in,cdt)
 
     ! initialize parameters:
 
@@ -17,10 +17,14 @@ contains
     implicit none
 
     integer icondavg, ierr
-
-    dt    = CRM_DT
-    dx    = CRM_DX
-    dy    = CRM_DY
+    real(crm_rknd), intent(in) :: dx_gl_in, dy_gl_in, cdt
+    doprecip    = .true.
+    dosgs   = .true.
+    dosurface = .true.
+    dodamping   = .true.
+    dt    = cdt
+    dx    = dx_gl_in
+    dy    = dy_gl_in
     
     rank  = 0   ! in MMF model, rank = 0
     !------------------------------------
@@ -53,6 +57,11 @@ contains
     call sgs_setparm() ! read in SGS options from prm file.
     call micro_setparm() ! read in microphysical options from prm file.
 
+    if(dosmoke) then
+      epsv=0.
+    else
+      epsv=0.61
+    endif
     if(navgmom_x.lt.0.or.navgmom_y.lt.0) then
       nstatmom        = 1
       nstatmomstart    = 99999999
