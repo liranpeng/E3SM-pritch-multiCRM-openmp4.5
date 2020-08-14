@@ -247,7 +247,6 @@ subroutine setup_grid(nx_gl_in, ny_gl_in, nz_gl_in)
     use openacc_utils
 #endif
     implicit none
-    integer, intent(in) :: ncrms
     integer, intent(in) :: ncrms,nz
     integer, intent(out) :: na,nb,bc
     
