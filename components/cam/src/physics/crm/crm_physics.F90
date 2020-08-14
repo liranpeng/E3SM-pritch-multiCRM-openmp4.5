@@ -82,11 +82,11 @@ subroutine crm_physics_register()
    integer idx
    logical           :: use_ECPP
    character(len=16) :: MMF_microphysics_scheme
-   integer, dimension(1) :: dims_gcm_1D
-   integer, dimension(2) :: dims_gcm_2D
-   integer, dimension(3) :: dims_crm_2D
-   integer, dimension(4) :: dims_crm_3D
-   integer, dimension(4) :: dims_crm_rad
+   integer, dimension(1) :: dims_gcm_1D,dims_gcm_1D2
+   integer, dimension(2) :: dims_gcm_2D,dims_gcm_2D2
+   integer, dimension(3) :: dims_crm_2D,dims_crm_2D2
+   integer, dimension(4) :: dims_crm_3D,dims_crm_3D2
+   integer, dimension(4) :: dims_crm_rad,dims_crm_rad2
 #ifdef MODAL_AERO
    integer, dimension(5) :: dims_crm_aer
 #endif
