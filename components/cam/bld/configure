@@ -1947,6 +1947,8 @@ if (defined $opts{'use_MMF'}) {
     $cfg_cppdefs .= " -D_$crm_adv -D$MMF_microphysics_scheme -DYES3DVAL=$yes3Dval";
     $cfg_cppdefs .= " -DCRM_NX=$crm_nx -DCRM_NY=$crm_ny -DCRM_NZ=$crm_nz ";
     $cfg_cppdefs .= " -DCRM_DX=$crm_dx -DCRM_DT=$crm_dt ";
+    $cfg_cppdefs .= " -DCRM_NX2=$crm_nx2 -DCRM_NY2=$crm_ny2 -DCRM_NZ2=$crm_nz2 ";
+    $cfg_cppdefs .= " -DCRM_DX2=$crm_dx2 -DCRM_DT2=$crm_dt2 ";
     if (defined $opts{'use_ECPP'}) { $cfg_cppdefs .= " -DECPP " }
     if (defined $opts{'use_MAML'}) { $cfg_cppdefs .= " -DMAML " }
     if (defined $opts{'crm_nx_rad'}) { 
