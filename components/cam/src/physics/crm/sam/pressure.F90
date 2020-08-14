@@ -22,10 +22,8 @@ contains
 #endif
     implicit none
     integer, intent(in) :: ncrms
-    integer, parameter :: npressureslabs = nsubdomains
-    integer, parameter :: nzslab = max(1,nzm / npressureslabs)
-    integer, parameter :: nx2=nx_gl+2, ny2=ny_gl+2*YES3D
-    integer, parameter :: n3i=3*nx_gl/2+1,n3j=3*ny_gl/2+1
+    integer :: npressureslabs
+    integer :: nzslab 
     real(crm_rknd) work(nx2,ny2)
     real(crm_rknd) ftmp(nx2,ny2)
     real(crm_rknd) ftmp_x(nx2)
@@ -48,6 +46,13 @@ contains
     integer iwall,jwall
     integer :: numgangs  !For working aroung PGI OpenACC bug where it didn't create enough gangs
     real(8), allocatable :: eign(:,:)
+
+    npressureslabs = nsubdomains
+    nzslab = max(1,nzm / npressureslabs)
+    nx2=nx_gl+2
+    ny2=ny_gl+2*YES3D
+    n3i=3*nx_gl/2+1
+    n3j=3*ny_gl/2+1
 
     allocate( f (ncrms,nx2,ny2,nzslab)      )
     allocate( ff(ncrms,nx+1,ny+2*YES3D,nzm) )
