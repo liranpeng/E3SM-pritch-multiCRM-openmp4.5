@@ -343,7 +343,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   crm_state_temperature = crm_state%temperature(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_qt          = crm_state%qt(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_qp          = crm_state%qp(1:ncrms,1:crmnx,1:crmny,1:crmnz)
-  crm_state_qn          = crm_state%qx,1:crmny,1:crmnz)
+  crm_state_qn          = crm_state%qn(1:ncrms,1:crmnx,1:crmny,1:crmnz)
 
   crm_accel_ceaseflag = .false.
 
@@ -376,7 +376,13 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     bflx(icrm) = crm_input_bflxls(icrm)
     wnd (icrm) = crm_input_wndls (icrm)
   enddo
-
+if(ncrms.eq.1) then
+  crmnxrad = crm_nx_rad2
+  crmnyrad = crm_ny_rad2
+else
+  crmnxrad = crm_nx_rad
+  crmnyrad = crm_ny_rad
+end if
 !-----------------------------------------
 
   call task_init ()
