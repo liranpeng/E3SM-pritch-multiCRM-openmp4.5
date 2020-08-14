@@ -2197,11 +2197,11 @@ end if
   enddo
 #endif /* ECPP */
   crm_rad%temperature(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_temperature
-  crm_rad%qv(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qv
-  crm_rad%qc(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qc
-  crm_rad%qi(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qi
-  crm_rad%cld(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_cld
-  crm_rad%qrad(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qrad
+  crm_rad%qv(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_qv
+  crm_rad%qc(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_qc
+  crm_rad%qi(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_qi
+  crm_rad%cld(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_cld
+  crm_rad%qrad(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_qrad
 
   crm_state%u_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_u_wind
   crm_state%v_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_v_wind
