@@ -105,6 +105,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd)  :: u2z,v2z,w2z
     integer         :: i,j,k,l,ptop,nn,icyc,icrm
     integer         :: kx
+    integer         :: crmnx,crmny,crmnz,crmnxrad,crmnyrad
     real(crm_rknd)  :: qsat, omg
     real(crm_rknd), allocatable  :: colprec(:), colprecs(:)
     real(crm_rknd), allocatable  :: ustar(:), bflx(:), wnd(:)
@@ -177,7 +178,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnz = crm_nz2
       crmnxrad = crm_nx_rad2
       crmnyrad = crm_ny_rad2
-      crmnxrad = crm_nx_rad2
 
    else
       crmnx = crm_nx
@@ -185,7 +185,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnz = crm_nz
       crmnxrad = crm_nx_rad
       crmnyrad = crm_ny_rad
-      crmnxrad = crm_nx_rad
    end if
 
   allocate( t00(ncrms,nz) )
