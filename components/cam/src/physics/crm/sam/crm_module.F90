@@ -44,7 +44,8 @@ use setparm_mod, only : setparm
 
 contains
 
-subroutine crm(lchnk, ncrms, dt_gl, plev,       &
+subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
+                cdt,timing_ex,lchnk, ncrms, dt_gl, plev,       &
                crm_state, crm_rad,  &
                crm_ecpp_output)
     !-----------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
 #ifdef MODAL_AERO
     use modal_aero_data       , only: ntot_amode
 #endif
-    use crmdims               , only: crm_nx_rad, crm_ny_rad
+    use crmdims               
 #ifdef ECPP
     use ecppvars              , only: qlsink, precr, precsolid, &
                                       area_bnd_final, area_bnd_sum, area_cen_final, area_cen_sum, &
@@ -79,10 +80,11 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
     !-----------------------------------------------------------------------------------------------
     ! Interface variable declarations
     !-----------------------------------------------------------------------------------------------
-
+    integer , intent(in   ) :: nx_gl_in,ny_gl_in,nz_gl_in
     integer , intent(in   ) :: lchnk                            ! chunk identifier (only for lat/lon and random seed)
     integer , intent(in   ) :: ncrms                            ! Number of "vector" GCM columns to push down into CRM for SIMD vectorization / more threading
     integer , intent(in   ) :: plev                             ! number of levels in parent model
+    real(crm_rknd), intent(in   ) :: dx_gl_in,dy_gl_in,cdt
     real(r8), intent(in   ) :: dt_gl                            ! global model's time step
     type(crm_state_type),      intent(inout) :: crm_state
     type(crm_rad_type), target,intent(inout) :: crm_rad
@@ -159,7 +161,32 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
 
   !-----------------------------------------------------------------------------------------------
+  double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
+  double precision :: wall(6), sys(6), usr(6)
+  double precision init_time,usrtime,systime,usrtime2,systime2
+  double precision,intent(inout) :: timing_ex
+  real(r8) :: clat(pcols), clon(pcols), work0
   !-----------------------------------------------------------------------------------------------
+
+  call setup_grid(nx_gl_in, ny_gl_in, nz_gl_in)
+  call setup_domain_xy(dx_gl_in,dy_gl_in)
+
+   if (ncrms .eq. 1) then
+      crmnx = crm_nx2
+      crmny = crm_ny2
+      crmnz = crm_nz2
+      crmnxrad = crm_nx_rad2
+      crmnyrad = crm_ny_rad2
+      crmnxrad = crm_nx_rad2
+
+   else
+      crmnx = crm_nx
+      crmny = crm_ny
+      crmnz = crm_nz
+      crmnxrad = crm_nx_rad
+      crmnyrad = crm_ny_rad
+      crmnxrad = crm_nx_rad
+   end if
 
   allocate( t00(ncrms,nz) )
   allocate( tln(ncrms,plev) )
@@ -191,20 +218,22 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   allocate( colprec (ncrms) )
   allocate( colprecs(ncrms) )
 
-  allocate( crm_rad_temperature(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
-  allocate( crm_rad_qv(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
-  allocate( crm_rad_qc(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
-  allocate( crm_rad_qi(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
-  allocate( crm_rad_cld(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
-  allocate( crm_rad_qrad(ncrms,crm_nx_rad,crm_ny_rad,crm_nz) )
 
-  allocate( crm_state_u_wind(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_v_wind(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_w_wind(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_temperature(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_qt(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_qp(ncrms,crm_nx,crm_ny,crm_nz) )
-  allocate( crm_state_qn(ncrms,crm_nx,crm_ny,crm_nz) )
+
+  allocate( crm_rad_temperature(ncrms,crmnxrad,crmnyrad,crmnz) )
+  allocate( crm_rad_qv(ncrms,crmnxrad,crmnyrad,crmnz) )
+  allocate( crm_rad_qc(ncrms,crmnxrad,crmnyrad,crmnz) )
+  allocate( crm_rad_qi(ncrms,crmnxrad,crmnyrad,crmnz) )
+  allocate( crm_rad_cld(ncrms,crmnxrad,crmnyrad,crmnz) )
+  allocate( crm_rad_qrad(ncrms,crmnxrad,crmnyrad,crmnz) )
+
+  allocate( crm_state_u_wind(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_v_wind(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_w_wind(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_temperature(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_qt(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_qp(ncrms,crmnx,crmny,crmnz) )
+  allocate( crm_state_qn(ncrms,crmnx,crmny,crmnz) )
 #if defined(_OPENACC)
   call prefetch( t00      )
   call prefetch( tln      )
@@ -289,8 +318,8 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   !$omp target enter data map(alloc: crm_state_qn )
 #endif
   call allocate_params(ncrms)
-  call allocate_vars(ncrms)
-  call allocate_grid(ncrms)
+  call allocate_vars(nx, ny, nz, ncrms)
+  call allocate_grid(nz,ncrms,z,pres,zi,presi,adz,adzw,dt3,dz,na,nb,nc)
   call allocate_tracers(ncrms)
   call allocate_sgs(ncrms)
   call allocate_micro(ncrms)
@@ -301,20 +330,20 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   call allocate_scalar_momentum(ncrms)
 #endif
 
-  crm_rad_temperature = crm_rad%temperature(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
-  crm_rad_qv          = crm_rad%qv(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
-  crm_rad_qc          = crm_rad%qc(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
-  crm_rad_qi          = crm_rad%qi(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
-  crm_rad_cld         = crm_rad%cld(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
-  crm_rad_qrad        = crm_rad%qrad(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz)
+  crm_rad_temperature = crm_rad%temperature(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
+  crm_rad_qv          = crm_rad%qv(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
+  crm_rad_qc          = crm_rad%qc(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
+  crm_rad_qi          = crm_rad%qi(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
+  crm_rad_cld         = crm_rad%cld(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
+  crm_rad_qrad        = crm_rad%qrad(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
 
-  crm_state_u_wind      = crm_state%u_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_v_wind      = crm_state%v_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_w_wind      = crm_state%w_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_temperature = crm_state%temperature(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_qt          = crm_state%qt(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_qp          = crm_state%qp(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
-  crm_state_qn          = crm_state%qn(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz)
+  crm_state_u_wind      = crm_state%u_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
+  crm_state_v_wind      = crm_state%v_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
+  crm_state_w_wind      = crm_state%w_wind(1:ncrms,1:crm_x,1:crmny,1:crmnz)
+  crm_state_temperature = crm_state%temperature(1:ncrms,1:crmnx,1:crmny,1:crmnz)
+  crm_state_qt          = crm_state%qt(1:ncrms,1:crmnx,1:crmny,1:crmnz)
+  crm_state_qp          = crm_state%qp(1:ncrms,1:crmnx,1:crmny,1:crmnz)
+  crm_state_qn          = crm_state%qx,1:crmny,1:crmnz)
 
   crm_accel_ceaseflag = .false.
 
@@ -351,8 +380,7 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
 !-----------------------------------------
 
   call task_init ()
-  call setparm()
-
+  call setparm(dx_gl_in,dy_gl_in,cdt)
   do icrm = 1 , ncrms
     fcor(icrm)= 4*pi/86400.*sin(latitude0(icrm)*pi/180.)
     fcorz(icrm) = sqrt(4.*(2*pi/(3600.*24.))**2-fcor(icrm)**2)
@@ -810,9 +838,9 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
     !--------------------------
     ! sanity check for method to calculate radiation
     ! over averaged groups of columns instead of each individually
-    if ( mod(nx,crm_nx_rad)==0 .or. mod(nx,crm_nx_rad)==0  ) then
-      crm_nx_rad_fac = real(crm_nx_rad,crm_rknd)/real(nx,crm_rknd)
-      crm_ny_rad_fac = real(crm_ny_rad,crm_rknd)/real(ny,crm_rknd)
+    if ( mod(nx,crmnxrad)==0 .or. mod(nx,crmnxrad)==0  ) then
+      crm_nx_rad_fac = real(crmnxrad,crm_rknd)/real(nx,crm_rknd)
+      crm_ny_rad_fac = real(crmnyrad,crm_rknd)/real(ny,crm_rknd)
     else
       write(0,*) "crm_nx_rad and crm_ny_rad need to be divisible by nx and ny"
       call endrun('crm main')
@@ -820,7 +848,7 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   enddo
 
 #ifdef MAML
-  if(crm_nx_rad.NE.crm_nx .or. crm_ny_rad.NE.crm_ny) then 
+  if(crmnxrad.NE.crmnx .or. crmnyrad.NE.crmny) then 
      write(0,*) "crm_nx_rad and crm_ny_rad have to be equal to crm_nx and crm_ny in the MAML configuration"
      call endrun('crm main')
   end if
@@ -836,15 +864,15 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   precsolid = 0.0
 #endif /* ECPP */
 
-  nstop = dt_gl/dt
+  nstop = dt_gl/cdt
   dt = dt_gl/nstop
 
   crm_run_time  = dt_gl
   icrm_run_time = 1._r8/crm_run_time
 
-  if (use_crm_accel) then
-    call crm_accel_nstop(nstop)  ! reduce nstop by factor of (1 + crm_accel_factor)
-  end if
+  !if (use_crm_accel) then
+  !  call crm_accel_nstop(nstop)  ! reduce nstop by factor of (1 + crm_accel_factor)
+  !end if
 
 #if defined(_OPENACC)
   !$acc wait(asyncid)
@@ -912,8 +940,8 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
         do j=1,ny
           do i=1,nx
             do icrm = 1 , ncrms
-              i_rad = (i-1) / (nx/crm_nx_rad) + 1
-              j_rad = (j-1) / (ny/crm_ny_rad) + 1
+              i_rad = (i-1) / (nx/crmnxrad) + 1
+              j_rad = (j-1) / (ny/crmnyrad) + 1
 #if defined(_OPENACC)
               !$acc atomic update
 #elif defined(_OPENMP)
@@ -1192,8 +1220,8 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
           do icrm = 1 , ncrms
             ! Reduced radiation method allows for fewer radiation calculations
             ! by collecting statistics and doing radiation over column groups
-            i_rad = (i-1) / (nx/crm_nx_rad) + 1
-            j_rad = (j-1) / (ny/crm_ny_rad) + 1
+            i_rad = (i-1) / (nx/crmnxrad) + 1
+            j_rad = (j-1) / (ny/crmnyrad) + 1
 #if defined(_OPENACC)
             !$acc atomic update
 #elif defined(_OPENMP)
@@ -1381,8 +1409,8 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
   !$omp target teams distribute parallel do collapse(4)
 #endif
   do k=1,nzm
-    do j=1,crm_ny_rad
-      do i=1,crm_nx_rad
+    do j=1,crmnyrad
+      do i=1,crmnxrad
         do icrm = 1 , ncrms
           crm_rad_temperature(icrm,i,j,k) = crm_rad_temperature(icrm,i,j,k) * tmp1
           crm_rad_qv         (icrm,i,j,k) = crm_rad_qv         (icrm,i,j,k) * tmp1
@@ -2163,20 +2191,20 @@ subroutine crm(lchnk, ncrms, dt_gl, plev,       &
     enddo
   enddo
 #endif /* ECPP */
-  crm_rad%temperature(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_temperature
-  crm_rad%qv(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_qv
-  crm_rad%qc(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_qc
-  crm_rad%qi(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_qi
-  crm_rad%cld(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_cld
-  crm_rad%qrad(1:ncrms,1:crm_nx_rad,1:crm_ny_rad,1:crm_nz) = crm_rad_qrad
+  crm_rad%temperature(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz) = crm_rad_temperature
+  crm_rad%qv(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qv
+  crm_rad%qc(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qc
+  crm_rad%qi(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qi
+  crm_rad%cld(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_cld
+  crm_rad%qrad(1:ncrms,1:crmnx_rad,1:crmnyrad,1:crmnz) = crm_rad_qrad
 
-  crm_state%u_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_u_wind
-  crm_state%v_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_v_wind
-  crm_state%w_wind(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_w_wind
-  crm_state%temperature(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_temperature
-  crm_state%qt(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_qt
-  crm_state%qp(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_qp
-  crm_state%qn(1:ncrms,1:crm_nx,1:crm_ny,1:crm_nz) = crm_state_qn
+  crm_state%u_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_u_wind
+  crm_state%v_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_v_wind
+  crm_state%w_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_w_wind
+  crm_state%temperature(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_temperature
+  crm_state%qt(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_qt
+  crm_state%qp(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_qp
+  crm_state%qn(1:ncrms,1:crmnx,1:crmny,1:crmnz) = crm_state_qn
 
   crm_output_timing_factor(:) = crm_output_timing_factor(:) / nstop
 

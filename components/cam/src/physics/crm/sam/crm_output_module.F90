@@ -146,13 +146,13 @@ contains
       ! Allocate arrays if dimensions are passed as input
       if (present(ncol)) then
         if (ncol .eq. 1) then
-	  crmnx = crm_nx2
-	  crmny = crm_ny2
-	  crmnz = crm_nz2
+      	  crmnx = crm_nx2
+      	  crmny = crm_ny2
+      	  crmnz = crm_nz2
         else
-	  crmnx = crm_nx
-	  crmny = crm_ny
-	  crmnz = crm_nz
+      	  crmnx = crm_nx
+      	  crmny = crm_ny
+      	  crmnz = crm_nz
         end if
          ! Allocate instantaneous outputs
          if (.not. allocated(crm_output_qcl)) allocate(crm_output_qcl(ncol,crmnx,crmny,crmnz))
