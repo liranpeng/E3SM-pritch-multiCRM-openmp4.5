@@ -65,6 +65,7 @@ module params
   logical:: dowallx       = .false.   ! not normally used for MMF
   logical:: dowally       = .false.   ! not normally used for MMF
   logical:: dotracers     = .false.   ! not normally used for MMF
+  logical:: dosmoke = .false.
 
   integer, parameter :: asyncid = 1
 
