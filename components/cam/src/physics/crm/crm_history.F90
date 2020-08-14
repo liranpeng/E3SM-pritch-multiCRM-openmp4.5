@@ -588,21 +588,21 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
 
    ! CRM condensate and precipitation on CRM grid
    if (ncol .eq. 1) then
-      call outfld('CRM_QC2  ',crm_output%qcl   ,1   ,lchnk   )
-      call outfld('CRM_QI2  ',crm_output%qci   ,1   ,lchnk   )
-      call outfld('CRM_QPC2 ',crm_output%qpl  ,1   ,lchnk   )
-      call outfld('CRM_QPI2 ',crm_output%qpi  ,1   ,lchnk   )
-      call outfld('CRM_PREC2',crm_output%prec_crm       ,1   ,lchnk   )
-      call outfld('CRM_TK2 ', crm_output%tk(:, :, :, :)  ,1   ,lchnk   )  
-      call outfld('CRM_TKH2', crm_output%tkh(:, :, :, :)  ,1   ,lchnk   ) 
+      call outfld('CRM_QC2  ',crm_output_qcl   ,1   ,lchnk   )
+      call outfld('CRM_QI2  ',crm_output_qci   ,1   ,lchnk   )
+      call outfld('CRM_QPC2 ',crm_output_qpl  ,1   ,lchnk   )
+      call outfld('CRM_QPI2 ',crm_output_qpi  ,1   ,lchnk   )
+      call outfld('CRM_PREC2',crm_output_prec_crm       ,1   ,lchnk   )
+      call outfld('CRM_TK2 ', crm_output_tk(:, :, :, :)  ,1   ,lchnk   )  
+      call outfld('CRM_TKH2', crm_output_tkh(:, :, :, :)  ,1   ,lchnk   ) 
    else
-      call outfld('CRM_QC  ',crm_output%qcl   ,pcols   ,lchnk   )
-      call outfld('CRM_QI  ',crm_output%qci   ,pcols   ,lchnk   )
-      call outfld('CRM_QPC ',crm_output%qpl  ,pcols   ,lchnk   )
-      call outfld('CRM_QPI ',crm_output%qpi  ,pcols   ,lchnk   )
-      call outfld('CRM_PREC',crm_output%prec_crm       ,pcols   ,lchnk   )
-      call outfld('CRM_TK ', crm_output%tk(:, :, :, :)  ,pcols   ,lchnk   )  
-      call outfld('CRM_TKH', crm_output%tkh(:, :, :, :)  ,pcols   ,lchnk   ) 
+      call outfld('CRM_QC  ',crm_output_qcl   ,pcols   ,lchnk   )
+      call outfld('CRM_QI  ',crm_output_qci   ,pcols   ,lchnk   )
+      call outfld('CRM_QPC ',crm_output_qpl  ,pcols   ,lchnk   )
+      call outfld('CRM_QPI ',crm_output_qpi  ,pcols   ,lchnk   )
+      call outfld('CRM_PREC',crm_output_prec_crm       ,pcols   ,lchnk   )
+      call outfld('CRM_TK ', crm_output_tk(:, :, :, :)  ,pcols   ,lchnk   )  
+      call outfld('CRM_TKH', crm_output_tkh(:, :, :, :)  ,pcols   ,lchnk   ) 
    end if 
 
    ! CRM domain average condensate and precipitation
