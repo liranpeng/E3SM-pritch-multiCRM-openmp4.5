@@ -509,7 +509,6 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
       crmnz = crm_nz2
       crmdx = crm_dx2
       crmdy = crm_dy2
-      crmdz = crm_dz2
       crmdt = crm_dt2
    else
       crmnx = crm_nx
@@ -517,7 +516,6 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
       crmnz = crm_nz
       crmdx = crm_dx
       crmdy = crm_dy
-      crmdz = crm_dz
       crmdt = crm_dt
    end if
    factor_xy = 1._r8/dble(crmnx*crmny)
