@@ -136,7 +136,7 @@ subroutine crm_physics_register()
    end if
 
    ! Setup CRM internal parameters
-   call setparm(dx_gl_in, dy_gl_in,cdt)
+   !call setparm(dx_gl_in, dy_gl_in,cdt)
 
    ! Register MMF history variables
    call crm_history_register()
@@ -454,7 +454,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    character(len=16) :: microp_scheme              ! GCM microphysics scheme
    character(len=16) :: MMF_microphysics_scheme    ! CRM microphysics scheme
    integer  :: crmnx,crmny,crmnz                   ! local crm array dimensions
-   real(r8) :: crmdx,crmdy,crmdz,crmdt
+   real(r8) :: crmdx,crmdy,crmdt
    ! variables for changing CRM orientation
    real(crm_rknd), parameter        :: pi   = 3.14159265359
    real(crm_rknd), parameter        :: pix2 = 6.28318530718
@@ -679,7 +679,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    ! Set pointers to microphysics fields in crm_state
    if (ncol .eq. 1) then
      call pbuf_get_field(pbuf, pbuf_get_index('CRM_QT2'), crm_state%qt)
-     if (SPCAM_microp_scheme .eq. 'sam1mom') then
+     if (MMF_microphysics_scheme .eq. 'sam1mom') then
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QP2'), crm_state%qp)
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QN2'), crm_state%qn)
      else
