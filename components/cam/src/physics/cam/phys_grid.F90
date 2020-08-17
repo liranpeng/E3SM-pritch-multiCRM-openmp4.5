@@ -5091,7 +5091,7 @@ logical function phys_grid_initialized ()
 
             if (multicrm_onethird_heavy) then 
               if (column_cost .lt. 2) then
-                 maxcol_chk(smp) = (ngcols-large_count)/(nchunks-large_count)
+                 maxcol_chk(smp) = (ngcols-extracount)/(nchunks-extracount)
                                                      ! For small cost column, 
                                                      ! increase the maximum
                                                      ! column size
