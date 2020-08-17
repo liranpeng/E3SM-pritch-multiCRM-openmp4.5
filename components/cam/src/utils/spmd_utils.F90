@@ -114,6 +114,7 @@ module spmd_utils
    integer, public              :: iam
    integer, public              :: npes
    integer, public              :: nsmps
+   integer, public              :: extracount
    integer, allocatable, public :: proc_smp_map(:)
    integer, parameter           :: DEFAULT_MASTERPROC=0 
                                       ! the value of iam which is assigned 

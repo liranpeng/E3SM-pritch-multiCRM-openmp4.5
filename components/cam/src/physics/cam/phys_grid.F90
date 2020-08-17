@@ -97,7 +97,7 @@ module phys_grid
                                local_dp_map
    use mpishorthand
 #endif
-   use spmd_utils,       only: iam, masterproc, npes, proc_smp_map, nsmps
+   use spmd_utils,       only: iam, masterproc, npes, proc_smp_map, nsmps,extracount
    use m_MergeSorts,     only: IndexSet, IndexSort
    use cam_abortutils,   only: endrun
    use perf_mod
@@ -385,7 +385,7 @@ contains
                                 get_gcol_block_d, get_gcol_block_cnt_d,   &
                                 get_horiz_grid_dim_d, get_horiz_grid_d,   &
                                 physgrid_copy_attributes_d
-    use spmd_utils,       only: pair, ceil2
+    use spmd_utils,       only: pair, ceil2,extracount
     use cam_grid_support, only: cam_grid_register, iMap
     use cam_grid_support, only: hcoord_len => max_hcoordname_len
     use cam_grid_support, only: horiz_coord_t, horiz_coord_create
@@ -451,8 +451,6 @@ contains
     integer, dimension(:), allocatable :: process_ncols ! number of columns per process
     integer, dimension(:), allocatable :: maxblksiz_proc
                                           ! maxblksiz for blocks assigned to each process
-
-    integer :: extracount ! peng and pritch for multi-CRM stuff.
     
     ! Maps and values for physics grid
     real(r8),                   pointer :: lonvals(:)
@@ -515,6 +513,7 @@ contains
     ! Get estimated computational cost weight for each column (only from SE dynamics currently)
     allocate( cost_d (1:ngcols) )
     cost_d(:) = 1.0_r8
+    extracount = 0
     use_cost_d = .false.
     multicrm_onethird_heavy = .true.
     if ((.not. single_column) .and. dycore_is('SE')) then
