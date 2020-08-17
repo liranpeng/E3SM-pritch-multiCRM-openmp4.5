@@ -5077,6 +5077,14 @@ logical function phys_grid_initialized ()
             chunk_cost = chunks(cid)%estcost
             column_cost = cost_d(curgcol)
 
+            write(iulog,*) "---------------1----------------"
+            write(iulog,*) "chunk_cost = ",i,chunk_cost
+            write(iulog,*) "column_cost = ",i,column_cost
+            write(iulog,*) "column_number = ",cid,chunks(cid)%ncols
+            write(iulog,*) "maxcol_chk(smp) = ",smp,maxcol_chk(smp)
+            write(iulog,*) "large_count = ",large_count,extracount
+            write(iulog,*) "---------------1---------------"
+
             if (multicrm_onethird_heavy) then 
               if (column_cost .lt. 2) then
                  maxcol_chk(smp) = (ngcols-large_count)/(nchunks-large_count)
@@ -5096,6 +5104,12 @@ logical function phys_grid_initialized ()
             chunks(cid)%estcost = chunks(cid)%estcost + cost_d(curgcol)
             knuhcs(curgcol)%chunkid = cid
             knuhcs(curgcol)%col = lcol
+
+            write(iulog,*) "---------------2---------------"
+            write(iulog,*) "chunk_cost = ",cid,chunks(cid)%estcost
+            write(iulog,*) "column_cost = ",column_cost
+            write(iulog,*) "maxcol_chk(smp) = ",smp,maxcol_chk(smp),extracount
+            write(iulog,*) "---------------2---------------"
 
             if (opt < 4) then
 
@@ -5126,8 +5140,14 @@ logical function phys_grid_initialized ()
                if ((use_cost_d).and.(chunks(cid)%ncols.eq.maxcol_chk(smp))) then
 
                   ! Re-heapify the min heap
+                  write(iulog,*) "---------------3---------------"
+                  write(iulog,*) "nchunks = ",nchunks
+                  write(iulog,*) "maxcol_chk(smp) = ",chunks(cid)%ncols,maxcol_chk(smp)
+                  write(iulog,*) "heap_len(smp)0 = ",heap_len(smp)
                   call adjust_heap(nchunks, maxcol_chk(smp), &
                                    cid_offset(smp), heap_len(smp), heap)
+                  write(iulog,*) "heap_len(smp)3= ",heap_len(smp)
+                  write(iulog,*) "---------------3---------------"
 
                else
 
