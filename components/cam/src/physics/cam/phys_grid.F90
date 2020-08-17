@@ -5040,7 +5040,12 @@ logical function phys_grid_initialized ()
                ! (and with space), i.e. to chunk at root of heap for
                ! current SMP
                if (heap_len(smp) > 0) then
+                  write(iulog,*) "---------------0----------------"
+                  write(iulog,*) "heap_len(smp) = ",smp,heap_len(smp)
                   cid = heap(cid_offset(smp))
+                  write(iulog,*) "cid_offset(smp) = ",smp,cid_offset(smp)
+                  write(iulog,*) "cid = ",cid
+                  write(iulog,*) "---------------0----------------"
                else
                   if (masterproc) then
                      write(iulog,*) &
