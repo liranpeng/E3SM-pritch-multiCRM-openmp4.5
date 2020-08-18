@@ -201,6 +201,9 @@ contains
        call add_default ('TGCLDLWP', 1, ' ')
        call add_default ('TGCLDIWP', 1, ' ')
        call add_default ('TGCLDCWP', 1, ' ')
+       call add_default ('TGCLDLWP2', 1, ' ')
+       call add_default ('TGCLDIWP2', 1, ' ')
+       call add_default ('TGCLDCWP2', 1, ' ')
        if (camrt_rad) then
            call add_default ('EMIS', 1, ' ')
        else
