@@ -495,6 +495,12 @@ subroutine cloud_diagnostics_calc(state,  pbuf)
     call outfld('ICLDTWP' ,cwp    , pcols,lchnk)
     call outfld('ICLDIWP' ,cicewp , pcols,lchnk)
 
+    call outfld('GCLDLWP2' ,gwp    , pcols,lchnk)
+    call outfld('TGCLDCWP2',tgwp   , pcols,lchnk)
+    call outfld('TGCLDLWP2',tgliqwp, pcols,lchnk)
+    call outfld('TGCLDIWP2',tgicewp, pcols,lchnk)
+    call outfld('ICLDTWP2' ,cwp    , pcols,lchnk)
+    call outfld('ICLDIWP2' ,cicewp , pcols,lchnk)
 ! Compute total preciptable water in column (in mm)
     tpw(:ncol) = 0.0_r8
     rgrav = 1.0_r8/gravit
