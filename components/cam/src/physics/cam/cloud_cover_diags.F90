@@ -31,6 +31,11 @@ subroutine cloud_cover_diags_init(sampling_seq)
   call addfld ('CLDMED',horiz_only,    'A','fraction','Vertically-integrated mid-level cloud' , sampling_seq=sampling_seq)
   call addfld ('CLDHGH',horiz_only,    'A','fraction','Vertically-integrated high cloud'      , sampling_seq=sampling_seq)
 
+  call addfld ('CLOUD2',(/ 'lev' /), 'A','fraction','Cloud fraction'                        , sampling_seq=sampling_seq)
+  call addfld ('CLDTOT2',horiz_only,    'A','fraction','Vertically-integrated total cloud'     , sampling_seq=sampling_seq)
+  call addfld ('CLDLOW2',horiz_only,    'A','fraction','Vertically-integrated low cloud'       , sampling_seq=sampling_seq)
+  call addfld ('CLDMED2',horiz_only,    'A','fraction','Vertically-integrated mid-level cloud' , sampling_seq=sampling_seq)
+  call addfld ('CLDHGH2',horiz_only,    'A','fraction','Vertically-integrated high cloud'      , sampling_seq=sampling_seq)
   ! determine the add_default fields
   call phys_getopts(history_amwg_out           = history_amwg  )
  
@@ -40,6 +45,11 @@ subroutine cloud_cover_diags_init(sampling_seq)
       call add_default ('CLDLOW  ', 1, ' ')
       call add_default ('CLDMED  ', 1, ' ')
       call add_default ('CLDHGH  ', 1, ' ')
+      call add_default ('CLOUD2  ', 1, ' ')
+      call add_default ('CLDTOT2 ', 1, ' ')
+      call add_default ('CLDLOW2 ', 1, ' ')
+      call add_default ('CLDMED2 ', 1, ' ')
+      call add_default ('CLDHGH2 ', 1, ' ')
   endif
     
 
@@ -65,13 +75,21 @@ subroutine cloud_cover_diags_out(lchnk, ncol, cld, pmid, nmxrgn, pmxrgn )
   !
   ! Dump cloud field information to history tape buffer (diagnostics)
   !
-  call outfld('CLDTOT  ',cltot  ,pcols,lchnk)
-  call outfld('CLDLOW  ',cllow  ,pcols,lchnk)
-  call outfld('CLDMED  ',clmed  ,pcols,lchnk)
-  call outfld('CLDHGH  ',clhgh  ,pcols,lchnk)
+  if (ncol .eq. 1) then
+    call outfld('CLDTOT2 ',cltot  ,1,lchnk)
+    call outfld('CLDLOW2 ',cllow  ,1,lchnk)
+    call outfld('CLDMED2 ',clmed  ,1,lchnk)
+    call outfld('CLDHGH2 ',clhgh  ,1,lchnk)
 
-  call outfld('CLOUD   ',cld    ,pcols,lchnk) 
+    call outfld('CLOUD2  ',cld    ,1,lchnk) 
+  else
+    call outfld('CLDTOT  ',cltot  ,pcols,lchnk)
+    call outfld('CLDLOW  ',cllow  ,pcols,lchnk)
+    call outfld('CLDMED  ',clmed  ,pcols,lchnk)
+    call outfld('CLDHGH  ',clhgh  ,pcols,lchnk)
 
+    call outfld('CLOUD   ',cld    ,pcols,lchnk) 
+  endif
 end subroutine cloud_cover_diags_out
 
 !===============================================================================
