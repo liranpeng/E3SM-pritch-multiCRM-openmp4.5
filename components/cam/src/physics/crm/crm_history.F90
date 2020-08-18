@@ -314,6 +314,8 @@ subroutine crm_history_init(species_class)
    call addfld('TIMINGF ', horiz_only,'A','        ','CRM CPU usage efficiency: 1 - ideal' )
    call addfld('CLOUDTOP',(/'lev'/),  'A','        ','Cloud Top PDF' )
 
+   call addfld('PRES2   ',(/'lev'/),  'A','Pa      ','Pressure' )
+   call addfld('DPRES2  ',(/'lev'/),  'A','Pa      ','Pressure thickness of layer' )
    call addfld('SPDT2   ',(/'lev'/),  'A','K/s     ','T tendency due to CRM' )
    call addfld('SPDQ2    ',(/'lev'/),  'A','kg/kg/s ','Q tendency due to CRM' )
    call addfld('SPDQC2   ',(/'lev'/),  'A','kg/kg/s ','QC tendency due to CRM' )
