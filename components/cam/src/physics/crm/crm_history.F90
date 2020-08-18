@@ -245,7 +245,11 @@ subroutine crm_history_init(species_class)
    call addfld('DU_CRM   ',(/'lev'/),'A','/s',  'detrainment from updraft from CRM')
    call addfld('EU_CRM   ',(/'lev'/),'A','/s',  'entraiment rate from updraft')
    call addfld('ED_CRM   ',(/'lev'/),'A','/s',  'entraiment rate from downdraft')
- 
+   call addfld('MU_CRM2  ',(/'lev'/),'A','Pa/s','mass flux up from CRM')
+   call addfld('MD_CRM2  ',(/'lev'/),'A','Pa/s','mass flux down from CRM')
+   call addfld('DU_CRM2  ',(/'lev'/),'A','/s',  'detrainment from updraft from CRM')
+   call addfld('EU_CRM2  ',(/'lev'/),'A','/s',  'entraiment rate from updraft')
+   call addfld('ED_CRM2  ',(/'lev'/),'A','/s',  'entraiment rate from downdraft')
    do m = 1, pcnst 
      if(cnst_name(m) == 'DMS') then 
         call addfld('DMSCONV',   (/ 'lev' /), 'A', 'kg/kg/s',  'DMS tendency from ZM convection')
