@@ -255,6 +255,8 @@ subroutine crm_history_init(species_class)
       end if
    end do
  
+   call addfld('SPQRL2   ', (/'lev'/), 'A','K/s', 'long-wave heating rate')
+   call addfld('SPQRS2   ', (/'lev'/), 'A','K/s', 'short-wave heating rate')
    call addfld('SPQRL    ', (/'lev'/), 'A','K/s', 'long-wave heating rate')
    call addfld('SPQRS    ', (/'lev'/), 'A','K/s', 'short-wave heating rate')
    call addfld('LENGC    ', (/'ilev'/),'A','m  ', 'Mixing length scale for the calcuation of vertical difusivity')
