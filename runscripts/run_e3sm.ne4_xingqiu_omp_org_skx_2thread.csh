@@ -54,8 +54,8 @@ set crm_nx_rad     = 1
 set crm_ny_rad     = 1
 set crm_nx2        = 32        # <<< change this one!
 set crm_ny2        = 1
-set crm_dx2        = 500
-set crm_dt2        = 2
+set crm_dx2        = 250
+set crm_dt2        = 1
 set crm_nz2        = 58
 set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
@@ -772,7 +772,7 @@ else if ( `lowercase $processor_config` == 'customknl' ) then
   e3sm_print 'using custom layout for cori-knl because $processor_config = '$processor_config
 
 
-  ${xmlchange_exe} MAX_TASKS_PER_NODE="256"
+  ${xmlchange_exe} MAX_TASKS_PER_NODE="48"
  # ${xmlchange_exe} PES_PER_NODE="256"
 
   ${xmlchange_exe} NTASKS_ATM="$natm"

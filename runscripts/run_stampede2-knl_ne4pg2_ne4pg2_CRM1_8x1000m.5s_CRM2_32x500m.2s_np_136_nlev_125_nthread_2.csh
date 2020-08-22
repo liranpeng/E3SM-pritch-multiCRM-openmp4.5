@@ -41,9 +41,9 @@ set nnum = $np
 #set natm           = 128
 set natm = $np
 set nother          = $np
-set ThreadCount_atm = 1
+set ThreadCount_atm = 2
 set nthreads        = 1
-set OMP_NUM_THREADS = 1
+set OMP_NUM_THREADS = 2
 ### GRID OPTIONS <Liran>
 set crm_nx         = 8         # <<< change this one!
 set crm_ny         = 1
@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}_nlev_${nlev}
+set job_name       = smoketest_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}

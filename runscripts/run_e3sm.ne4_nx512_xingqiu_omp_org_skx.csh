@@ -32,8 +32,8 @@ set compset        = F-EAMv1-AQP1
 set resolution     = ne4pg2_ne4pg2
 #set machine        = development
 #set machine        = stampede2-knl-liran
-set machine        = stampede2-knl
-#set machine        = stampede2
+#set machine        = stampede2-knl
+set machine        = stampede2
 set walltime       = 1:00:00
 setenv project       TG-ATM190002
 #set nnum           = 128
@@ -45,21 +45,21 @@ set ThreadCount_atm = 1
 set nthreads        = 1
 set OMP_NUM_THREADS = 1
 ### GRID OPTIONS <Liran>
-set crm_nx         = 32         # <<< change this one!
+set crm_nx         = 64         # <<< change this one!
 set crm_ny         = 1
-set crm_dx         = 4000
+set crm_dx         = 1000
 set crm_dt         = 5
-set crm_nz         = 70
+set crm_nz         = 58
 set crm_nx_rad     = 1
 set crm_ny_rad     = 1
 set crm_nx2        = 512        # <<< change this one!
 set crm_ny2        = 1
 set crm_dx2        = 250
 set crm_dt2        = 1
-set crm_nz2        = 70
+set crm_nz2        = 58
 set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
-set nlev           = 72
+set nlev           = 125
 @ work0 = 384 - 128
 @ work1 = $np - 128
 @ npcol = $work0 / $work1
@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_4_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}
+set job_name       = smoketest_5_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}_nlev_${nlev}_crm_nz_${crm_nz}_crm_nz2_${crm_nz2}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -772,7 +772,7 @@ else if ( `lowercase $processor_config` == 'customknl' ) then
   e3sm_print 'using custom layout for cori-knl because $processor_config = '$processor_config
 
 
-  ${xmlchange_exe} MAX_TASKS_PER_NODE="256"
+  ${xmlchange_exe} MAX_TASKS_PER_NODE="48"
  # ${xmlchange_exe} PES_PER_NODE="256"
 
   ${xmlchange_exe} NTASKS_ATM="$natm"
@@ -885,7 +885,7 @@ endif
 #===========================
 # SET THE PARTITION OF NODES
 #===========================
-$xmlchange_exe --id JOB_QUEUE --val 'normal'
+$xmlchange_exe --id JOB_QUEUE --val 'skx-normal'
 if ( `lowercase $debug_queue` == true ) then
   if ( $machine == cab || $machine == sierra ) then
     $xmlchange_exe --id JOB_QUEUE --val 'pdebug'

@@ -1820,9 +1820,9 @@ end subroutine rhcrit_calc
          ! This case should not happen. Issue error message !
          ! ------------------------------------------------ !    
          else
-             write(iulog,*) 'Impossible case2 in instratus_condensate' 
-             write(iulog,*)  al0_st, a_sc, a_dc
-             write(iulog,*)  1000*ql0_nc, 1000*(ql0+qi0)
+             write(iulog,*) 'Impossible case2 in instratus_condensate',lchnk 
+             write(iulog,*)  lchnk,al0_st, a_sc, a_dc
+             write(iulog,*)  lchnk,1000*ql0_nc, 1000*(ql0+qi0)
              call endrun
          endif
       endif
@@ -2233,8 +2233,7 @@ end subroutine rhcrit_calc
    qc_nc0 = max(0._r8,ql+qi-a_dc*(ql_dc+qi_dc)-a_sc*(ql_sc+qi_sc))
    Tc    = T - (latvap/cpair)*ql
    qt    = qv + ql
-
-   do m = 1, 20
+   do m = 1, 40
       call qsat_water(T, p, es, qs, dqsdt=dqsdT)
       Tscale = latvap/cpair
       qc     = (T-Tc)/Tscale
@@ -2242,13 +2241,14 @@ end subroutine rhcrit_calc
       f      = qs + qc - qt 
       fg     = dqsdT + dqcdt
       fg     = sign(1._r8,fg)*max(1.e-10_r8,abs(fg))
+      f      = min(30.0_r8*fg,f)
     ! Sungsu modified convergence criteria to speed up convergence and guarantee RH <= 1.
       if( qc .ge. 0._r8 .and. ( qt - qc ) .ge. 0.999_r8*qs .and. ( qt - qc ) .le. 1._r8*qs ) then
           goto 10
       endif
       T = T - f/fg
    enddo
- ! write(iulog,*) 'Convergence in gridmean_RH is not reached. RH = ', ( qt - qc ) / qs
+  !write(iulog,*) 'Convergence in gridmean_RH is not reached. RH = ', ( qt - qc ) / qs
 10 continue
 
    call qsat_water(T, p, es, qs)
