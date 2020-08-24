@@ -1041,11 +1041,11 @@ end if
 
       !-----------------------------------------------------------
       !       Apply mean-state acceleration
-      if (use_crm_accel .and. .not. crm_accel_ceaseflag) then
+      !if (use_crm_accel .and. .not. crm_accel_ceaseflag) then
         ! Use Jones-Bretherton-Pritchard methodology to accelerate
         ! CRM horizontal mean evolution artificially.
-        call accelerate_crm(ncrms, nstep, nstop, crm_accel_ceaseflag)
-      endif
+      !  call accelerate_crm(ncrms, nstep, nstop, crm_accel_ceaseflag)
+      !endif
 
       !-----------------------------------------------------------
       !    Compute diagnostics fields:
