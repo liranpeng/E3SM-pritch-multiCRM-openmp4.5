@@ -535,9 +535,13 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    !------------------------------------------------------------------------------------------------
    call crm_state%initialize()
    call crm_rad_initialize(crm_rad)
-   call crm_input_initialize(pcols,pver)
-   call crm_output_initialize(pcols,pver)
-
+   if (ncol .eq. 1) then
+      call crm_input_initialize(1,pver)
+      call crm_output_initialize(1,pver)
+   else
+      call crm_input_initialize(pcols,pver)
+      call crm_output_initialize(pcols,pver)
+   end if
    !------------------------------------------------------------------------------------------------
    ! Set CRM orientation angle
    !------------------------------------------------------------------------------------------------
