@@ -2500,7 +2500,7 @@ end function radiation_nextsw_cday
              do ii =1, crmnx
                 lwup_loc = lwup_loc + cam_in%lwup(i,ii)
              end do
-             lwup_loc = lwup_loc/crm_nx
+             lwup_loc = lwup_loc/crmnx
              ts(i) = sqrt(sqrt(lwup_loc/stebol))
 #else
              ts(i) = sqrt(sqrt(cam_in%lwup(i)/stebol))
