@@ -223,13 +223,13 @@ flags should be captured within MPAS CMake files.
 <compiler COMPILER="intel">
   <CFLAGS>
     <base> -O2 -fp-model precise -std=gnu99 </base>
-    <append compile_threaded="TRUE"> -qno-openmp-offload </append>
+    <append compile_threaded="TRUE"> -qno-openmp </append>
     <append DEBUG="FALSE"> -O2 -debug minimal </append>
     <append DEBUG="TRUE"> -O0 -g </append>
   </CFLAGS>
   <CXXFLAGS>
     <base> -std=c++11 -fp-model source </base>
-    <append compile_threaded="TRUE"> -qno-openmp-offload </append>
+    <append compile_threaded="TRUE"> -qopenmp </append>
     <append DEBUG="TRUE"> -O0 -g </append>
     <append DEBUG="FALSE"> -O2 </append>
   </CXXFLAGS>
@@ -246,7 +246,7 @@ flags should be captured within MPAS CMake files.
   </FC_AUTO_R8>
   <FFLAGS>
     <base>  -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source </base>
-    <append compile_threaded="TRUE"> -qno-openmp-offload </append>
+    <append compile_threaded="TRUE"> -qno-openmp </append>
     <append DEBUG="TRUE"> -O0 -g -check uninit -check bounds -check pointers -fpe0 -check noarg_temp_created </append>
     <append DEBUG="FALSE"> -O2 -debug minimal </append>
   </FFLAGS>
