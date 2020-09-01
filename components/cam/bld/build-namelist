@@ -844,7 +844,7 @@ add_default($nl, 'bnd_topo', 'nofail'=>1);
 add_default($nl, 'tropopause_climo_file');
 
 # Heavy load region flag
-add_default($nl, 'heavy_flag_file');
+add_default($nl, 'heavy_load_file');
 
 # Radiation
 if ($rad_pkg eq 'camrt') {
