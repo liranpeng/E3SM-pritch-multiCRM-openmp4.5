@@ -1445,7 +1445,7 @@ contains
     !-----------------------------------------------------------------------
     !       ... open netcdf file
     !-----------------------------------------------------------------------
-    call getfil (heavy_flag_file, locfn, 0)
+    call getfil (heavy_load_file, locfn, 0)
     call cam_pio_openfile(pio_id, trim(locfn), PIO_NOWRITE)
     !------------------------------------------------------------------
     !  ... allocate arrays
