@@ -354,6 +354,9 @@ module phys_grid
    integer, private, parameter :: def_alltoall = 1                ! default
    integer, private :: phys_alltoall = def_alltoall
 
+  ! Namelist variables
+  character(len=256)    :: heavy_load_file = 'heavy_load_file'
+
 contains
 !========================================================================
   integer function get_nlcols_p()
@@ -385,7 +388,7 @@ contains
                                 get_gcol_block_d, get_gcol_block_cnt_d,   &
                                 get_horiz_grid_dim_d, get_horiz_grid_d,   &
                                 physgrid_copy_attributes_d
-    use spmd_utils,       only: pair, ceil2,extracount,stratiform_cld
+    use spmd_utils,       only: pair, ceil2,extracount
     use cam_grid_support, only: cam_grid_register, iMap
     use cam_grid_support, only: hcoord_len => max_hcoordname_len
     use cam_grid_support, only: horiz_coord_t, horiz_coord_create
@@ -422,9 +425,6 @@ contains
     real(r8), dimension(:), allocatable :: wght_d     ! column integration weight (from dynamics)
     integer,  dimension(:), allocatable :: pchunkid   ! chunk global ordering
     integer,  dimension(:), allocatable :: tmp_gcol   ! work array for global physics column indices
-
-    ! Namelist variables
-    character(len=256)    :: heavy_load_file = 'heavy_load_file'
 
     ! permutation array used in physics column sorting;
     ! reused later as work space in (lbal_opt == -1) logic
