@@ -515,7 +515,6 @@ contains
     latmin = MINVAL(ABS(lat_d))
     lonmin = MINVAL(ABS(lon_d))
     hflag = 0
-     
     call two_crm_read_file()
 
     ! Get estimated computational cost weight for each column (only from SE dynamics currently)
@@ -523,10 +522,8 @@ contains
     cost_d(:) = 1.0_r8
     extracount = 0
     use_cost_d = .false.
-    multicrm_onethird_heavy = .true.
     if ((.not. single_column) .and. dycore_is('SE')) then
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
-      if (multicrm_onethird_heavy) then
         do i=1,ngcols
           write(iulog,*) 'hflag = ',hflag(i)
           if (hflag(i) .gt. 0.5) then
@@ -534,7 +531,6 @@ contains
                extracount = extracount + 1 
           endif
         enddo
-      endif ! end if ((plan3flag).or.(plan2flag)) then
       if (minval(cost_d) .ne. maxval(cost_d)) use_cost_d = .true.
     endif
 
