@@ -258,6 +258,7 @@ contains
    use aerodep_flx,         only: aerodep_flx_readnl
    use solar_data,          only: solar_data_readnl
    use tropopause,          only: tropopause_readnl
+   use phys_grid,           only: two_crm_readnl
    use aoa_tracers,         only: aoa_tracers_readnl
    use prescribed_ozone,    only: prescribed_ozone_readnl
    use prescribed_aero,     only: prescribed_aero_readnl
