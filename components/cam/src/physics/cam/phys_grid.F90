@@ -454,7 +454,7 @@ contains
     integer, dimension(:), allocatable :: process_ncols ! number of columns per process
     integer, dimension(:), allocatable :: maxblksiz_proc
                                           ! maxblksiz for blocks assigned to each process
-    real(r8), allocatable :: hflag(:)
+    integer, allocatable :: hflag(:)
 
     ! Maps and values for physics grid
     real(r8),                   pointer :: lonvals(:)
