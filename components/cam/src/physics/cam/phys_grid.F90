@@ -515,7 +515,7 @@ contains
     latmin = MINVAL(ABS(lat_d))
     lonmin = MINVAL(ABS(lon_d))
     hflag = 0
-    call two_crm_read_file()
+    call two_crm_read_file(hflag)
 
     ! Get estimated computational cost weight for each column (only from SE dynamics currently)
     allocate( cost_d (1:ngcols) )
@@ -1419,7 +1419,7 @@ contains
   end subroutine two_crm_readnl
 !========================================================================
 
-  subroutine two_crm_read_file
+  subroutine two_crm_read_file(hflag)
     !------------------------------------------------------------------
     ! ... initialize physical grids using the flag values
     !------------------------------------------------------------------
@@ -1437,7 +1437,7 @@ contains
     type(var_desc_t) :: vid
     integer :: start(1)
     integer :: count(1)
-    real(r8), allocatable :: hflag(:)
+    integer, intent(inout) :: hflag(:)
     character(len=256) :: locfn
 
     !-----------------------------------------------------------------------
@@ -1448,7 +1448,7 @@ contains
     !------------------------------------------------------------------
     !  ... allocate arrays
     !------------------------------------------------------------------
-    allocate( hflag(ngcols), stat=ierr )
+
     if( ierr /= 0 ) then
        write(iulog,*) '2 crm init: hflag allocation error = ',ierr
        call endrun
