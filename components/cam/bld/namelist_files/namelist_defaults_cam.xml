@@ -562,6 +562,8 @@
 <!-- Tropopause climatology -->
 <tropopause_climo_file>atm/cam/chem/trop_mozart/ub/clim_p_trop.nc</tropopause_climo_file>
 
+<!-- Two CRM flag file -->
+<heavy_flag_file>/scratch/07088/tg863871/inputdata/Liran_Flag/ne4pg2_Flag.nc</heavy_flag_file>
 
 <!-- Solar constant from Judith Lean via Caspar Ammann for 1990 or 2000 -->
 <solar_const>1361.27</solar_const>

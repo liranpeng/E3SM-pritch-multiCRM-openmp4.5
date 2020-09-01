@@ -508,6 +508,7 @@ contains
    call solar_data_readnl(nlfilename)
    call carma_readnl(nlfilename)
    call tropopause_readnl(nlfilename)
+   call two_crm_readnl(nlfilename)
    call aoa_tracers_readnl(nlfilename)
    call aerodep_flx_readnl(nlfilename)
    call prescribed_ozone_readnl(nlfilename)

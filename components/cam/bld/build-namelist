@@ -843,6 +843,9 @@ add_default($nl, 'bnd_topo', 'nofail'=>1);
 # Tropopause climatology
 add_default($nl, 'tropopause_climo_file');
 
+# Heavy load region flag
+add_default($nl, 'heavy_flag_file');
+
 # Radiation
 if ($rad_pkg eq 'camrt') {
     # Only needed for CAM3/4 RT code

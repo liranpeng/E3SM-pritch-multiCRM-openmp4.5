@@ -385,7 +385,7 @@ contains
                                 get_gcol_block_d, get_gcol_block_cnt_d,   &
                                 get_horiz_grid_dim_d, get_horiz_grid_d,   &
                                 physgrid_copy_attributes_d
-    use spmd_utils,       only: pair, ceil2,extracount
+    use spmd_utils,       only: pair, ceil2,extracount,stratiform_cld
     use cam_grid_support, only: cam_grid_register, iMap
     use cam_grid_support, only: hcoord_len => max_hcoordname_len
     use cam_grid_support, only: horiz_coord_t, horiz_coord_create
@@ -422,6 +422,9 @@ contains
     real(r8), dimension(:), allocatable :: wght_d     ! column integration weight (from dynamics)
     integer,  dimension(:), allocatable :: pchunkid   ! chunk global ordering
     integer,  dimension(:), allocatable :: tmp_gcol   ! work array for global physics column indices
+
+    ! Namelist variables
+    character(len=256)    :: heavy_load_file = 'heavy_load_file'
 
     ! permutation array used in physics column sorting;
     ! reused later as work space in (lbal_opt == -1) logic
@@ -492,6 +495,7 @@ contains
     else
       ngcols = hdim1_d*hdim2_d
     endif
+
     allocate( clat_d(1:ngcols) )
     allocate( clon_d(1:ngcols) )
     allocate( lat_d(1:ngcols) )
@@ -509,6 +513,8 @@ contains
     endif
     latmin = MINVAL(ABS(lat_d))
     lonmin = MINVAL(ABS(lon_d))
+     
+    call two_crm_read_file()
 
     ! Get estimated computational cost weight for each column (only from SE dynamics currently)
     allocate( cost_d (1:ngcols) )
@@ -520,12 +526,9 @@ contains
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
       if (multicrm_onethird_heavy) then
         do i=1,ngcols
-          if (clat_d(i)* 57.296_r8 .ge. -20. .and. clat_d(i)* 57.296_r8 .le. 20.) then
+          if (hflag .eq. 1) then
                cost_d(i) = 3.0_r8
                extracount = extracount + 1 
-             if ((abs(clat_d(i)*57.296_r8+5.6062).le.0.1).and.(abs(clon_d(i)*57.296_r8-354.3681).le.0.1)) then
-               cost_d(i) = 1.0_r8
-             endif
           endif
         enddo
       endif ! end if ((plan3flag).or.(plan2flag)) then
@@ -1377,6 +1380,95 @@ contains
     call t_adj_detailf(+2)
     return
   end subroutine phys_grid_init
+  !========================================================================
+
+   ! Read namelist variables.
+   subroutine two_crm_readnl(nlfile)
+
+      use namelist_utils,  only: find_group_name
+      use units,           only: getunit, freeunit
+      use mpishorthand
+
+      character(len=*), intent(in) :: nlfile  ! filepath for file containing namelist input
+
+      ! Local variables
+      integer :: unitn, ierr
+      character(len=*), parameter :: subname = 'two_crm_readnl'
+
+      namelist /two_crm_nl/ heavy_flag_file
+      !-----------------------------------------------------------------------------
+
+      if (masterproc) then
+         unitn = getunit()
+         open( unitn, file=trim(nlfile), status='old' )
+         call find_group_name(unitn, 'two_crm_nl', status=ierr)
+         if (ierr == 0) then
+            read(unitn, two_crm_nl, iostat=ierr)
+            if (ierr /= 0) then
+               call endrun(subname // ':: ERROR reading namelist')
+            end if
+         end if
+         close(unitn)
+         call freeunit(unitn)
+      end if
+
+#ifdef SPMD
+      ! Broadcast namelist variables
+      call mpibcast(heavy_flag_file, len(heavy_flag_file), mpichar, 0, mpicom)
+#endif
+
+  end subroutine two_crm_readnl
+!========================================================================
+
+  subroutine two_crm_read_file
+    !------------------------------------------------------------------
+    ! ... initialize physical grids using the flag values
+    !------------------------------------------------------------------
+    use ioFileMod,    only : getfil
+    use cam_pio_utils, only: cam_pio_openfile
+    use pio,          only : file_desc_t, var_desc_t, &
+         pio_inq_varid, pio_get_var, pio_closefile
+
+    !------------------------------------------------------------------
+    ! ... local variables
+    !------------------------------------------------------------------
+    integer :: ierr
+    type(file_desc_t) :: pio_id
+    integer :: dimid
+    type(var_desc_t) :: vid
+    integer :: start(1)
+    integer :: count(1)
+    real(r8), allocatable :: hflag(:)
+    character(len=256) :: locfn
+
+    !-----------------------------------------------------------------------
+    !       ... open netcdf file
+    !-----------------------------------------------------------------------
+    call getfil (heavy_flag_file, locfn, 0)
+    call cam_pio_openfile(pio_id, trim(locfn), PIO_NOWRITE)
+    !------------------------------------------------------------------
+    !  ... allocate arrays
+    !------------------------------------------------------------------
+    allocate( hflag(ncol), stat=ierr )
+    if( ierr /= 0 ) then
+       write(iulog,*) '2 crm init: hflag allocation error = ',ierr
+       call endrun
+    end if
+    !------------------------------------------------------------------
+    !  ... read in the heavy loading flag
+    !------------------------------------------------------------------
+    ierr = pio_inq_varid( pio_id, 'Flag', vid )
+    start = (/ 1 /)
+    count = (/ ncol /)
+    ierr = pio_get_var( pio_id, vid, start, count, hflag )
+
+    !------------------------------------------------------------------
+    !  ... close the netcdf file
+    !------------------------------------------------------------------
+    call pio_closefile( pio_id )
+
+
+  end subroutine two_crm_read_file
 
 !========================================================================
 
