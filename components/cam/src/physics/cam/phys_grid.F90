@@ -514,6 +514,7 @@ contains
     endif
     latmin = MINVAL(ABS(lat_d))
     lonmin = MINVAL(ABS(lon_d))
+    hflag = 0
      
     call two_crm_read_file()
 
@@ -527,6 +528,7 @@ contains
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
       if (multicrm_onethird_heavy) then
         do i=1,ngcols
+          write(iulog,*) 'hflag = ',hflag(i)
           if (hflag(i) .gt. 0.5) then
                cost_d(i) = 3.0_r8
                extracount = extracount + 1 
