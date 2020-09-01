@@ -527,7 +527,7 @@ contains
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
       if (multicrm_onethird_heavy) then
         do i=1,ngcols
-          if (hflag .eq. 1) then
+          if (hflag(i) .eq. 1) then
                cost_d(i) = 3.0_r8
                extracount = extracount + 1 
           endif
@@ -1396,7 +1396,7 @@ contains
       integer :: unitn, ierr
       character(len=*), parameter :: subname = 'two_crm_readnl'
 
-      namelist /two_crm_nl/ heavy_flag_file
+      namelist /two_crm_nl/ heavy_load_file
       !-----------------------------------------------------------------------------
 
       if (masterproc) then
@@ -1415,7 +1415,7 @@ contains
 
 #ifdef SPMD
       ! Broadcast namelist variables
-      call mpibcast(heavy_flag_file, len(heavy_flag_file), mpichar, 0, mpicom)
+      call mpibcast(heavy_load_file, len(heavy_load_file), mpichar, 0, mpicom)
 #endif
 
   end subroutine two_crm_readnl
