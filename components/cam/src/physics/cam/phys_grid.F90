@@ -454,7 +454,8 @@ contains
     integer, dimension(:), allocatable :: process_ncols ! number of columns per process
     integer, dimension(:), allocatable :: maxblksiz_proc
                                           ! maxblksiz for blocks assigned to each process
-    
+    real(r8), allocatable :: hflag(:)
+
     ! Maps and values for physics grid
     real(r8),                   pointer :: lonvals(:)
     real(r8),                   pointer :: latvals(:)
@@ -495,7 +496,7 @@ contains
     else
       ngcols = hdim1_d*hdim2_d
     endif
-
+    allocate( hflag(1:ngcols))
     allocate( clat_d(1:ngcols) )
     allocate( clon_d(1:ngcols) )
     allocate( lat_d(1:ngcols) )
@@ -1427,7 +1428,7 @@ contains
     use ioFileMod,    only : getfil
     use cam_pio_utils, only: cam_pio_openfile
     use pio,          only : file_desc_t, var_desc_t, &
-         pio_inq_varid, pio_get_var, pio_closefile
+         pio_inq_varid, pio_get_var, pio_closefile, pio_nowrite
 
     !------------------------------------------------------------------
     ! ... local variables
@@ -1449,7 +1450,7 @@ contains
     !------------------------------------------------------------------
     !  ... allocate arrays
     !------------------------------------------------------------------
-    allocate( hflag(ncol), stat=ierr )
+    allocate( hflag(ngcols), stat=ierr )
     if( ierr /= 0 ) then
        write(iulog,*) '2 crm init: hflag allocation error = ',ierr
        call endrun
@@ -1459,7 +1460,7 @@ contains
     !------------------------------------------------------------------
     ierr = pio_inq_varid( pio_id, 'Flag', vid )
     start = (/ 1 /)
-    count = (/ ncol /)
+    count = (/ ngcols /)
     ierr = pio_get_var( pio_id, vid, start, count, hflag )
 
     !------------------------------------------------------------------
