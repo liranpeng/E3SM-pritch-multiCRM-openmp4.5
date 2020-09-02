@@ -973,10 +973,10 @@ print *,"00_crm_physics, end crm"
       wall(1) = wall(2)-wall(1)
       crm_output_timingo = wall(1)/ncol
       if (ncol .eq. 1) then
-         call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO'), crm_output_timingo )
-      else
          call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO2'), crm_output_timingo )
-      end
+      else
+         call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO'), crm_output_timingo )
+      end if
       !---------------------------------------------------------------------------------------------
       ! Copy tendencies from CRM output to ptend
       !---------------------------------------------------------------------------------------------
