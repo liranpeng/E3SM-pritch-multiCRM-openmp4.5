@@ -525,11 +525,11 @@ contains
     if ((.not. single_column) .and. dycore_is('SE')) then
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
         do i=1,ngcols
-          write(iulog,*) 'hflag = ',hflag(i)
           if (hflag(i) .gt. 0.5) then
                cost_d(i) = 3.0_r8
                extracount = extracount + 1 
           endif
+          write(iulog,*) 'hflag = ',i,hflag(i),cost_d(i),extracount
         enddo
       if (minval(cost_d) .ne. maxval(cost_d)) use_cost_d = .true.
     endif
