@@ -948,6 +948,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
       !---------------------------------------------------------------------------------------------
       ! Run the CRM
       !---------------------------------------------------------------------------------------------
+
       if (.not.allocated(ptend%q)) write(*,*) '=== ptend%q not allocated ==='
       if (.not.allocated(ptend%s)) write(*,*) '=== ptend%s not allocated ==='
 
@@ -967,6 +968,12 @@ print *,"00_crm_physics, start crm, icall ",icall
 
 print *,"00_crm_physics, end crm"
 
+      ! The crm timmer stops here
+      call t_stampf(wall(2), usr(2), sys(2))
+      wall(1) = wall(2)-wall(1)
+      crm_output_timingo = wall(1)/ncol
+      call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO'), crm_output_timingo )
+      
       !---------------------------------------------------------------------------------------------
       ! Copy tendencies from CRM output to ptend
       !---------------------------------------------------------------------------------------------

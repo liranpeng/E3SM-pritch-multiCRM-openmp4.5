@@ -616,7 +616,7 @@ subroutine diag_init()
    call addfld ('ALDIR',       horiz_only,    'A',   '1','albedo: longwave, direct')
    call addfld ('ALDIF',       horiz_only,    'A',   '1','albedo: longwave, diffuse')
    call addfld ('SST',       horiz_only,    'A',     'K','sea surface temperature')
-
+   
    ! defaults
    if (history_amwg) then
        call add_default ('DTCOND  ', 1, ' ')
@@ -696,6 +696,7 @@ subroutine diag_init()
    call addfld ('TPERT&IC',horiz_only,    'I','K','Perturbation temperature (eddies in PBL)'        )
    call addfld ('QPERT&IC',horiz_only,    'I','kg/kg','Perturbation specific humidity (eddies in PBL)'  )
    call addfld ('TBOT&IC',horiz_only,    'I','K','Lowest model level temperature'                  )
+   call addfld ('TIMINGO',horiz_only,    'I',     's','CRM CPU timing')
 
 
    ! Initial file - Optional fields
@@ -714,6 +715,7 @@ subroutine diag_init()
       call add_default ('KVH&IC     ',0, 'I')
       call add_default ('KVM&IC     ',0, 'I')
       call add_default ('TBOT&IC    ',0, 'I')
+      call add_default ('TIMINGO    ',0, 'I')
    end if
 
    ! CAM export state 
