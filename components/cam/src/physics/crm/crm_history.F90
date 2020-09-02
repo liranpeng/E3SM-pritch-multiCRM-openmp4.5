@@ -737,6 +737,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
       call outfld('CLDLOW2  ',crm_output_cllow,  1, lchnk )
       call outfld('CLOUDTOP2',crm_output_cldtop, 1, lchnk )
       call outfld('TIMINGF2 ',crm_output_timing_factor  ,1,lchnk)
+      call outfld('TIMINGO2 ',crm_output_timingo  ,1,lchnk)
    else
       call outfld('CLOUD   ',crm_output_cld,    pcols, lchnk )
       call outfld('CLDTOT  ',crm_output_cltot,  pcols, lchnk )
@@ -745,6 +746,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
       call outfld('CLDLOW  ',crm_output_cllow,  pcols, lchnk )
       call outfld('CLOUDTOP',crm_output_cldtop, pcols, lchnk )
       call outfld('TIMINGF ',crm_output_timing_factor  ,pcols,lchnk)
+      call outfld('TIMINGO ',crm_output_timingo  ,pcols,lchnk)
    end if
 
    ! CRM mass flux
