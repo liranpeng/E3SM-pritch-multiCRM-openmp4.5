@@ -522,8 +522,10 @@ contains
     cost_d(:) = 1.0_r8
     extracount = 0
     use_cost_d = .false.
+    multicrm_onethird_heavy = .true.
     if ((.not. single_column) .and. dycore_is('SE')) then
       call get_horiz_grid_d(ngcols, cost_d_out=cost_d)
+      if (multicrm_onethird_heavy) then
         do i=1,ngcols
           if (hflag(i) .gt. 0.5) then
                cost_d(i) = 3.0_r8
@@ -531,6 +533,7 @@ contains
           endif
           write(iulog,*) 'hflag = ',i,hflag(i),cost_d(i),extracount
         enddo
+      endif
       if (minval(cost_d) .ne. maxval(cost_d)) use_cost_d = .true.
     endif
 
