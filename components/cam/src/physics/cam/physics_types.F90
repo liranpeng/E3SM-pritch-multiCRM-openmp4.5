@@ -598,6 +598,8 @@ contains
          varname="state%exner",     msg=msg)
     call shr_assert_in_domain(state%zm(:ncol,:),        is_nan=.false., &
          varname="state%zm",        msg=msg)
+    call shr_assert_in_domain(state%timing(:ncol,:),    is_nan=.false., &
+         varname="state%timing",        msg=msg)
 
     ! 2-D variables (at interfaces)
     call shr_assert_in_domain(state%pint(:ncol,:),      is_nan=.false., &
