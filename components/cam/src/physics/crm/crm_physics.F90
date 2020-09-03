@@ -971,12 +971,8 @@ print *,"00_crm_physics, end crm"
       ! The crm timmer stops here
       call t_stampf(wall(2), usr(2), sys(2))
       wall(1) = wall(2)-wall(1)
-      crm_output_timingo = wall(1)/ncol
-      if (ncol .eq. 1) then
-         call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO2'), crm_output_timingo )
-      else
-         call pbuf_set_field(pbuf, pbuf_get_index('TIMINGO'), crm_output_timingo )
-      end if
+      state%timing = wall(1)/ncol
+
       !---------------------------------------------------------------------------------------------
       ! Copy tendencies from CRM output to ptend
       !---------------------------------------------------------------------------------------------
