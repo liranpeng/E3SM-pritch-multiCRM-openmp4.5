@@ -1658,6 +1658,9 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   allocate(state%cid(psetcols), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%cid')
 
+  allocate(state%timing(psetcols), stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%ulat')
+  
   state%lat(:) = inf
   state%lon(:) = inf
   state%ulat(:) = inf
@@ -1692,6 +1695,8 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   state%te_cur(:) = inf
   state%tw_ini(:) = inf
   state%tw_cur(:) = inf
+
+  state%timing(:,:) = inf
 
 end subroutine physics_state_alloc
 
@@ -1809,6 +1814,9 @@ subroutine physics_state_dealloc(state)
   deallocate(state%cid, stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%cid')
 
+  deallocate(state%timing, stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%timing')
+  
 end subroutine physics_state_dealloc
 
 !===============================================================================

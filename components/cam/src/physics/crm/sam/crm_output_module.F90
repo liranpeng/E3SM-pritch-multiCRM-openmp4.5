@@ -43,8 +43,6 @@ module crm_output_module
    real(crm_rknd), allocatable :: crm_output_precsc(:)   ! convective snow precipitation rate
    real(crm_rknd), allocatable :: crm_output_precsl(:)   ! stratiform snow precipitation rate
 
-   real(crm_rknd), allocatable :: crm_output_timingo (:) ! CRM CPU timing
-
    ! TODO: These diagnostics are currently all on the GCM vertical grid. I think this is
    ! misleading though, and overly complicates crm_module. I think the better thing to do would
    ! be to define everything within crm_module on the CRM grid, and then do the
@@ -188,8 +186,6 @@ contains
          if (.not. allocated(crm_output_precsc)) allocate(crm_output_precsc(ncol))
          if (.not. allocated(crm_output_precsl)) allocate(crm_output_precsl(ncol))
 
-         if (.not. allocated(crm_output_timingo)) allocate(crm_output_timingo(ncol))
-
          ! NOTE: this output had a bug in the previous implementation
          if (.not. allocated(crm_output_cldtop)) allocate(crm_output_cldtop(ncol,nlev))
 
@@ -223,7 +219,6 @@ contains
          call prefetch(crm_output_precl)
          call prefetch(crm_output_precsc)
          call prefetch(crm_output_precsl)
-         call prefetch(crm_output_timingo)
          call prefetch(crm_output_cldtop)
          call prefetch(crm_output_qc_mean)
          call prefetch(crm_output_qi_mean)
@@ -255,7 +250,6 @@ contains
          !$omp target enter data map(alloc:crm_output_precl)
          !$omp target enter data map(alloc:crm_output_precsc)
          !$omp target enter data map(alloc:crm_output_precsl)
-         !$omp target enter data map(alloc:crm_output_timingo)
          !$omp target enter data map(alloc:crm_output_cldtop)
          !$omp target enter data map(alloc:crm_output_qc_mean)
          !$omp target enter data map(alloc:crm_output_qi_mean)
@@ -449,7 +443,6 @@ contains
       crm_output_precl = 0
       crm_output_precsc = 0
       crm_output_precsl = 0
-      crm_output_timingo = 0
 
       crm_output_qc_mean = 0
       crm_output_qi_mean = 0
@@ -560,7 +553,6 @@ contains
       !$omp target update from (crm_output_precl)
       !$omp target update from (crm_output_precsc)
       !$omp target update from (crm_output_precsl)
-      !$omp target update from (crm_output_timingo)
       !$omp target update from (crm_output_cldtop)
       !$omp target update from (crm_output_qc_mean)
       !$omp target update from (crm_output_qi_mean)
@@ -714,7 +706,6 @@ contains
       if (allocated(crm_output_precl)) deallocate(crm_output_precl)
       if (allocated(crm_output_precsc)) deallocate(crm_output_precsc)
       if (allocated(crm_output_precsl)) deallocate(crm_output_precsl)
-      if (allocated(crm_output_timingo)) deallocate(crm_output_timingo)
 
       if (allocated(crm_output_qc_mean)) deallocate(crm_output_qc_mean)
       if (allocated(crm_output_qi_mean)) deallocate(crm_output_qi_mean)

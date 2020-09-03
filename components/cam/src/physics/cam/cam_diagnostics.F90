@@ -390,6 +390,8 @@ subroutine diag_init()
    call addfld ('U90M',horiz_only,    'A','m/s','Zonal wind at turbine hub height (90m above surface)')
    call addfld ('V90M',horiz_only,    'A','m/s','Meridional wind at turbine hub height (90m above surface)')
 
+   call addfld ('TIMINGO',horiz_only,    'A',     's','CRM CPU timing')
+
    ! This field is added by radiation when full physics is used
    if ( ideal_phys )then
       call addfld('QRS', (/ 'lev' /), 'A', 'K/s', 'Solar heating rate')
@@ -696,7 +698,6 @@ subroutine diag_init()
    call addfld ('TPERT&IC',horiz_only,    'I','K','Perturbation temperature (eddies in PBL)'        )
    call addfld ('QPERT&IC',horiz_only,    'I','kg/kg','Perturbation specific humidity (eddies in PBL)'  )
    call addfld ('TBOT&IC',horiz_only,    'I','K','Lowest model level temperature'                  )
-   call addfld ('TIMINGO',horiz_only,    'I',     's','CRM CPU timing')
 
 
    ! Initial file - Optional fields
@@ -715,7 +716,6 @@ subroutine diag_init()
       call add_default ('KVH&IC     ',0, 'I')
       call add_default ('KVM&IC     ',0, 'I')
       call add_default ('TBOT&IC    ',0, 'I')
-      call add_default ('TIMINGO    ',0, 'I')
    end if
 
    ! CAM export state 
@@ -1638,6 +1638,10 @@ end subroutine diag_conv_tend_ini
     if (hist_fld_active('V100')) then
        call vertinterp(ncol, pcols, pver, state%pmid, 10000._r8, state%v, p_surf)
        call outfld('V100    ', p_surf, pcols, lchnk )
+    end if
+
+    if (hist_fld_active('TIMINGO')) then
+       call outfld('TIMINGO    ', state%timing, pcols, lchnk )
     end if
 
     ftem(:ncol,:) = state%t(:ncol,:)*state%t(:ncol,:)
