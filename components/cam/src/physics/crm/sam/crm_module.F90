@@ -1100,19 +1100,19 @@ end if
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
-            crm_buoya(l) = crm_buoya(l) + tkelebuoy(k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            crm_buoya(l) = crm_buoya(l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
              wbaraux = 0.
              do j=1,ny
               do i=1,nx
-                  wbaraux = wbaraux + w(i,j,k)
+                  wbaraux = wbaraux + w(icrm,i,j,k)
               end do
              end do
              wbaraux = wbaraux*factor_xy ! Mean w at each
 
              crm_ww_inst(l) = 0.D0 
-             crm_ww(l) = crm_ww(l) + (w(i,j,k) - wbaraux)**2
-             crm_ww_inst(l) = crm_ww_inst(l) + (w(i,j,k) - wbaraux)**2
+             crm_ww(l) = crm_ww(l) + (w(icrm,i,j,k) - wbaraux)**2
+             crm_ww_inst(l) = crm_ww_inst(l) + (w(icrm,i,j,k) - wbaraux)**2
             !            end hparish, mspritch
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
