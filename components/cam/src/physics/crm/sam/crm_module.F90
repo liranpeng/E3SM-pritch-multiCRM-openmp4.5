@@ -161,8 +161,8 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
     real(r8) wbaraux
-    real(r8), intent(out) :: crm_ww(plev)  ! w'w'2 from CRM, mspritch, hparish
-    real(r8), intent(out) :: crm_buoya(plev) ! buoyancy flux profile, mwyant
+    real(crm_rknd), allocatable  :: crm_ww(:,:)   ! w'w'2 from CRM, mspritch, hparish
+    real(crm_rknd), allocatable  :: crm_buoya(:,:)  ! buoyancy flux profile, mwyant
   !-----------------------------------------------------------------------------------------------
   double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
   double precision :: wall(6), sys(6), usr(6)
@@ -188,7 +188,9 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnxrad = crm_nx_rad
       crmnyrad = crm_ny_rad
    end if
-
+   
+  allocate( crm_ww(ncrms,plev) )
+  allocate( crm_buoya(ncrms,plev) )
   allocate( t00(ncrms,nz) )
   allocate( tln(ncrms,plev) )
   allocate( qln(ncrms,plev) )
@@ -1101,14 +1103,14 @@ end if
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
-            crm_buoya(l) = crm_buoya(l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
              wbaraux = wbaraux + w(icrm,i,j,k)
              wbaraux = wbaraux*factor_xy ! Mean w at each
 
-             crm_ww_inst(l) = 0.D0 
-             crm_ww(l) = crm_ww(l) + (w(icrm,i,j,k) - wbaraux)**2
-             crm_ww_inst(l) = crm_ww_inst(l) + (w(icrm,i,j,k) - wbaraux)**2
+             crm_ww_inst(icrm,l) = 0.D0 
+             crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux)**2
+             crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux)**2
             !            end hparish, mspritch
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
