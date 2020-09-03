@@ -1641,7 +1641,7 @@ end subroutine diag_conv_tend_ini
     end if
 
     if (hist_fld_active('TIMINGO')) then
-       call outfld('TIMINGO    ', state%timing, pcols, lchnk )
+       call outfld('TIMINGO    ', state%timing(:ncol,:), pcols, lchnk )
     end if
 
     ftem(:ncol,:) = state%t(:ncol,:)*state%t(:ncol,:)

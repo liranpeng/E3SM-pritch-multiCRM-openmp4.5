@@ -442,6 +442,9 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    real(r8), dimension(pcols) ::  qi_hydro_after   ! column-integrated snow water + graupel water
    real(r8) :: sfactor                             ! used to determine precip type for sam1mom
 
+   real(r8) spww(pcols,pver)         ! w'w'^2, mspritch, hparish
+   real(r8) spbuoya(pcols, pver)     ! resolved buoyancy flux, mwyant
+
    integer  :: i, k, m, ii, jj                     ! loop iterators
    integer  :: ixcldliq, ixcldice                  ! constituent indices
    integer  :: ixnumliq, ixnumice                  ! constituent indices
@@ -460,7 +463,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    real(crm_rknd), parameter        :: pix2 = 6.28318530718
    real(crm_rknd), dimension(pcols) :: crm_angle
    double precision :: wall(2), sys(2), usr(2) 
-   double precision :: timing_in,itimemax
+   double precision :: timing_in,itimemax,timing_ex
    real(r8) :: factor_xy
 
 #ifdef MAML
@@ -658,6 +661,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    snow_str = 0.
    prec_pcw = 0
    snow_pcw = 0.
+   spww(:,:) = 0. ! mspritch, hparish
+   spbuoya(:,:) = 0. ! mwyant
    
    ! Initialize stuff:
    call cnst_get_ind('CLDLIQ', ixcldliq)
@@ -961,7 +966,7 @@ print *,"00_crm_physics, start crm, icall ",icall
 
       call crm(crmnx,crmny,crmnz,crmdx,crmdy,                      &
                 crmdt,timing_in,lchnk, ncol, ztodt, pver,   &
-                crm_state, crm_rad,  &
+                crm_state, crm_rad, spww, spbuoya,&
                 crm_ecpp_output )
 
       call t_stopf('crm_call')
@@ -971,7 +976,9 @@ print *,"00_crm_physics, end crm"
       ! The crm timmer stops here
       call t_stampf(wall(2), usr(2), sys(2))
       wall(1) = wall(2)-wall(1)
-      state%timing = wall(1)/ncol
+      timing_ex = wall(1)/ncol
+      !state%crm_ww = crm_ww
+      !state%crm_buoya = crm_buoya
 
       !---------------------------------------------------------------------------------------------
       ! Copy tendencies from CRM output to ptend
@@ -1105,7 +1112,7 @@ print *,"00_crm_physics, end crm"
       ! Write out data for history files
       !---------------------------------------------------------------------------------------------
 
-      call crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl)
+      call crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya)
 
       ! Convert heating rate to Q*dp to conserve energy across timesteps
       do m = 1,crm_nz
