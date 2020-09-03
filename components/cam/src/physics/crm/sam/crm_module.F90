@@ -46,7 +46,7 @@ contains
 
 subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
                 cdt,timing_ex,lchnk, ncrms, dt_gl, plev,       &
-               crm_state, crm_rad,  &
+               crm_state, crm_rad, crm_ww, crm_buoya, &
                crm_ecpp_output)
     !-----------------------------------------------------------------------------------------------
     !-----------------------------------------------------------------------------------------------
@@ -160,7 +160,9 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qt         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
-
+    
+    real(r8), intent(out) :: crm_ww(plev)  ! w'w'2 from CRM, mspritch, hparish
+    real(r8), intent(out) :: crm_buoya(plev) ! buoyancy flux profile, mwyant
   !-----------------------------------------------------------------------------------------------
   double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
   double precision :: wall(6), sys(6), usr(6)
@@ -365,6 +367,8 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   crm_rad_qc  = 0.
   crm_rad_qi  = 0.
   crm_rad_cld = 0.
+  crm_ww = 0. ! mspritch, hparish
+  crm_buoya = 0. ! mwyant. hparish debugged and confirmed operational. 
 #ifdef m2005
   crm_rad%nc = 0.0
   crm_rad%ni = 0.0
@@ -1096,6 +1100,20 @@ end if
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
+            crm_buoya(l) = crm_buoya(l) + tkelebuoy(k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
+             wbaraux = 0.
+             do j=1,ny
+              do i=1,nx
+                  wbaraux = wbaraux + w(i,j,k)
+              end do
+             end do
+             wbaraux = wbaraux*factor_xy ! Mean w at each
+
+             crm_ww_inst(l) = 0.D0 
+             crm_ww(l) = crm_ww(l) + (w(i,j,k) - wbaraux)**2
+             crm_ww_inst(l) = crm_ww_inst(l) + (w(i,j,k) - wbaraux)**2
+            !            end hparish, mspritch
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
             !$acc atomic update
@@ -1866,6 +1884,8 @@ end if
       crm_output_mcdn  (icrm,k) = crm_output_mcdn (icrm,k) * factor_xyt
       crm_output_mcuup (icrm,k) = crm_output_mcuup(icrm,k) * factor_xyt
       crm_output_mcudn (icrm,k) = crm_output_mcudn(icrm,k) * factor_xyt
+      crm_ww = crm_ww / factor_xyt ! mspritch,hparish
+      crm_buoya = crm_buoya / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
       crm_output_mctot (icrm,k) = crm_output_mcup(icrm,k) + crm_output_mcdn(icrm,k) + crm_output_mcuup(icrm,k) + crm_output_mcudn(icrm,k)
 
       crm_output_qc_mean(icrm,k) = crm_output_qc_mean(icrm,k) * factor_xy

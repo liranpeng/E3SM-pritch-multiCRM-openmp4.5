@@ -39,5 +39,19 @@ contains
       end do ! k
     end do ! k
 
+!to calculate the buoyancy profile.
+  do k=1,nzm
+    do j=1,ny
+      do i=1,nx
+        du(i,j,k,1)=0.
+        du(i,j,k,2)=0.
+        du(i,j,k,3)=dwdt(i,j,k,na)-du(i,j,k,3)
+      end do
+    end do
+  end do
+
+  call stat_tke(du,tkelebuoy)
+
+
   end subroutine buoyancy
 end module buoyancy_mod
