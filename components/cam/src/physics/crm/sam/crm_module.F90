@@ -160,7 +160,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qt         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
-    
+    real(r8) wbaraux
     real(r8), intent(out) :: crm_ww(plev)  ! w'w'2 from CRM, mspritch, hparish
     real(r8), intent(out) :: crm_buoya(plev) ! buoyancy flux profile, mwyant
   !-----------------------------------------------------------------------------------------------
@@ -1095,6 +1095,7 @@ end if
 #elif defined(_OPENMP)
     !$omp target teams distribute parallel do collapse(3)
 #endif
+    wbaraux = 0.
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
@@ -1102,12 +1103,7 @@ end if
             l = plev-k+1
             crm_buoya(l) = crm_buoya(l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
-             wbaraux = 0.
-             do j=1,ny
-              do i=1,nx
-                  wbaraux = wbaraux + w(icrm,i,j,k)
-              end do
-             end do
+             wbaraux = wbaraux + w(icrm,i,j,k)
              wbaraux = wbaraux*factor_xy ! Mean w at each
 
              crm_ww_inst(l) = 0.D0 

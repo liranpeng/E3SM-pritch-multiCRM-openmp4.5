@@ -74,6 +74,7 @@ module vars
   real(crm_rknd), allocatable :: qp0  (:,:)
   real(crm_rknd), allocatable :: qn0  (:,:)
   real(crm_rknd), allocatable :: tkelebuoy(:,:)
+  real(crm_rknd), allocatable :: crm_ww_inst(:,:)
 
   !-----------------------------------------------------------------
   ! reference vertical profiles:
@@ -223,7 +224,8 @@ contains
     allocate( qp0(ncrms,nz_gl_in-1) )
     allocate( qn0(ncrms,nz_gl_in-1) )
     allocate( tkelebuoy(ncrms,nz_gl_in-1) )
-
+    allocate( crm_ww_inst(ncrms,nz_gl_in-1) )
+    allocate( crm_ww_inst(ncrms,nz_gl_in-1) )
     allocate( prespot(ncrms,nz_gl_in-1)   )
     allocate( rho(ncrms,nz_gl_in-1)     )
     allocate( rhow(ncrms,nz_gl_in )    )
@@ -325,6 +327,7 @@ contains
     call prefetch( qp0 )
     call prefetch( qn0 )
     call prefetch( tkelebuoy )
+    call prefetch( crm_ww_inst )
     call prefetch( prespot )
     call prefetch( rho )
     call prefetch( rhow )
@@ -426,6 +429,7 @@ contains
     !$omp target enter data map(alloc: qp0 )
     !$omp target enter data map(alloc: qn0 )
     !$omp target enter data map(alloc: tkelebuoy )
+    !$omp target enter data map(alloc: crm_ww_inst )
     !$omp target enter data map(alloc: prespot )
     !$omp target enter data map(alloc: rho )
     !$omp target enter data map(alloc: rhow )
@@ -527,6 +531,7 @@ contains
     qp0 = zero
     qn0 = zero
     tkelebuoy = zero
+    crm_ww_inst = zero
     prespot = zero
     rho = zero
     rhow = zero
@@ -632,6 +637,7 @@ contains
     !$omp target update to( qp0 )
     !$omp target update to( qn0 )
     !$omp target update to( tkelebuoy )
+    !$omp target update to( crm_ww_inst )
     !$omp target update to( prespot )
     !$omp target update to( rho )
     !$omp target update to( rhow )
@@ -734,6 +740,7 @@ contains
     !$omp target update from( qp0 )
     !$omp target update from( qn0 )
     !$omp target update from( tkelebuoy )
+    !$omp target update from( crm_ww_inst )
     !$omp target update from( prespot )
     !$omp target update from( rho )
     !$omp target update from( rhow )
@@ -838,6 +845,7 @@ contains
     !$omp target exit data map(delete: qp0 )
     !$omp target exit data map(delete: qn0 )
     !$omp target exit data map(delete: tkelebuoy )
+    !$omp target exit data map(delete: crm_ww_inst )
     !$omp target exit data map(delete: prespot )
     !$omp target exit data map(delete: rho )
     !$omp target exit data map(delete: rhow )
@@ -939,6 +947,7 @@ contains
     deallocate( qp0 )
     deallocate( qn0 )
     deallocate( tkelebuoy )
+    deallocate( crm_ww_inst )
     deallocate( prespot )
     deallocate( rho )
     deallocate( rhow )
