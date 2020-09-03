@@ -73,6 +73,7 @@ module vars
   real(crm_rknd), allocatable :: q01  (:,:)
   real(crm_rknd), allocatable :: qp0  (:,:)
   real(crm_rknd), allocatable :: qn0  (:,:)
+  real(crm_rknd), allocatable :: tkelebuoy(:,:)
 
   !-----------------------------------------------------------------
   ! reference vertical profiles:
@@ -323,6 +324,7 @@ contains
     call prefetch( q01 )
     call prefetch( qp0 )
     call prefetch( qn0 )
+    call prefetch( tkelebuoy )
     call prefetch( prespot )
     call prefetch( rho )
     call prefetch( rhow )
@@ -423,6 +425,7 @@ contains
     !$omp target enter data map(alloc: q01 )
     !$omp target enter data map(alloc: qp0 )
     !$omp target enter data map(alloc: qn0 )
+    !$omp target enter data map(alloc: tkelebuoy )
     !$omp target enter data map(alloc: prespot )
     !$omp target enter data map(alloc: rho )
     !$omp target enter data map(alloc: rhow )
@@ -523,6 +526,7 @@ contains
     q01 = zero
     qp0 = zero
     qn0 = zero
+    tkelebuoy = zero
     prespot = zero
     rho = zero
     rhow = zero
@@ -627,6 +631,7 @@ contains
     !$omp target update to( q01 )
     !$omp target update to( qp0 )
     !$omp target update to( qn0 )
+    !$omp target update to( tkelebuoy )
     !$omp target update to( prespot )
     !$omp target update to( rho )
     !$omp target update to( rhow )
@@ -728,6 +733,7 @@ contains
     !$omp target update from( q01 )
     !$omp target update from( qp0 )
     !$omp target update from( qn0 )
+    !$omp target update from( tkelebuoy )
     !$omp target update from( prespot )
     !$omp target update from( rho )
     !$omp target update from( rhow )
@@ -831,6 +837,7 @@ contains
     !$omp target exit data map(delete: q01 )
     !$omp target exit data map(delete: qp0 )
     !$omp target exit data map(delete: qn0 )
+    !$omp target exit data map(delete: tkelebuoy )
     !$omp target exit data map(delete: prespot )
     !$omp target exit data map(delete: rho )
     !$omp target exit data map(delete: rhow )
@@ -931,6 +938,7 @@ contains
     deallocate( q01 )
     deallocate( qp0 )
     deallocate( qn0 )
+    deallocate( tkelebuoy )
     deallocate( prespot )
     deallocate( rho )
     deallocate( rhow )
