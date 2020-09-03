@@ -384,7 +384,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    use crm_output_module
 
    real(r8),                   intent(in   ) :: ztodt            ! global model time increment
-   type(physics_state),        intent(in   ) :: state            ! Global model state 
+   type(physics_state),        intent(inout) :: state            ! Global model state 
    type(physics_tend),         intent(in   ) :: tend             ! 
    type(physics_ptend),        intent(  out) :: ptend            ! output tendencies
    type(physics_buffer_desc),  pointer       :: pbuf(:)          ! physics buffer
