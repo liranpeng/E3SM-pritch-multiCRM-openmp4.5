@@ -69,13 +69,13 @@ module physics_types
           psdry,   &! dry surface pressure
           phis,    &! surface geopotential
           ulat,    &! unique latitudes  (radians)
+          timing,  &! CPU timmer 
           ulon      ! unique longitudes (radians)
      real(r8), dimension(:,:),allocatable        :: &
           t,       &! temperature (K)
           u,       &! zonal wind (m/s)
           v,       &! meridional wind (m/s)
           s,       &! dry static energy
-          timing,  &! CPU timmer 
           omega,   &! vertical pressure velocity (Pa/s) 
           pmid,    &! midpoint pressure (Pa) 
           pmiddry, &! midpoint pressure dry (Pa) 
