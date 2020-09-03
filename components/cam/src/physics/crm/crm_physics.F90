@@ -442,8 +442,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    real(r8), dimension(pcols) ::  qi_hydro_after   ! column-integrated snow water + graupel water
    real(r8) :: sfactor                             ! used to determine precip type for sam1mom
 
-   real(r8), dimension(pcols,pver) :: spww         ! w'w'^2, mspritch, hparish
-   real(r8), dimension(pcols,pver) :: spbuoya      ! resolved buoyancy flux, mwyant
+   real(r8), allocatable  :: spww(:,:)   ! w'w'2 from CRM, mspritch, hparish
+   real(r8), allocatable  :: spbuoya(:,:)  ! buoyancy flux profile, mwyant
 
    integer  :: i, k, m, ii, jj                     ! loop iterators
    integer  :: ixcldliq, ixcldice                  ! constituent indices
@@ -521,6 +521,10 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
       crmdy = crm_dy
       crmdt = crm_dt
    end if
+
+   allocate( spww(ncol,pver) )
+   allocate( spbuoya(ncol,pver) )
+
    factor_xy = 1._r8/dble(crmnx*crmny)
    call t_startf ('crm')
 
