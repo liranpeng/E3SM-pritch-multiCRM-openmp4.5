@@ -390,8 +390,6 @@ subroutine diag_init()
    call addfld ('U90M',horiz_only,    'A','m/s','Zonal wind at turbine hub height (90m above surface)')
    call addfld ('V90M',horiz_only,    'A','m/s','Meridional wind at turbine hub height (90m above surface)')
 
-   call addfld ('TIMINGO',horiz_only,    'A',     's','CRM CPU timing')
-
    ! This field is added by radiation when full physics is used
    if ( ideal_phys )then
       call addfld('QRS', (/ 'lev' /), 'A', 'K/s', 'Solar heating rate')
@@ -1638,10 +1636,6 @@ end subroutine diag_conv_tend_ini
     if (hist_fld_active('V100')) then
        call vertinterp(ncol, pcols, pver, state%pmid, 10000._r8, state%v, p_surf)
        call outfld('V100    ', p_surf, pcols, lchnk )
-    end if
-
-    if (hist_fld_active('TIMINGO')) then
-       call outfld('TIMINGO    ', state%timing(:ncol,:), pcols, lchnk )
     end if
 
     ftem(:ncol,:) = state%t(:ncol,:)*state%t(:ncol,:)
