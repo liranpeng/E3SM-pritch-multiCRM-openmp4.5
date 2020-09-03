@@ -64,7 +64,7 @@ contains
     end do
   end do
 
-  call stat_tke(du,tkelebuoy)
+  call stat_tke(du,tkelebuoy,ncrms)
 
 
   end subroutine buoyancy
@@ -76,14 +76,15 @@ end module buoyancy_mod
 
 ! hparish tests this routine and confirms functionality after few modifications. 04/01/2016
 
-subroutine stat_tke(du,tkele)
+subroutine stat_tke(du,tkele,ncrms)
 
 use vars
 implicit none
 real du(ncrms,nx,ny,nz,3)
 real tkele(ncrms,nzm)
 real d_u(ncrms,nz), d_v(ncrms,nz),d_w(ncrms,nz),coef
-integer i,j,k
+integer, intent(in) :: ncrms
+integer i,j,k,icrm
 coef = 1./float(nx*ny)
 do k=1,nz
   do icrm=1,ncrms
