@@ -10,7 +10,7 @@ contains
     implicit none
     integer, intent(in) :: ncrms
     integer i,j,k,kb,icrm
-    real du(nx,ny,nz,3)
+    real du(ncrms,nx,ny,nz,3)
     real(crm_rknd) betu, betd
 
 #if defined(_OPENACC)
@@ -22,11 +22,13 @@ contains
   do k=1,nzm
     do j=1,ny
       do i=1,nx
-         du(i,j,k,3)=dwdt(i,j,k,na)
+        do icrm=1,ncrms
+         du(icrm,i,j,k,3)=dwdt(icrm,i,j,k,na)
+       end do
       end do
     end do
   end do
-  
+
     do k=2,nzm
       do j=1,ny
         do i=1,nx
@@ -53,9 +55,11 @@ contains
   do k=1,nzm
     do j=1,ny
       do i=1,nx
-        du(i,j,k,1)=0.
-        du(i,j,k,2)=0.
-        du(i,j,k,3)=dwdt(i,j,k,na)-du(i,j,k,3)
+        do icrm=1,ncrms
+          du(icrm,i,j,k,1)=0.
+          du(icrm,i,j,k,2)=0.
+          du(icrm,i,j,k,3)=dwdt(icrm,i,j,k,na)-du(icrm,i,j,k,3)
+        end do
       end do
     end do
   end do
@@ -76,30 +80,36 @@ subroutine stat_tke(du,tkele)
 
 use vars
 implicit none
-real du(nx,ny,nz,3)
-real tkele(nzm)
-real d_u(nz), d_v(nz),d_w(nz),coef
+real du(ncrms,nx,ny,nz,3)
+real tkele(ncrms,nzm)
+real d_u(ncrms,nz), d_v(ncrms,nz),d_w(ncrms,nz),coef
 integer i,j,k
 coef = 1./float(nx*ny)
 do k=1,nz
- d_u(k)=0.
- d_v(k)=0.
- d_w(k)=0.
+  do icrm=1,ncrms
+   d_u(icrm,k)=0.
+   d_v(icrm,k)=0.
+   d_w(icrm,k)=0.
+  end do
 end do
 do k=1,nzm
  do j=1,ny
   do i=1,nx
-   d_u(k)=d_u(k)+(u(i,j,k)-u0(k))*du(i,j,k,1)
-   d_v(k)=d_v(k)+(v(i,j,k)-v0(k))*du(i,j,k,2)
-   d_w(k)=d_w(k)+ w(i,j,k) *      du(i,j,k,3)
+    do icrm=1,ncrms
+     d_u(icrm,k)=d_u(icrm,k)+(u(icrm,i,j,k)-u0(icrm,k))*du(icrm,i,j,k,1)
+     d_v(icrm,k)=d_v(icrm,k)+(v(icrm,i,j,k)-v0(icrm,k))*du(icrm,i,j,k,2)
+     d_w(icrm,k)=d_w(icrm,k)+ w(icrm,i,j,k) *      du(icrm,i,j,k,3)
+    end do
   end do
  end do
- d_u(k)=d_u(k)*coef
- d_v(k)=d_v(k)*coef
- d_w(k)=d_w(k)*coef
+ d_u(icrm,k)=d_u(icrm,k)*coef
+ d_v(icrm,k)=d_v(icrm,k)*coef
+ d_w(icrm,k)=d_w(icrm,k)*coef
 end do
 do k=1,nzm
- tkele(k)=0.5*(d_w(k)+d_w(k+1))+d_u(k)+d_v(k)*YES3D
+  do icrm=1,ncrms
+   tkele(icrm,k)=0.5*(d_w(icrm,k)+d_w(icrm,k+1))+d_u(icrm,k)+d_v(icrm,k)*YES3D
+  end do
 end do
 
 end
