@@ -566,6 +566,8 @@ contains
          varname="state%tw_ini",    msg=msg)
     call shr_assert_in_domain(state%tw_cur(:ncol),      is_nan=.false., &
          varname="state%tw_cur",    msg=msg)
+    call shr_assert_in_domain(state%timing(:ncol),      is_nan=.false., &
+         varname="state%timing",    msg=msg)
 
     ! 2-D variables (at midpoints)
     call shr_assert_in_domain(state%t(:ncol,:),         is_nan=.false., &
@@ -598,9 +600,7 @@ contains
          varname="state%exner",     msg=msg)
     call shr_assert_in_domain(state%zm(:ncol,:),        is_nan=.false., &
          varname="state%zm",        msg=msg)
-    call shr_assert_in_domain(state%timing(:ncol,:),    is_nan=.false., &
-         varname="state%timing",        msg=msg)
-
+    
     ! 2-D variables (at interfaces)
     call shr_assert_in_domain(state%pint(:ncol,:),      is_nan=.false., &
          varname="state%pint",      msg=msg)
@@ -1662,7 +1662,7 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%cid')
 
   allocate(state%timing(psetcols), stat=ierr)
-  if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%ulat')
+  if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%timing')
   
   state%lat(:) = inf
   state%lon(:) = inf
@@ -1698,8 +1698,7 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   state%te_cur(:) = inf
   state%tw_ini(:) = inf
   state%tw_cur(:) = inf
-
-  state%timing(:,:) = inf
+  state%timing(:) = inf
 
 end subroutine physics_state_alloc
 
