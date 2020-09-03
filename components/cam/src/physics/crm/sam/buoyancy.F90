@@ -10,6 +10,7 @@ contains
     implicit none
     integer, intent(in) :: ncrms
     integer i,j,k,kb,icrm
+    real du(nx,ny,nz,3)
     real(crm_rknd) betu, betd
 
 #if defined(_OPENACC)
@@ -17,6 +18,15 @@ contains
 #elif defined(_OPENMP)
     !$omp target teams distribute parallel do collapse(4)
 #endif
+
+  do k=1,nzm
+    do j=1,ny
+      do i=1,nx
+         du(i,j,k,3)=dwdt(i,j,k,na)
+      end do
+    end do
+  end do
+  
     do k=2,nzm
       do j=1,ny
         do i=1,nx
