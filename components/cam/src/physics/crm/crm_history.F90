@@ -102,6 +102,8 @@ subroutine crm_history_init(species_class)
    call phys_getopts(use_ECPP_out = use_ECPP)
    call phys_getopts(MMF_microphysics_scheme_out = MMF_microphysics_scheme)
 
+   call addfld('TIMINGO', horiz_only, 'A',  's', 'CRM CPU timmer')
+ 
    call addfld('CRM_DEI  ', dims_crm_3D, 'A', 'micrometers', 'cloud scale Mitchell ice effective diameter')
    call addfld('CRM_REL  ', dims_crm_3D, 'A', 'micrometers', 'cloud scale droplet effective radius')
    call addfld('CRM_REI  ', dims_crm_3D, 'A', 'micrometers', 'cloud scale ice crystal effective radius')
@@ -117,7 +119,7 @@ subroutine crm_history_init(species_class)
    call addfld('CRM_FLNTC', dims_crm_2D, 'A',  'unitless', 'net TOA clear-sky longwave fluxes at CRM grids')
    call addfld('CRM_FLNS',  dims_crm_2D, 'A',  'unitless', 'net surface longwave fluxes at CRM grids')
    call addfld('CRM_FLNSC', dims_crm_2D, 'A',  'unitless', 'net surface clear-sky longwave fluxes at CRM grids')
- 
+   
    call addfld('CRM_FSNT2',  dims_crm_2D2, 'A',  'unitless', 'net TOA shortwave fluxes at CRM grids')
    call addfld('CRM_FSNTC2', dims_crm_2D2, 'A',  'unitless', 'net TOA clear-sky shortwave fluxes at CRM grids')
    call addfld('CRM_FSNS2',  dims_crm_2D2, 'A',  'unitless', 'net surface shortwave fluxes at CRM grids')
@@ -502,6 +504,8 @@ subroutine crm_history_init(species_class)
    call add_default ('TIMINGF ', 1, ' ')
    call add_default ('TIMINGF2', 1, ' ')
 
+   call add_default ('TIMINGO ', 1, ' ')
+
    call add_default ('AOD400',  1, ' ')
    call add_default ('AOD700',  1, ' ')
 
@@ -539,7 +543,7 @@ subroutine crm_history_init(species_class)
 end subroutine crm_history_init
 !---------------------------------------------------------------------------------------------------
 !---------------------------------------------------------------------------------------------------
-subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya)
+subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya,timing_ex)
    use physics_types,          only: physics_state, physics_tend, physics_ptend
    use phys_control,           only: phys_getopts
    use crm_state_module,       only: crm_state_type
@@ -563,6 +567,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    real(r8), dimension(:,:), intent(in) :: qrl        ! longwave radiative heating rate
    real(r8), dimension(:,:), intent(in) :: spww       ! w'w'^2, mspritch, hparish
    real(r8), dimension(:,:), intent(in) :: spbuoya    ! resolved buoyancy flux, mwyant
+   real(r8), dimension(:,:), intent(in) :: timing_ex
    !----------------------------------------------------------------------------
    ! local variables
    real(r8) :: cwp      (pcols,pver)   ! in-cloud cloud (total) water path (kg/m2)
@@ -618,6 +623,9 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    ! CRM_QRS + CRM_QRL output in radiation_tend will show a time lag.
 
    ! GCM level rad heating tendencies
+
+   call outfld('TIMINGO   ',timing_ex, pcols, lchnk )
+
    if (ncol .eq. 1) then
       call outfld('SPQRL2   ',qrl/cpair, 1, lchnk )
       call outfld('SPQRS2   ',qrs/cpair, 1, lchnk )
