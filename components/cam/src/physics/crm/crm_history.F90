@@ -567,6 +567,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    real(r8), dimension(:,:), intent(in) :: qrl        ! longwave radiative heating rate
    real(r8), dimension(:,:), intent(in) :: spww       ! w'w'^2, mspritch, hparish
    real(r8), dimension(:,:), intent(in) :: spbuoya    ! resolved buoyancy flux, mwyant
+   real(r8), dimension(:),   intent(in) :: timing_ex
    !----------------------------------------------------------------------------
    ! local variables
    real(r8) :: cwp      (pcols,pver)   ! in-cloud cloud (total) water path (kg/m2)
@@ -583,7 +584,6 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    integer :: i, k                     ! loop iterators
    logical :: use_ECPP
    character(len=16) :: MMF_microphysics_scheme
-   double precision :: timing_ex
 
    !----------------------------------------------------------------------------
 
