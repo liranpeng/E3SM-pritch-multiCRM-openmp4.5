@@ -45,7 +45,7 @@ use setparm_mod, only : setparm
 contains
 
 subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
-                cdt,timing_ex,lchnk, ncrms, dt_gl, plev,       &
+                cdt,timing_in,lchnk, ncrms, dt_gl, plev,       &
                crm_state, crm_rad, crm_ww, crm_buoya, &
                crm_ecpp_output)
     !-----------------------------------------------------------------------------------------------
@@ -161,13 +161,13 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
     real(r8) wbaraux
-    real(crm_rknd), allocatable  :: crm_ww(:,:)   ! w'w'2 from CRM, mspritch, hparish
-    real(crm_rknd), allocatable  :: crm_buoya(:,:)  ! buoyancy flux profile, mwyant
+    real(r8), dimension(ncrms, plev) :: crm_ww      ! w'w'2 from CRM, mspritch, hparish
+    real(r8), dimension(ncrms, plev) :: crm_buoya   ! buoyancy flux profile, mwyant
   !-----------------------------------------------------------------------------------------------
   double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
   double precision :: wall(6), sys(6), usr(6)
   double precision init_time,usrtime,systime,usrtime2,systime2
-  double precision,intent(inout) :: timing_ex
+  double precision,intent(inout) :: timing_in
   real(r8) :: clat(pcols), clon(pcols), work0
   !-----------------------------------------------------------------------------------------------
 
@@ -188,7 +188,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnxrad = crm_nx_rad
       crmnyrad = crm_ny_rad
    end if
-   
+
   allocate( crm_ww(ncrms,plev) )
   allocate( crm_buoya(ncrms,plev) )
   allocate( t00(ncrms,nz) )
