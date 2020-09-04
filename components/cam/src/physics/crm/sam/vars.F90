@@ -225,7 +225,6 @@ contains
     allocate( qn0(ncrms,nz_gl_in-1) )
     allocate( tkelebuoy(ncrms,nz_gl_in-1) )
     allocate( crm_ww_inst(ncrms,nz_gl_in-1) )
-    allocate( crm_ww_inst(ncrms,nz_gl_in-1) )
     allocate( prespot(ncrms,nz_gl_in-1)   )
     allocate( rho(ncrms,nz_gl_in-1)     )
     allocate( rhow(ncrms,nz_gl_in )    )
