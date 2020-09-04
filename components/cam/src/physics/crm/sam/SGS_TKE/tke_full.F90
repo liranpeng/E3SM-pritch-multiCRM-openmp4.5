@@ -272,9 +272,9 @@ subroutine tke_full(ncrms,   &
           Ce1 = Ce/0.7*0.19
           Ce2 = Ce/0.7*0.51
           !!! compute correction factors for eddy visc/cond not to acceed 3D stability
-          cx = dx**2/dt/grdf_x(icrm,k)
-          cy = dy**2/dt/grdf_y(icrm,k)
-          cz = (dz(icrm)*min(adzw(icrm,k),adzw(icrm,k+1)))**2/dt/grdf_z(icrm,k)
+          cx = dx**2/dtn/grdf_x(icrm,k)
+          cy = dy**2/dtn/grdf_y(icrm,k)
+          cz = (dz(icrm)*min(adzw(icrm,k),adzw(icrm,k+1)))**2/dtn/grdf_z(icrm,k)
           !!! maximum value of eddy visc/cond
           tkmax = 0.09/(1./cx+1./cy+1./cz)
           buoy_sgs = 0.5*( buoy_sgs_vert(icrm,i,j,k-1) + buoy_sgs_vert(icrm,i,j,k) )
@@ -297,7 +297,7 @@ subroutine tke_full(ncrms,   &
             a_prod_sh = (tk(icrm,i,j,k)+0.001)*def2(icrm,i,j,k)
             a_prod_bu = 0.5*( a_prod_bu_vert(icrm,i,j,k-1) + a_prod_bu_vert(icrm,i,j,k) )
             !!! cap the diss rate (useful for large time steps)
-            a_diss = min(tke(icrm,i,j,k)/(4.*dt),Cee/smix*tke(icrm,i,j,k)**1.5)
+            a_diss = min(tke(icrm,i,j,k)/(4.*dtn),Cee/smix*tke(icrm,i,j,k)**1.5)
             tke(icrm,i,j,k) = max(real(0.,crm_rknd),tke(icrm,i,j,k)+dtn*(max(0._crm_rknd,a_prod_sh+a_prod_bu)-a_diss))
             tk(icrm,i,j,k)  = Ck*smix*sqrt(tke(icrm,i,j,k))
           end if
