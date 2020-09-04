@@ -584,6 +584,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    integer :: i, k                     ! loop iterators
    logical :: use_ECPP
    character(len=16) :: MMF_microphysics_scheme
+   double precision :: timing_ex
 
    !----------------------------------------------------------------------------
 
