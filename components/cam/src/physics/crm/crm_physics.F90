@@ -463,7 +463,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    real(crm_rknd), parameter        :: pix2 = 6.28318530718
    real(crm_rknd), dimension(pcols) :: crm_angle
    double precision :: wall(2), sys(2), usr(2) 
-   double precision :: timing_in,itimemax,timing_ex
+   double precision :: timing_in,itimemax
+   real(r8), allocatable  :: timing_ex
    real(r8) :: factor_xy
 
 #ifdef MAML
@@ -486,7 +487,6 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    ! CRM types
    type(crm_state_type)  :: crm_state
    type(crm_rad_type)    :: crm_rad
-
 
    icall = icall + 1
 
@@ -522,6 +522,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
       crmdt = crm_dt
    end if
 
+   allocate( timing_ex(ncol))
    allocate( spww(ncol,pver) )
    allocate( spbuoya(ncol,pver) )
 
@@ -980,7 +981,10 @@ print *,"00_crm_physics, end crm"
       ! The crm timmer stops here
       call t_stampf(wall(2), usr(2), sys(2))
       wall(1) = wall(2)-wall(1)
-      timing_ex = wall(1)/ncol
+      do i = 1,ncol
+         timing_ex(i) = wall(1)/ncol
+      end do
+      
 write(iulog,*) "timing_ex = ",timing_ex
       !state%crm_ww = crm_ww
       !state%crm_buoya = crm_buoya
