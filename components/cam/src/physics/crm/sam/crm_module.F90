@@ -903,9 +903,6 @@ end if
 #elif defined(_OPENMP)
     !$omp target teams distribute parallel do 
 #endif
-    do icrm = 1 , ncrms
-      crm_output_timing_factor(icrm) = crm_output_timing_factor(icrm)+1
-    enddo
 
     !------------------------------------------------------------------
     !  Check if the dynamical time step should be decreased
@@ -923,6 +920,10 @@ end if
       dtn = dt/ncycle
       dt3(na) = dtn
       dtfactor = dtn/dt
+      
+      do icrm = 1 , ncrms
+        crm_output_timing_factor(icrm) = crm_output_timing_factor(icrm)+1
+      enddo
 
       !---------------------------------------------
       !  	the Adams-Bashforth scheme in time
