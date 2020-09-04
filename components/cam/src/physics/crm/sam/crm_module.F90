@@ -163,7 +163,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(r8) wbaraux
     real(r8), dimension(ncrms, plev) :: crm_ww      ! w'w'2 from CRM, mspritch, hparish
     real(r8), dimension(ncrms, plev) :: crm_buoya   ! buoyancy flux profile, mwyant
-    real(r8), dimension(ncrms, nzm) :: crm_ww_inst
+    real(r8), dimension(ncrms, plev) :: crm_ww_inst
   !-----------------------------------------------------------------------------------------------
   double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
   double precision :: wall(6), sys(6), usr(6)
