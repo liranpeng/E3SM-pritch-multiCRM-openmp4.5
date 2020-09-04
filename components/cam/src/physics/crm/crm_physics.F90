@@ -980,7 +980,8 @@ print *,"00_crm_physics, end crm"
       ! The crm timmer stops here
       call t_stampf(wall(2), usr(2), sys(2))
       wall(1) = wall(2)-wall(1)
-      timing_ex = wall(1)/ncol
+      timing_ex(:ncol) = wall(1)/ncol
+
       !state%crm_ww = crm_ww
       !state%crm_buoya = crm_buoya
 
