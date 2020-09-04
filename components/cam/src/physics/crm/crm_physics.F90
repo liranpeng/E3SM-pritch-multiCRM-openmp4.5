@@ -464,7 +464,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    real(crm_rknd), dimension(pcols) :: crm_angle
    double precision :: wall(2), sys(2), usr(2) 
    double precision :: timing_in,itimemax
-   real(r8), allocatable  :: timing_ex
+   real(r8), allocatable  :: timing_ex(:)
    real(r8) :: factor_xy
 
 #ifdef MAML
