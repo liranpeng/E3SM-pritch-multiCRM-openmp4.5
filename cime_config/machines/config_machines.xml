@@ -556,6 +556,29 @@
     <!--    <GMAKE>make</GMAKE> <- this doesn't actually work! -->
   </machine>
 
+  <machine MACH="yellowstone">
+          <DESC>NCAR IBM, os is Linux, 16 pes/node, batch system is LSF</DESC>
+          <OS>LINUX</OS>
+          <COMPILERS>intel,pgi,gnu,pathscale</COMPILERS>
+          <MPILIBS>mpich2,pempi,mpi-serial</MPILIBS>
+          <CESMSCRATCHROOT>/glade/scratch/$USER</CESMSCRATCHROOT>
+          <RUNDIR>$CESMSCRATCHROOT/$CASE/run</RUNDIR>
+          <EXEROOT>$CESMSCRATCHROOT/$CASE/bld</EXEROOT>
+          <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+          <DIN_LOC_ROOT_CLMFORC>$ENV{CESMROOT}/lmwg</DIN_LOC_ROOT_CLMFORC>
+          <DOUT_S_ROOT>$CESMSCRATCHROOT/archive/$CASE</DOUT_S_ROOT>
+          <DOUT_L_MSROOT>csm/$CASE</DOUT_L_MSROOT>
+          <CCSM_BASELINE>$ENV{CESMDATAROOT}/ccsm_baselines</CCSM_BASELINE>
+          <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cprnc/cprnc</CCSM_CPRNC>
+          <BATCHQUERY>bjobs -w</BATCHQUERY>
+          <BATCHSUBMIT>bsub &lt;</BATCHSUBMIT>
+          <SUPPORTED_BY>cseg</SUPPORTED_BY>
+          <GMAKE_J>8</GMAKE_J>
+          <MAX_TASKS_PER_NODE>30</MAX_TASKS_PER_NODE>
+          <PES_PER_NODE>16</PES_PER_NODE>
+  </machine>
+
+
   <machine MACH="linux-generic">
     <DESC>Linux workstation or laptop</DESC>
     <NODENAME_REGEX>none</NODENAME_REGEX>
@@ -892,6 +915,152 @@
     <environment_variables SMP_PRESENT="TRUE">
       <env name="OMP_STACKSIZE">64M</env>
     </environment_variables>
+  </machine>
+
+  <machine MACH="cheyenne">
+    <DESC>NCAR SGI platform, os is Linux, 36 pes/node, batch system is PBS</DESC>
+    <NODENAME_REGEX>.*.?cheyenne\d?.ucar.edu</NODENAME_REGEX>
+    <!-- MPT sometimes timesout at model start time, the next two lines cause
+    case_run.py to detect the timeout and retry FORCE_SPARE_NODES times -->
+    <MPIRUN_RETRY_REGEX>MPT: xmpi_net_accept_timeo/accept() timeout</MPIRUN_RETRY_REGEX>
+    <MPIRUN_RETRY_COUNT>10</MPIRUN_RETRY_COUNT>
+    <OS>LINUX</OS>
+    <COMPILERS>intel,gnu,pgi</COMPILERS>
+    <MPILIBS compiler="intel" >mpt,openmpi</MPILIBS>
+    <MPILIBS compiler="pgi" >openmpi,mpt</MPILIBS>
+    <MPILIBS compiler="gnu" >openmpi</MPILIBS>
+    <CIME_OUTPUT_ROOT>/glade/scratch/$USER</CIME_OUTPUT_ROOT>
+    <DIN_LOC_ROOT>$ENV{CESMDATAROOT}/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT_CLMFORC>/glade/p/cgd/tss/CTSM_datm_forcing_data</DIN_LOC_ROOT_CLMFORC>
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
+    <BASELINE_ROOT>$ENV{CESMDATAROOT}/cesm_baselines</BASELINE_ROOT>
+    <CCSM_CPRNC>$ENV{CESMDATAROOT}/tools/cime/tools/cprnc/cprnc.cheyenne</CCSM_CPRNC>
+    <GMAKE_J>8</GMAKE_J>
+    <BATCH_SYSTEM>pbs</BATCH_SYSTEM>
+    <SUPPORTED_BY>cseg</SUPPORTED_BY>
+    <!-- have not seen any performance benefit in smt -->
+    <MAX_TASKS_PER_NODE>36</MAX_TASKS_PER_NODE>
+    <MAX_MPITASKS_PER_NODE>36</MAX_MPITASKS_PER_NODE>
+    <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+    <mpirun mpilib="default">
+      <executable>mpiexec_mpt</executable>
+      <arguments>
+  <!-- for mpt/2.19 the -p needs to preceed -np -->
+  <arg name="labelstdout">-p "%g:"</arg>
+  <arg name="num_tasks"> -np {{ total_tasks }}</arg>
+  <!-- the omplace argument needs to be last -->
+  <arg name="zthreadplacement"> omplace -tm open64 </arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="mpt" queue="share">
+      <executable>mpirun `hostname`</executable>
+      <arguments>
+  <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
+  <!-- the omplace argument needs to be last -->
+  <arg name="zthreadplacement"> omplace -tm open64 </arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="openmpi">
+      <executable>mpirun</executable>
+      <arguments>
+  <arg name="anum_tasks"> -np {{ total_tasks }}</arg>
+      </arguments>
+    </mpirun>
+    <mpirun mpilib="default" unit_testing="true">
+      <!-- The only place we can build and run the unit tests is on cheyenne's
+     shared nodes. However, running mpi jobs on the shared nodes currently
+     requires some workarounds; these workarounds are implemented here -->
+      <executable>/opt/sgi/mpt/mpt-2.15/bin/mpirun $ENV{UNIT_TEST_HOST} -np 1 </executable>
+    </mpirun>
+    <module_system type="module">
+      <init_path lang="perl">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/init/perl</init_path>
+      <init_path lang="python">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/init/env_modules_python.py</init_path>
+      <init_path lang="csh">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/init/csh</init_path>
+      <init_path lang="sh">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/init/sh</init_path>
+      <cmd_path lang="perl">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/libexec/lmod perl</cmd_path>
+      <cmd_path lang="python">/glade/u/apps/ch/opt/lmod/7.5.3/lmod/lmod/libexec/lmod python</cmd_path>
+      <cmd_path lang="sh">module</cmd_path>
+      <cmd_path lang="csh">module</cmd_path>
+      <modules>
+  <command name="purge"/>
+  <command name="load">ncarenv/1.2</command>
+      </modules>
+      <modules compiler="intel">
+  <command name="load">intel/17.0.1</command>
+  <command name="load">esmf_libs</command>
+  <command name="load">mkl</command>
+      </modules>
+      <modules compiler="pgi">
+  <command name="load">pgi/19.3</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="TRUE">
+  <command name="load">esmf-7.1.0r-defio-mpi-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="!mpi-serial" DEBUG="FALSE">
+  <command name="load">esmf-7.1.0r-defio-mpi-O</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="TRUE">
+  <command name="load">esmf-7.1.0r-ncdfio-uni-g</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial" DEBUG="FALSE">
+  <command name="load">esmf-7.1.0r-ncdfio-uni-O</command>
+      </modules>
+      <modules compiler="gnu">
+        <command name="load">gnu/7.3.0</command>
+        <command name="load">openblas/0.2.20</command>
+      </modules>
+      <modules mpilib="mpt" compiler="gnu">
+  <command name="load">mpt/2.16</command>
+  <command name="load">netcdf-mpi/4.6.1</command>
+      </modules>
+      <modules mpilib="mpt" compiler="intel">
+  <command name="load">mpt/2.19</command>
+  <command name="load">netcdf-mpi/4.6.1</command>
+  <command name="load">pnetcdf/1.11.0</command>
+      </modules>
+      <modules mpilib="mpt" compiler="pgi">
+  <command name="load">mpt/2.19</command>
+  <command name="load">netcdf-mpi/4.6.3</command>
+  <command name="load">pnetcdf/1.11.1</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="pgi">
+  <command name="load">openmpi/3.1.4</command>
+  <command name="load">netcdf/4.6.3</command>
+      </modules>
+      <modules mpilib="openmpi" compiler="gnu">
+        <command name="load">openmpi/3.0.1</command>
+        <command name="load">netcdf/4.6.1</command>
+      </modules>
+      <modules>
+  <command name="load">ncarcompilers/0.5.0</command>
+      </modules>
+      <modules compiler="gnu" mpilib="mpi-serial">
+  <command name="load">netcdf/4.6.1</command>
+      </modules>
+      <modules compiler="pgi" mpilib="mpi-serial">
+  <command name="load">netcdf/4.6.3</command>
+      </modules>
+      <modules compiler="intel" mpilib="mpi-serial">
+  <command name="load">netcdf/4.5.0</command>
+      </modules>
+    </module_system>
+    <environment_variables>
+      <env name="OMP_STACKSIZE">256M</env>
+      <env name="TMPDIR">/glade/scratch/$USER</env>
+      <env name="MPI_TYPE_DEPTH">16</env>
+      <env name="MPI_IB_CONGESTED">1</env>
+      <env name="MPI_USE_ARRAY"/>
+    </environment_variables>
+    <environment_variables unit_testing="true">
+      <env name="MPI_USE_ARRAY">false</env>
+    </environment_variables>
+    <environment_variables queue="share">
+      <env name="TMPDIR">/glade/scratch/$USER</env>
+      <env name="MPI_USE_ARRAY">false</env>
+    </environment_variables>
+    <resource_limits>
+      <resource name="RLIMIT_STACK">-1</resource>
+    </resource_limits>
   </machine>
 
   <machine MACH="sandiatoss3">
