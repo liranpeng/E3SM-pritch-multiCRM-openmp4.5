@@ -2153,8 +2153,8 @@
       <ny>1</ny>
       <file grid="atm|lnd" mask="oQU240">domain.lnd.ne16pg2_oQU240.200527.nc</file>
       <file grid="ice|ocn" mask="oQU240">domain.ocn.ne16pg2_oQU240.200527.nc</file>
-      <file grid="atm|lnd" mask="gx1v6">DUMMY</file>
-      <file grid="ice|ocn" mask="gx1v6">DUMMY</file>
+      <file grid="atm|lnd" mask="gx1v6">domain.lnd.ne16pg2_gx1v6.200624.nc</file>
+      <file grid="ice|ocn" mask="gx1v6">domain.ocn.ne16pg2_gx1v6.200624.nc</file>
       <desc>ne16np4.pg2 is Spectral Elem 2-deg grid w/ 2x2 FV physics grid per element:</desc>
     </domain>
 
