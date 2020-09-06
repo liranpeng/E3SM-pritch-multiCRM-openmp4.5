@@ -49,17 +49,17 @@ set crm_nx         = 64         # <<< change this one!
 set crm_ny         = 1
 set crm_dx         = 1000
 set crm_dt         = 2
-set crm_nz         = 58
-set crm_nx_rad     = 1
+set crm_nz         = 120
+set crm_nx_rad     = 16
 set crm_ny_rad     = 1
 set crm_nx2        = 512        # <<< change this one!
 set crm_ny2        = 1
 set crm_dx2        = 250
-set crm_dt2        = 1
-set crm_nz2        = 58
-set crm_nx_rad2    = 1
+set crm_dt2        = 0.5
+set crm_nz2        = 120
+set crm_nx_rad2    = 16
 set crm_ny_rad2    = 1
-set nlev           = 72
+set nlev           = 125
 @ work0 = 6144 - 128
 @ work1 = $np - 128
 @ npcol = $work0 / $work1
@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_v1_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -103,7 +103,7 @@ set short_term_archive_root_dir = ${e3sm_simulations_dir}/${case_name}/archive
 
 ## 5-day test simulation
 set stop_units       = ndays
-set stop_num         = 1
+set stop_num         = 2
 set restart_units    = $stop_units
 set restart_num      = $stop_num
 
@@ -1003,7 +1003,7 @@ cat <<EOF >> user_nl_cam
  avgflag_pertape = 'A','A','I','A','A','A'
  fexcl1 = 'CFAD_SR532_CAL'
  fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp','CLD_CAL'
- fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','SPWW','SPWW2','SPBUOYA2','SPBUOYA','TIMINGO','WWQUI_CEN','WWQUI_CLD_CEN','WWQUI_BND','WWQUI_CLD_BND'
+ fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO'
  fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT','CRM_U','CRM_U2','CRM_SHF','CRM_SHF2'
  fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500','TGCLDLWP','TGCLDIWP'
  fincl5 = 'PRECT','PRECC'

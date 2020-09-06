@@ -988,7 +988,7 @@ cat <<EOF >> user_nl_cam
  prescribed_aero_type           = 'CYCLICAL'
  prescribed_aero_datapath='/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
  prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
- heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
+ heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne4pg2_Flag.nc'
  ncdata		= '/scratch/07088/tg863871/inputdata/atm/cam/inic/homme/cami_aquaplanet_ne4np4_L125_c08242020.nc'
  prescribed_aero_cycle_yr = 01
  se_fv_phys_remap_alg = 1
