@@ -1970,9 +1970,13 @@ end function radiation_nextsw_cday
                 call t_stopf ('rad_rrtmg_sw')
                    
                 ! Output net fluxes at 200 mb
-                call vertinterp(ncol, pcols, pverp, state%pint, 20000._r8, fcns, fsn200c)
-                call vertinterp(ncol, pcols, pverp, state%pint, 20000._r8, fns, fsn200)
-
+                if(ncol.eq.1) then
+                  call vertinterp(ncol, 1, pverp, state%pint, 20000._r8, fcns, fsn200c)
+                  call vertinterp(ncol, 1, pverp, state%pint, 20000._r8, fns, fsn200)
+                else
+                  call vertinterp(ncol, pcols, pverp, state%pint, 20000._r8, fcns, fsn200c)
+                  call vertinterp(ncol, pcols, pverp, state%pint, 20000._r8, fns, fsn200)
+                end if 
                 ! Calculate diagnostic quantities
                 do i=1,ncol
                   swcf(i)=fsntoa(i) - fsntoac(i)
@@ -2106,37 +2110,71 @@ end function radiation_nextsw_cday
 
                 ! Dump shortwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
-                  ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                  call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
-                  ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-                  call outfld('QRSC'//diag(icall),ftem  ,pcols,lchnk)
-                  call outfld('SOLIN'//diag(icall),solin ,pcols,lchnk)
-                  call outfld('FSDS'//diag(icall),fsds  ,pcols,lchnk)
-                  call outfld('FSNIRTOA'//diag(icall),fsnirt,pcols,lchnk)
-                  call outfld('FSNRTOAC'//diag(icall),fsnrtc,pcols,lchnk)
-                  call outfld('FSNRTOAS'//diag(icall),fsnirtsq,pcols,lchnk)
-                  call outfld('FSNT'//diag(icall),fsnt  ,pcols,lchnk)
-                  call outfld('FSNS'//diag(icall),fsns  ,pcols,lchnk)
-                  call outfld('FSNTC'//diag(icall),fsntc ,pcols,lchnk)
-                  call outfld('FSNSC'//diag(icall),fsnsc ,pcols,lchnk)
-                  call outfld('FSDSC'//diag(icall),fsdsc ,pcols,lchnk)
-                  call outfld('FSNTOA'//diag(icall),fsntoa,pcols,lchnk)
-                  call outfld('FSUTOA'//diag(icall),fsutoa,pcols,lchnk)
-                  call outfld('FSNTOAC'//diag(icall),fsntoac,pcols,lchnk)
-#ifdef MAML
-                   call outfld('SOLS'//diag(icall),sols_loc  ,pcols,lchnk)
-                   call outfld('SOLL'//diag(icall),soll_loc  ,pcols,lchnk)
-                   call outfld('SOLSD'//diag(icall),solsd_loc ,pcols,lchnk)
-                   call outfld('SOLLD'//diag(icall),solld_loc ,pcols,lchnk)
-#else
-                   call outfld('SOLS'//diag(icall),cam_out%sols  ,pcols,lchnk)
-                   call outfld('SOLL'//diag(icall),cam_out%soll  ,pcols,lchnk)
-                   call outfld('SOLSD'//diag(icall),cam_out%solsd ,pcols,lchnk)
-                   call outfld('SOLLD'//diag(icall),cam_out%solld ,pcols,lchnk)
-#endif
-                  call outfld('FSN200'//diag(icall),fsn200,pcols,lchnk)
-                  call outfld('FSN200C'//diag(icall),fsn200c,pcols,lchnk)
-                  call outfld('SWCF'//diag(icall),swcf  ,pcols,lchnk)
+                  if(ncol.eq.1) then
+                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    call outfld('QRS'//diag(icall),ftem  ,1,lchnk)
+                    ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
+                    call outfld('QRSC'//diag(icall),ftem  ,1,lchnk)
+                    call outfld('SOLIN'//diag(icall),solin ,1,lchnk)
+                    call outfld('FSDS'//diag(icall),fsds  ,1,lchnk)
+                    call outfld('FSNIRTOA'//diag(icall),fsnirt,1,lchnk)
+                    call outfld('FSNRTOAC'//diag(icall),fsnrtc,1,lchnk)
+                    call outfld('FSNRTOAS'//diag(icall),fsnirtsq,1,lchnk)
+                    call outfld('FSNT'//diag(icall),fsnt  ,1,lchnk)
+                    call outfld('FSNS'//diag(icall),fsns  ,1,lchnk)
+                    call outfld('FSNTC'//diag(icall),fsntc ,1,lchnk)
+                    call outfld('FSNSC'//diag(icall),fsnsc ,1,lchnk)
+                    call outfld('FSDSC'//diag(icall),fsdsc ,1,lchnk)
+                    call outfld('FSNTOA'//diag(icall),fsntoa,1,lchnk)
+                    call outfld('FSUTOA'//diag(icall),fsutoa,1,lchnk)
+                    call outfld('FSNTOAC'//diag(icall),fsntoac,1,lchnk)
+  #ifdef MAML
+                     call outfld('SOLS'//diag(icall),sols_loc  ,1,lchnk)
+                     call outfld('SOLL'//diag(icall),soll_loc  ,1,lchnk)
+                     call outfld('SOLSD'//diag(icall),solsd_loc ,1,lchnk)
+                     call outfld('SOLLD'//diag(icall),solld_loc ,1,lchnk)
+  #else
+                     call outfld('SOLS'//diag(icall),cam_out%sols  ,1,lchnk)
+                     call outfld('SOLL'//diag(icall),cam_out%soll  ,1,lchnk)
+                     call outfld('SOLSD'//diag(icall),cam_out%solsd ,1,lchnk)
+                     call outfld('SOLLD'//diag(icall),cam_out%solld ,1,lchnk)
+  #endif
+                    call outfld('FSN200'//diag(icall),fsn200,1,lchnk)
+                    call outfld('FSN200C'//diag(icall),fsn200c,1,lchnk)
+                    call outfld('SWCF'//diag(icall),swcf  ,1,lchnk)
+                  else
+                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
+                    ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
+                    call outfld('QRSC'//diag(icall),ftem  ,pcols,lchnk)
+                    call outfld('SOLIN'//diag(icall),solin ,pcols,lchnk)
+                    call outfld('FSDS'//diag(icall),fsds  ,pcols,lchnk)
+                    call outfld('FSNIRTOA'//diag(icall),fsnirt,pcols,lchnk)
+                    call outfld('FSNRTOAC'//diag(icall),fsnrtc,pcols,lchnk)
+                    call outfld('FSNRTOAS'//diag(icall),fsnirtsq,pcols,lchnk)
+                    call outfld('FSNT'//diag(icall),fsnt  ,pcols,lchnk)
+                    call outfld('FSNS'//diag(icall),fsns  ,pcols,lchnk)
+                    call outfld('FSNTC'//diag(icall),fsntc ,pcols,lchnk)
+                    call outfld('FSNSC'//diag(icall),fsnsc ,pcols,lchnk)
+                    call outfld('FSDSC'//diag(icall),fsdsc ,pcols,lchnk)
+                    call outfld('FSNTOA'//diag(icall),fsntoa,pcols,lchnk)
+                    call outfld('FSUTOA'//diag(icall),fsutoa,pcols,lchnk)
+                    call outfld('FSNTOAC'//diag(icall),fsntoac,pcols,lchnk)
+  #ifdef MAML
+                     call outfld('SOLS'//diag(icall),sols_loc  ,pcols,lchnk)
+                     call outfld('SOLL'//diag(icall),soll_loc  ,pcols,lchnk)
+                     call outfld('SOLSD'//diag(icall),solsd_loc ,pcols,lchnk)
+                     call outfld('SOLLD'//diag(icall),solld_loc ,pcols,lchnk)
+  #else
+                     call outfld('SOLS'//diag(icall),cam_out%sols  ,pcols,lchnk)
+                     call outfld('SOLL'//diag(icall),cam_out%soll  ,pcols,lchnk)
+                     call outfld('SOLSD'//diag(icall),cam_out%solsd ,pcols,lchnk)
+                     call outfld('SOLLD'//diag(icall),cam_out%solld ,pcols,lchnk)
+  #endif
+                    call outfld('FSN200'//diag(icall),fsn200,pcols,lchnk)
+                    call outfld('FSN200C'//diag(icall),fsn200c,pcols,lchnk)
+                    call outfld('SWCF'//diag(icall),swcf  ,pcols,lchnk)
+                  endif
                 end if  ! (use_MMF .and. last_column) .or .not. use_MMF
 
                 if(do_aerocom_ind3) then
@@ -2185,16 +2223,29 @@ end function radiation_nextsw_cday
                 aod700(idxnite(i)) = fillvalue
                 crm_aodvisz(idxnite(i), :, :, :) = fillvalue
               end do
-              call outfld('CRM_FSNT', crm_fsnt, pcols, lchnk)
-              call outfld('CRM_FSNTC', crm_fsntc, pcols, lchnk)
-              call outfld('CRM_FSNS', crm_fsns, pcols, lchnk)
-              call outfld('CRM_FSNSC', crm_fsnsc, pcols, lchnk)
-              call outfld('CRM_AODVIS', crm_aodvis, pcols, lchnk)
-              call outfld('CRM_AOD400', crm_aod400, pcols, lchnk)
-              call outfld('CRM_AOD700', crm_aod700, pcols, lchnk)
-              call outfld('AOD400', aod400, pcols, lchnk)
-              call outfld('AOD700', aod700, pcols, lchnk)
-              call outfld('CRM_AODVISZ', crm_aodvisz, pcols, lchnk)
+              if(ncol.eq.1) then
+                call outfld('CRM_FSNT', crm_fsnt, 1, lchnk)
+                call outfld('CRM_FSNTC', crm_fsntc, 1, lchnk)
+                call outfld('CRM_FSNS', crm_fsns, 1, lchnk)
+                call outfld('CRM_FSNSC', crm_fsnsc, 1, lchnk)
+                call outfld('CRM_AODVIS', crm_aodvis, 1, lchnk)
+                call outfld('CRM_AOD400', crm_aod400, 1, lchnk)
+                call outfld('CRM_AOD700', crm_aod700, 1, lchnk)
+                call outfld('AOD400', aod400, 1, lchnk)
+                call outfld('AOD700', aod700, 1, lchnk)
+                call outfld('CRM_AODVISZ', crm_aodvisz, pcols, lchnk)
+              else
+                call outfld('CRM_FSNT', crm_fsnt, pcols, lchnk)
+                call outfld('CRM_FSNTC', crm_fsntc, pcols, lchnk)
+                call outfld('CRM_FSNS', crm_fsns, pcols, lchnk)
+                call outfld('CRM_FSNSC', crm_fsnsc, pcols, lchnk)
+                call outfld('CRM_AODVIS', crm_aodvis, pcols, lchnk)
+                call outfld('CRM_AOD400', crm_aod400, pcols, lchnk)
+                call outfld('CRM_AOD700', crm_aod700, pcols, lchnk)
+                call outfld('AOD400', aod400, pcols, lchnk)
+                call outfld('AOD700', aod700, pcols, lchnk)
+                call outfld('CRM_AODVISZ', crm_aodvisz, pcols, lchnk)
+              endif
 
               do i=1,ncol
                 do k=1,pver
@@ -2244,14 +2295,23 @@ end function radiation_nextsw_cday
                   snow_icld_vistau(IdxNite(i),:) = fillvalue
                 endif
               end do
-
-              call outfld('TOT_CLD_VISTAU', tot_cld_vistau, pcols, lchnk)       
-              call outfld('TOT_ICLD_VISTAU', tot_icld_vistau, pcols, lchnk)
-              call outfld('LIQ_ICLD_VISTAU', liq_icld_vistau, pcols, lchnk)
-              call outfld('ICE_ICLD_VISTAU', ice_icld_vistau, pcols, lchnk)
-              if (cldfsnow_idx > 0) then
-                call outfld('SNOW_ICLD_VISTAU', snow_icld_vistau, pcols, lchnk)
-              endif
+              if(ncol.eq.1) then
+                call outfld('TOT_CLD_VISTAU', tot_cld_vistau, 1, lchnk)       
+                call outfld('TOT_ICLD_VISTAU', tot_icld_vistau, 1, lchnk)
+                call outfld('LIQ_ICLD_VISTAU', liq_icld_vistau, 1, lchnk)
+                call outfld('ICE_ICLD_VISTAU', ice_icld_vistau, 1, lchnk)
+                if (cldfsnow_idx > 0) then
+                  call outfld('SNOW_ICLD_VISTAU', snow_icld_vistau, 1, lchnk)
+                endif
+              else
+                call outfld('TOT_CLD_VISTAU', tot_cld_vistau, pcols, lchnk)       
+                call outfld('TOT_ICLD_VISTAU', tot_icld_vistau, pcols, lchnk)
+                call outfld('LIQ_ICLD_VISTAU', liq_icld_vistau, pcols, lchnk)
+                call outfld('ICE_ICLD_VISTAU', ice_icld_vistau, pcols, lchnk)
+                if (cldfsnow_idx > 0) then
+                  call outfld('SNOW_ICLD_VISTAU', snow_icld_vistau, pcols, lchnk)
+                endif
+              end if
             end if
 
             call t_stopf ('rad_sw')
