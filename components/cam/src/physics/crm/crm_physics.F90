@@ -985,7 +985,7 @@ print *,"00_crm_physics, end crm"
          timing_ex(i) = wall(1)/ncol
       end do
       
-write(iulog,*) "timing_ex = ",timing_ex
+!write(iulog,*) "timing_ex = ",timing_ex
       !state%crm_ww = crm_ww
       !state%crm_buoya = crm_buoya
 
