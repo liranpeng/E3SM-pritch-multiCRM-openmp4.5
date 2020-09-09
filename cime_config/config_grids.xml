@@ -964,7 +964,7 @@
       <mask>gx3v7</mask>
     </model_grid>
 
-    <model_grid alias="ne16pg2_r05_oQU240">
+    <model_grid alias="ne16pg2_r05_oQU240" compset="(CAM5.+CLM.+MPASO)">
       <grid name="atm">ne16np4.pg2</grid>
       <grid name="lnd">r05</grid>
       <grid name="ocnice">oQU240</grid>

@@ -48,16 +48,16 @@ set OMP_NUM_THREADS = 1
 set crm_nx         = 8         # <<< change this one!
 set crm_ny         = 1
 set crm_dx         = 4000
-set crm_dt         = 5
-set crm_nz         = 120
-set crm_nx_rad     = 4
+set crm_dt         = 10
+set crm_nz         = 58
+set crm_nx_rad     = 1
 set crm_ny_rad     = 1
-set crm_nx2        = 32        # <<< change this one!
+set crm_nx2        = 120        # <<< change this one!
 set crm_ny2        = 1
-set crm_dx2        = 1000
-set crm_dt2        = 0.5
+set crm_dx2        = 500
+set crm_dt2        = 1
 set crm_nz2        = 120
-set crm_nx_rad2    = 4
+set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
 set nlev           = 125
 @ work0 = 384 - 128
@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_F-MMF1_hflag_default_IC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_F-MMF1_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -103,7 +103,7 @@ set short_term_archive_root_dir = ${e3sm_simulations_dir}/${case_name}/archive
 
 ## 5-day test simulation
 set stop_units       = ndays
-set stop_num         = 1
+set stop_num         = 2
 set restart_units    = $stop_units
 set restart_num      = $stop_num
 
@@ -737,7 +737,7 @@ cp -f $this_script_path $script_provenance_dir/$script_provenance_name
 
 #set cam_opt = "-phys cam5 -use_SPCAM  -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_adv MPDATA -crm_dt $crm_nt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates  -SPCAM_microp_scheme sam1mom -chem none  -cppdefs  -DSP_MCICA_RAD   -aquaplanet "
 #set cam_opt = "-phys cam5 -use_SPCAM -rad rrtmg -nlev 72 -microphys mg2  -crm_nz 58 -crm_adv MPDATA -crm_dt 5  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates -SPCAM_microp_scheme sam1mom -chem none  -cppdefs '-DSP_DIR_NS -DSP_MCICA_RAD' -aquaplanet "
-set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol"
+set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmgp -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol -aquaplanet"
 $xmlchange_exe --id CAM_CONFIG_OPTS --val "$cam_opt"
 
 #=============================================

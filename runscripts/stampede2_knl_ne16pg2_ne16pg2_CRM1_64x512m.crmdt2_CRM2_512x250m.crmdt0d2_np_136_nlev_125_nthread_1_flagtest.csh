@@ -60,15 +60,15 @@ set crm_nz2        = 120
 set crm_nx_rad2    = 16
 set crm_ny_rad2    = 1
 set nlev           = 125
-@ work0 = 6144 - 2048
-@ work1 = $np - 2048
+@ work0 = 6144 - 128
+@ work1 = $np - 128
 @ npcol = $work0 / $work1
 ### SOURCE CODE OPTIONS
 set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_F-EAM-AQP1_v5_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -647,9 +647,9 @@ e3sm_newline
 e3sm_print '-------- Finished create_newcase --------'
 e3sm_newline
 $xmlchange_exe --id DIN_LOC_ROOT --val "/scratch/07088/tg863871/inputdata"
-#$xmlchange_exe --id LND_DOMAIN_FILE --val "domain.lnd.ne16pg2_gx1v6.200624.nc"
-#$xmlchange_exe --id ICE_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
-#$xmlchange_exe --id OCN_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
+$xmlchange_exe --id LND_DOMAIN_FILE --val "domain.lnd.ne16pg2_gx1v6.200624.nc"
+$xmlchange_exe --id ICE_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
+$xmlchange_exe --id OCN_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
 #$xmlchange_exe --id OCN_DOMAIN_FILE --val 'ne16pg2_scrip_c20191218.nc'
 #$xmlchange_exe --id OCN_DOMAIN_PATH --val '/scratch/07088/tg863871/inputdata/grids'
 
@@ -999,7 +999,6 @@ cat <<EOF >> user_nl_cam
  crm_accel_factor = 1
  rsplit    = 2
  se_nsplit = 2
- dyn_npes = 1536
  mfilt  = 1,30,120,120,240,30
  avgflag_pertape = 'A','A','I','A','A','A'
  fexcl1 = 'CFAD_SR532_CAL'
