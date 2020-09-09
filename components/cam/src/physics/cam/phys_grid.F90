@@ -531,7 +531,6 @@ contains
                cost_d(i) = 3.0_r8
                extracount = extracount + 1 
           endif
-          write(iulog,*) 'hflag = ',i,hflag(i),cost_d(i),extracount
         enddo
       endif
       if (minval(cost_d) .ne. maxval(cost_d)) use_cost_d = .true.
