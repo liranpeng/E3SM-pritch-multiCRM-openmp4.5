@@ -1181,12 +1181,12 @@ end function radiation_nextsw_cday
 #ifdef MAML
     !define local cam_out fluxes for each CRM column  
     real(r8) lwup_loc 
-    real(r8) :: sols_loc(pcols)
-    real(r8) :: soll_loc(pcols)
-    real(r8) :: solsd_loc(pcols)
-    real(r8) :: solld_loc(pcols)
-    real(r8) :: fsns_loc
-    real(r8) :: flwds_loc(pcols)
+    real(r8),allocatable ::  sols_loc(:)
+    real(r8),allocatable ::  soll_loc(:)
+    real(r8),allocatable ::  solsd_loc(:)
+    real(r8),allocatable ::  solld_loc(:)
+    real(r8) fsns_loc
+    real(r8),allocatable ::  flwds_loc(:)
 #endif
 
     integer :: ixcldliq, ixcldice
@@ -1336,6 +1336,13 @@ end function radiation_nextsw_cday
       allocate(crm_aod700(1, crm_nx_rad2, crm_ny_rad2))
       allocate(aod400(1))
       allocate(aod700(1))
+#ifdef MAML
+      allocate(sols_loc(1))
+      allocate(soll_loc(1))
+      allocate(solsd_loc(1))
+      allocate(solld_loc(1))
+      allocate(flwds_loc(1))
+#endif
     else
       crmnxrad = crm_nx_rad
       crmnyrad = crm_ny_rad
@@ -1367,6 +1374,13 @@ end function radiation_nextsw_cday
       allocate(crm_aod700(pcols, crm_nx_rad, crm_ny_rad))
       allocate(aod400(pcols))
       allocate(aod700(pcols))
+#ifdef MAML
+      allocate(sols_loc(pcols))
+      allocate(soll_loc(pcols))
+      allocate(solsd_loc(pcols))
+      allocate(solld_loc(pcols))
+      allocate(flwds_loc(pcols))
+#endif
     end if
     if(pergro_mods) then
        ilchnk = (lchnk - lastblock) - tot_chnk_till_this_prc(iam)
@@ -1535,6 +1549,13 @@ end function radiation_nextsw_cday
          crm_fsns   = 0.   ; crm_fsnsc  = 0.
          crm_flnt   = 0.   ; crm_flntc  = 0.
          crm_flns   = 0.   ; crm_flnsc  = 0.
+#ifdef MAML
+         sols_loc   = 0.
+         soll_loc   = 0.
+         solsd_loc   = 0.
+         solld_loc   = 0.
+         flwds_loc   = 0.
+#endif
          tot_cld_vistau   = 0
          tot_icld_vistau  = 0. ; nct_tot_icld_vistau  = 0.
          liq_icld_vistau  = 0. ; nct_liq_icld_vistau  = 0.
@@ -2204,10 +2225,17 @@ end function radiation_nextsw_cday
                      aerindex(idxnite(i)) = fillvalue
                   end do
                   if(icall.eq.0) then ! only for climatology run
+                    if(ncol.eq.1) then
+                     call outfld('angstrm', angstrm, 1, lchnk)
+                     call outfld('aod400', aod400, 1, lchnk)
+                     call outfld('aod700', aod700, 1, lchnk)
+                     call outfld('aerindex', aerindex, 1, lchnk)
+                   else
                      call outfld('angstrm', angstrm, pcols, lchnk)
                      call outfld('aod400', aod400, pcols, lchnk)
                      call outfld('aod700', aod700, pcols, lchnk)
                      call outfld('aerindex', aerindex, pcols, lchnk)
+                   endif 
                   end if
                 end if  ! do_aerocom_ind3
 
@@ -2233,7 +2261,7 @@ end function radiation_nextsw_cday
                 call outfld('CRM_AOD700', crm_aod700, 1, lchnk)
                 call outfld('AOD400', aod400, 1, lchnk)
                 call outfld('AOD700', aod700, 1, lchnk)
-                call outfld('CRM_AODVISZ', crm_aodvisz, pcols, lchnk)
+                call outfld('CRM_AODVISZ', crm_aodvisz, 1, lchnk)
               else
                 call outfld('CRM_FSNT', crm_fsnt, pcols, lchnk)
                 call outfld('CRM_FSNTC', crm_fsntc, pcols, lchnk)

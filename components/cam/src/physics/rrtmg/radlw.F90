@@ -80,7 +80,7 @@ subroutine rad_rrtmg_lw(lchnk   ,ncol      ,rrtmg_levs,r_state,       &
    real(r8), intent(out) :: flnsc(pcols)         ! Clear sky surface cooing
    real(r8), intent(out) :: flntc(pcols)         ! Net clear sky outgoing flux
    real(r8), intent(out) :: flutc(pcols)         ! Upward clear-sky flux at top of model
-   real(r8), intent(out) :: flwds(pcols)         ! Down longwave flux at surface
+   real(r8), intent(inout) :: flwds(:)         ! Down longwave flux at surface
    real(r8), intent(out) :: fldsc(pcols)         ! Down longwave clear flux at surface
    real(r8), intent(out) :: fcnl(pcols,pverp)    ! clear sky net flux at interfaces
    real(r8), intent(out) :: fnl(pcols,pverp)     ! net flux at interfaces

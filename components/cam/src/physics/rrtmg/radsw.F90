@@ -148,10 +148,10 @@ subroutine rad_rrtmg_sw(lchnk,ncol       ,rrtmg_levs   ,r_state      , &
    real(r8), intent(out) :: fsdsc(pcols)     ! Clear sky surface downwelling solar flux
    real(r8), intent(out) :: fsntc(pcols)     ! Clear sky total column absorbed solar flx
    real(r8), intent(out) :: fsntoac(pcols)   ! Clear sky net solar flx at TOA
-   real(r8), intent(out) :: sols(pcols)      ! Direct solar rad on surface (< 0.7)
-   real(r8), intent(out) :: soll(pcols)      ! Direct solar rad on surface (>= 0.7)
-   real(r8), intent(out) :: solsd(pcols)     ! Diffuse solar rad on surface (< 0.7)
-   real(r8), intent(out) :: solld(pcols)     ! Diffuse solar rad on surface (>= 0.7)
+   real(r8), intent(inout) :: sols(pcols)      ! Direct solar rad on surface (< 0.7)
+   real(r8), intent(inout) :: soll(pcols)      ! Direct solar rad on surface (>= 0.7)
+   real(r8), intent(inout) :: solsd(pcols)     ! Diffuse solar rad on surface (< 0.7)
+   real(r8), intent(inout) :: solld(pcols)     ! Diffuse solar rad on surface (>= 0.7)
    real(r8), intent(out) :: fsnirtoa(pcols)  ! Near-IR flux absorbed at toa
    real(r8), intent(out) :: fsnrtoac(pcols)  ! Clear sky near-IR flux absorbed at toa
    real(r8), intent(out) :: fsnrtoaq(pcols)  ! Net near-IR flux at toa >= 0.7 microns
