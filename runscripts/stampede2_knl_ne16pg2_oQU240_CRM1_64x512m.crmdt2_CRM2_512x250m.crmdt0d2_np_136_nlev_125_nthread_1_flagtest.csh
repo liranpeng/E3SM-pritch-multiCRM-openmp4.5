@@ -29,7 +29,7 @@ set np = 2056 # 8 cores for the light loading work.
 # set np = 130 #  2 cores for the light loading work.
 
 set compset        = F-EAMv1-AQP1
-set resolution     = ne16pg2_ne16pg2
+set resolution     = ne16pg2
 #set machine        = development
 #set machine        = stampede2-knl-liran
 set machine        = stampede2-knl
@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_F-EAM-AQP1_v5_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_F-EAMv2-AQP1_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -646,10 +646,6 @@ cd ${case_scripts_dir}
 e3sm_newline
 e3sm_print '-------- Finished create_newcase --------'
 e3sm_newline
-$xmlchange_exe --id DIN_LOC_ROOT --val "/scratch/07088/tg863871/inputdata"
-#$xmlchange_exe --id LND_DOMAIN_FILE --val "domain.lnd.ne16pg2_gx1v6.200624.nc"
-#$xmlchange_exe --id ICE_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
-#$xmlchange_exe --id OCN_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
 #$xmlchange_exe --id OCN_DOMAIN_FILE --val 'ne16pg2_scrip_c20191218.nc'
 #$xmlchange_exe --id OCN_DOMAIN_PATH --val '/scratch/07088/tg863871/inputdata/grids'
 
@@ -999,7 +995,6 @@ cat <<EOF >> user_nl_cam
  crm_accel_factor = 1
  rsplit    = 2
  se_nsplit = 2
- dyn_npes = 1536
  mfilt  = 1,30,120,120,240,30
  avgflag_pertape = 'A','A','I','A','A','A'
  fexcl1 = 'CFAD_SR532_CAL'
