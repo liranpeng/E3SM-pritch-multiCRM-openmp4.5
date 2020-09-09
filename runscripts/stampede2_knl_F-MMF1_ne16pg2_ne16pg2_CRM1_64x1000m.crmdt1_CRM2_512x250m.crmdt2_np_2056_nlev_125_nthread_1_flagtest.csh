@@ -29,7 +29,7 @@ set np = 2056 # 8 cores for the light loading work.
 # set np = 130 #  2 cores for the light loading work.
 
 set compset        = F-MMF1
-set resolution     = ne16pg2_ne16pg2
+set resolution     = ne16pg2_r05_oQU240
 #set machine        = development
 #set machine        = stampede2-knl-liran
 set machine        = stampede2-knl
@@ -737,7 +737,7 @@ cp -f $this_script_path $script_provenance_dir/$script_provenance_name
 
 #set cam_opt = "-phys cam5 -use_SPCAM  -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_adv MPDATA -crm_dt $crm_nt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates  -SPCAM_microp_scheme sam1mom -chem none  -cppdefs  -DSP_MCICA_RAD   -aquaplanet "
 #set cam_opt = "-phys cam5 -use_SPCAM -rad rrtmg -nlev 72 -microphys mg2  -crm_nz 58 -crm_adv MPDATA -crm_dt 5  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates -SPCAM_microp_scheme sam1mom -chem none  -cppdefs '-DSP_DIR_NS -DSP_MCICA_RAD' -aquaplanet "
-set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmgp -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol -aquaplanet"
+set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol "
 $xmlchange_exe --id CAM_CONFIG_OPTS --val "$cam_opt"
 
 #=============================================
@@ -982,11 +982,11 @@ cat <<EOF >> user_nl_cam
  nhtfrq =   0,-24,-6,-6,-3,-24
  use_hetfrz_classnuc = .false.
  aerodep_flx_type = 'CYCLICAL'
- aerodep_flx_datapath = '/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
+ aerodep_flx_datapath = '/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
  aerodep_flx_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
  aerodep_flx_cycle_yr = 01
  prescribed_aero_type           = 'CYCLICAL'
- prescribed_aero_datapath='/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
+ prescribed_aero_datapath='/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
  prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
  heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
  prescribed_aero_cycle_yr = 01
