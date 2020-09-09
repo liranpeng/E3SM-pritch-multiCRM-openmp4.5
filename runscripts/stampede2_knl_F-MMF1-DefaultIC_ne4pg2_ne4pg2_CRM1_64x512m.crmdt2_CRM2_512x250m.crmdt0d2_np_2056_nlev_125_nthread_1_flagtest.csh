@@ -23,13 +23,13 @@
 ###===================================================================
 
 ### BASIC INFO ABOUT RUN
-set np = 2056 # 8 cores for the light loading work.
+set np = 136 # 8 cores for the light loading work.
 # CASES TO DO:
 # #set np = 132 #  4 cores for the light loading work.
 # set np = 130 #  2 cores for the light loading work.
 
-set compset        = F-EAMv1-AQP1
-set resolution     = ne16pg2_ne16pg2
+set compset        = F-MMF1
+set resolution     = ne4pg2_ne4pg2
 #set machine        = development
 #set machine        = stampede2-knl-liran
 set machine        = stampede2-knl
@@ -60,15 +60,15 @@ set crm_nz2        = 120
 set crm_nx_rad2    = 16
 set crm_ny_rad2    = 1
 set nlev           = 125
-@ work0 = 6144 - 2048
-@ work1 = $np - 2048
+@ work0 = 384 - 128
+@ work1 = $np - 128
 @ npcol = $work0 / $work1
 ### SOURCE CODE OPTIONS
 set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_F-EAM-AQP1_v5_Default_IC_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_F-MMF1_Default_ICv4_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -646,7 +646,7 @@ cd ${case_scripts_dir}
 e3sm_newline
 e3sm_print '-------- Finished create_newcase --------'
 e3sm_newline
-$xmlchange_exe --id DIN_LOC_ROOT --val "/scratch/07088/tg863871/inputdata"
+#$xmlchange_exe --id DIN_LOC_ROOT --val "/scratch/07088/tg863871/inputdata"
 #$xmlchange_exe --id LND_DOMAIN_FILE --val "domain.lnd.ne16pg2_gx1v6.200624.nc"
 #$xmlchange_exe --id ICE_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
 #$xmlchange_exe --id OCN_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
@@ -740,7 +740,7 @@ cp -f $this_script_path $script_provenance_dir/$script_provenance_name
 
 #set cam_opt = "-phys cam5 -use_SPCAM  -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_adv MPDATA -crm_dt $crm_nt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates  -SPCAM_microp_scheme sam1mom -chem none  -cppdefs  -DSP_MCICA_RAD   -aquaplanet "
 #set cam_opt = "-phys cam5 -use_SPCAM -rad rrtmg -nlev 72 -microphys mg2  -crm_nz 58 -crm_adv MPDATA -crm_dt 5  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates -SPCAM_microp_scheme sam1mom -chem none  -cppdefs '-DSP_DIR_NS -DSP_MCICA_RAD' -aquaplanet "
-set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmgp -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol -aquaplanet"
+set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmgp -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol"
 $xmlchange_exe --id CAM_CONFIG_OPTS --val "$cam_opt"
 
 #=============================================
@@ -991,7 +991,6 @@ cat <<EOF >> user_nl_cam
  prescribed_aero_type           = 'CYCLICAL'
  prescribed_aero_datapath='/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
  prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
- heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
  prescribed_aero_cycle_yr = 01
  se_fv_phys_remap_alg = 1
  use_crm_accel    = .true.
@@ -999,13 +998,12 @@ cat <<EOF >> user_nl_cam
  crm_accel_factor = 1
  rsplit    = 2
  se_nsplit = 2
- dyn_npes = 1536
  mfilt  = 1,30,120,120,240,30
  avgflag_pertape = 'A','A','I','A','A','A'
  fexcl1 = 'CFAD_SR532_CAL'
  fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp','CLD_CAL'
  fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO'
- fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT','CRM_U','CRM_U2','CRM_SHF','CRM_SHF2'
+ fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT'
  fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500','TGCLDLWP','TGCLDIWP'
  fincl5 = 'PRECT','PRECC'
  fincl6 = 'CLDTOT_ISCCP','MEANCLDALB_ISCCP','MEANTAU_ISCCP','MEANPTOP_ISCCP','MEANTB_ISCCP','CLDTOT_CAL','CLDTOT_CAL_LIQ','CLDTOT_CAL_ICE','CLDTOT_CAL_UN','CLDHGH_CAL','CLDHGH_CAL_LIQ','CLDHGH_CAL_ICE','CLDHGH_CAL_UN','CLDMED_CAL','CLDMED_CAL_LIQ','CLDMED_CAL_ICE','CLDMED_CAL_UN','CLDLOW_CAL','CLDLOW_CAL_LIQ','CLDLOW_CAL_ICE','CLDLOW_CAL_UN'
