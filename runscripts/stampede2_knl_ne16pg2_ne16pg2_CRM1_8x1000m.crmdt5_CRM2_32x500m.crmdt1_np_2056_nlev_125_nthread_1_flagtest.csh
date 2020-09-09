@@ -23,18 +23,18 @@
 ###===================================================================
 
 ### BASIC INFO ABOUT RUN
-set np = NPP # 8 cores for the light loading work.
+set np = 2056 # 8 cores for the light loading work.
 # CASES TO DO:
 # #set np = 132 #  4 cores for the light loading work.
 # set np = 130 #  2 cores for the light loading work.
 
 set compset        = F-EAMv1-AQP1
-set resolution     = ne4pg2_ne4pg2
+set resolution     = ne16pg2_ne16pg2
 #set machine        = development
 #set machine        = stampede2-knl-liran
-set machine        = cheyenne
+set machine        = stampede2-knl
 #set machine        = stampede2
-set walltime       = 1:00:00
+set walltime       = 30:00:00
 setenv project       TG-ATM190002
 #set nnum           = 128
 set nnum = $np
@@ -48,26 +48,27 @@ set OMP_NUM_THREADS = 1
 set crm_nx         = 8         # <<< change this one!
 set crm_ny         = 1
 set crm_dx         = 1000
-set crm_dt         = 1
+set crm_dt         = 5
 set crm_nz         = 120
 set crm_nx_rad     = 1
 set crm_ny_rad     = 1
-set crm_nx2        = NX2        # <<< change this one!
+set crm_nx2        = 32        # <<< change this one!
 set crm_ny2        = 1
 set crm_dx2        = 500
-set crm_dt2        = DT2
+set crm_dt2        = 1
 set crm_nz2        = 120
 set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
-@ work0 = 384 - 128
-@ work1 = $np - 128
+set nlev           = 125
+@ work0 = 6144 - 2048
+@ work1 = $np - 2048
 @ npcol = $work0 / $work1
 ### SOURCE CODE OPTIONS
 set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_hflag_1steps_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -101,8 +102,8 @@ set short_term_archive_root_dir = ${e3sm_simulations_dir}/${case_name}/archive
 ### LENGTH OF SIMULATION, RESTARTS, AND ARCHIVING
 
 ## 5-day test simulation
-set stop_units       = ndays
-set stop_num         = 1
+set stop_units       = nhours
+set stop_num         = 12
 set restart_units    = $stop_units
 set restart_num      = $stop_num
 
@@ -645,7 +646,10 @@ cd ${case_scripts_dir}
 e3sm_newline
 e3sm_print '-------- Finished create_newcase --------'
 e3sm_newline
-
+$xmlchange_exe --id DIN_LOC_ROOT --val "/scratch/07088/tg863871/inputdata"
+$xmlchange_exe --id LND_DOMAIN_FILE --val "domain.lnd.ne16pg2_gx1v6.200624.nc"
+$xmlchange_exe --id ICE_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
+$xmlchange_exe --id OCN_DOMAIN_FILE --val "domain.ocn.ne16pg2_gx1v6.200624.nc"
 #$xmlchange_exe --id OCN_DOMAIN_FILE --val 'ne16pg2_scrip_c20191218.nc'
 #$xmlchange_exe --id OCN_DOMAIN_PATH --val '/scratch/07088/tg863871/inputdata/grids'
 
@@ -771,7 +775,7 @@ else if ( `lowercase $processor_config` == 'customknl' ) then
   e3sm_print 'using custom layout for cori-knl because $processor_config = '$processor_config
 
 
-  ${xmlchange_exe} MAX_TASKS_PER_NODE="36"
+  ${xmlchange_exe} MAX_TASKS_PER_NODE="64"
  # ${xmlchange_exe} PES_PER_NODE="256"
 
   ${xmlchange_exe} NTASKS_ATM="$natm"
@@ -982,13 +986,13 @@ cat <<EOF >> user_nl_cam
  use_hetfrz_classnuc = .false.
  aerodep_flx_type = 'CYCLICAL'
  aerodep_flx_datapath = '/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
- aerodep_flx_file = 'mam4_0.9x1.2_L125_2000clim_c170323.nc'
+ aerodep_flx_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
  aerodep_flx_cycle_yr = 01
- prescribed_aero_type		= 'CYCLICAL'
+ prescribed_aero_type           = 'CYCLICAL'
  prescribed_aero_datapath='/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
- prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c170323.nc'
+ prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc' 
  prescribed_aero_cycle_yr = 01
- heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne4pg2_Flag.nc'
+  heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
  se_fv_phys_remap_alg = 1
  use_crm_accel    = .true.
  crm_accel_uv     = .true.
@@ -1000,7 +1004,7 @@ cat <<EOF >> user_nl_cam
  fexcl1 = 'CFAD_SR532_CAL'
  fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp','CLD_CAL'
  fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO'
- fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT'
+ fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT','CRM_U','CRM_U2'
  fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500','TGCLDLWP','TGCLDIWP'
  fincl5 = 'PRECT','PRECC'
  fincl6 = 'CLDTOT_ISCCP','MEANCLDALB_ISCCP','MEANTAU_ISCCP','MEANPTOP_ISCCP','MEANTB_ISCCP','CLDTOT_CAL','CLDTOT_CAL_LIQ','CLDTOT_CAL_ICE','CLDTOT_CAL_UN','CLDHGH_CAL','CLDHGH_CAL_LIQ','CLDHGH_CAL_ICE','CLDHGH_CAL_UN','CLDMED_CAL','CLDMED_CAL_LIQ','CLDMED_CAL_ICE','CLDMED_CAL_UN','CLDLOW_CAL','CLDLOW_CAL_LIQ','CLDLOW_CAL_ICE','CLDLOW_CAL_UN'

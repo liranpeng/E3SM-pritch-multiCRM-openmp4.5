@@ -59,7 +59,6 @@ set crm_dt2        = DT2
 set crm_nz2        = 120
 set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
-@ work0 = 384 - 128
 @ work1 = $np - 128
 @ npcol = $work0 / $work1
 ### SOURCE CODE OPTIONS
