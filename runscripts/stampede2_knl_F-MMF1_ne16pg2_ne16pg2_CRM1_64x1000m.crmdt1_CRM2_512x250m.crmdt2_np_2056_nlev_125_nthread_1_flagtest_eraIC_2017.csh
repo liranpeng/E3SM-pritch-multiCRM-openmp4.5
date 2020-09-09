@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_ERA5_IC_v0_ERAYYY_F-MMF1_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_ERA5_IC_v0_2017_F-MMF1_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -989,7 +989,7 @@ cat <<EOF >> user_nl_cam
  prescribed_aero_datapath='/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
  prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
  heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
- ncdata		= '/scratch/07088/tg863871/inputdata/HICCUP_data_from_walter/HICCUP.atm_era5.ERAYYY-10-01.ne16np4.L125.nc'
+ ncdata		= '/scratch/07088/tg863871/inputdata/HICCUP_data_from_walter/HICCUP.atm_era5.2017-10-01.ne16np4.L125.nc'
  prescribed_aero_cycle_yr = 01
  se_fv_phys_remap_alg = 1
  use_crm_accel    = .true.
@@ -1042,7 +1042,7 @@ cat <<EOF >> user_docn.streams.txt.prescribed
      /scratch/07088/tg863871/inputdata/HICCUP_data_from_walter
    </filePath>
    <fileNames>
-    HICCUP.sst_noaa.ERAYYY-10-01.nc 
+    HICCUP.sst_noaa.2017-10-01.nc 
    </fileNames>
    <offset>
       0

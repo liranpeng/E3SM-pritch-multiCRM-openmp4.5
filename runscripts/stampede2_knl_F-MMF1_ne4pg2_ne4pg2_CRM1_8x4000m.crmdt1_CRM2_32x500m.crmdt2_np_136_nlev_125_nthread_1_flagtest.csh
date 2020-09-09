@@ -68,7 +68,7 @@ set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_F-MMF1_v4_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_F-MMF1_v7_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -79,7 +79,7 @@ set old_executable = false      # build executable is set to 'false', reuse
                                 # existing one otherwise
 
 ### SUBMIT OPTIONS
-set submit_run       = false     # submit experiment after successful build
+set submit_run       = true     # submit experiment after successful build
 set debug_queue      = false     # submit to debug queue?
 
 ### PROCESSOR CONFIGURATION
@@ -1001,7 +1001,7 @@ cat <<EOF >> user_nl_cam
  avgflag_pertape = 'A','A','I','A','A','A'
  fexcl1 = 'CFAD_SR532_CAL'
  fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp','CLD_CAL'
- fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO'
+ fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO','SPBUOYA'
  fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT','CRM_U','CRM_U2'
  fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500','TGCLDLWP','TGCLDIWP'
  fincl5 = 'PRECT','PRECC'

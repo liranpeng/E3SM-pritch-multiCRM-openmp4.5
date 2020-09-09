@@ -23,18 +23,18 @@
 ###===================================================================
 
 ### BASIC INFO ABOUT RUN
-set np = 2056 # 8 cores for the light loading work.
+set np = 130 # 8 cores for the light loading work.
 # CASES TO DO:
 # #set np = 132 #  4 cores for the light loading work.
 # set np = 130 #  2 cores for the light loading work.
 
-set compset        = F-MMF1
-set resolution     = ne16pg2_r05_oQU240
+set compset        = F-EAMv1-AQP1
+set resolution     = ne4pg2_ne4pg2
 #set machine        = development
 #set machine        = stampede2-knl-liran
-set machine        = stampede2-knl
+set machine        = cheyenne
 #set machine        = stampede2
-set walltime       = 30:00:00
+set walltime       = 1:00:00
 setenv project       TG-ATM190002
 #set nnum           = 128
 set nnum = $np
@@ -45,30 +45,28 @@ set ThreadCount_atm = 1
 set nthreads        = 1
 set OMP_NUM_THREADS = 1
 ### GRID OPTIONS <Liran>
-set crm_nx         = 64         # <<< change this one!
+set crm_nx         = 8         # <<< change this one!
 set crm_ny         = 1
 set crm_dx         = 1000
-set crm_dt         = 5
+set crm_dt         = 1
 set crm_nz         = 120
-set crm_nx_rad     = 16
+set crm_nx_rad     = 1
 set crm_ny_rad     = 1
-set crm_nx2        = 512        # <<< change this one!
+set crm_nx2        = 2048        # <<< change this one!
 set crm_ny2        = 1
-set crm_dx2        = 250
-set crm_dt2        = 0.5
+set crm_dx2        = 500
+set crm_dt2        = 1.25
 set crm_nz2        = 120
-set crm_nx_rad2    = 16
+set crm_nx_rad2    = 1
 set crm_ny_rad2    = 1
-set nlev           = 125
-@ work0 = 6144 - 2048
-@ work1 = $np - 2048
+@ work1 = $np - 128
 @ npcol = $work0 / $work1
 ### SOURCE CODE OPTIONS
 set fetch_code     = false        # flag to toggle cloning source code
 set e3sm_tag       = remotes/E3SM/xyuan/openmp4.5   # github tag or hash
 set branch_name    = xyuan/openmp4.5
 set tag_name       = E3SM    # code sub-directory name
-set job_name       = smoketest_ERA5_IC_v0_ERAYYY_F-MMF1_hflag_eraIC_openmp_${machine}_${resolution}_CRM1_${crm_nx}x_${crm_nz}z${crm_dx}m.${crm_dt}s_crm_nx_rad_${crm_nx_rad}_CRM2_${crm_nx2}x_${crm_nz2}z${crm_dx2}m.${crm_dt2}s_crm_nx_rad2_${crm_nx_rad2}_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
+set job_name       = smoketest_openmp_${machine}_${resolution}_CRM1_${crm_nx}x${crm_dx}m.${crm_dt}s_CRM2_${crm_nx2}x${crm_dx2}m.${crm_dt2}s_np_${np}_nlev_${nlev}_nthread_${OMP_NUM_THREADS}
 
 ### CASE_NAME
 set case_name = ${job_name}.${machine}
@@ -79,7 +77,7 @@ set old_executable = false      # build executable is set to 'false', reuse
                                 # existing one otherwise
 
 ### SUBMIT OPTIONS
-set submit_run       = false     # submit experiment after successful build
+set submit_run       = true     # submit experiment after successful build
 set debug_queue      = false     # submit to debug queue?
 
 ### PROCESSOR CONFIGURATION
@@ -103,7 +101,7 @@ set short_term_archive_root_dir = ${e3sm_simulations_dir}/${case_name}/archive
 
 ## 5-day test simulation
 set stop_units       = ndays
-set stop_num         = 2
+set stop_num         = 1
 set restart_units    = $stop_units
 set restart_num      = $stop_num
 
@@ -737,7 +735,7 @@ cp -f $this_script_path $script_provenance_dir/$script_provenance_name
 
 #set cam_opt = "-phys cam5 -use_SPCAM  -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_adv MPDATA -crm_dt $crm_nt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates  -SPCAM_microp_scheme sam1mom -chem none  -cppdefs  -DSP_MCICA_RAD   -aquaplanet "
 #set cam_opt = "-phys cam5 -use_SPCAM -rad rrtmg -nlev 72 -microphys mg2  -crm_nz 58 -crm_adv MPDATA -crm_dt 5  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad 1 -crm_ny_rad 1 -bc_dep_to_snow_updates -SPCAM_microp_scheme sam1mom -chem none  -cppdefs '-DSP_DIR_NS -DSP_MCICA_RAD' -aquaplanet "
-set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmg -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol"
+set cam_opt = "-phys cam5 -use_MMF -crm_adv MPDATA -rad rrtmgp -nlev $nlev -microphys mg2  -crm_nz $crm_nz -crm_dt $crm_dt  -crm_nx $crm_nx -crm_ny $crm_ny -crm_dx $crm_dx  -crm_nx_rad $crm_nx_rad -crm_ny_rad $crm_ny_rad -crm_nz2 $crm_nz2 -crm_dt2 $crm_dt2  -crm_nx2 $crm_nx2 -crm_ny2 $crm_ny2 -crm_dx2 $crm_dx2  -crm_nx_rad2 $crm_nx_rad2   -crm_ny_rad2 $crm_ny_rad2 -chem none  -cppdefs ' -DMMF_DIR_NS ' -MMF_microphysics_scheme sam1mom -pcols $npcol -aquaplanet"
 $xmlchange_exe --id CAM_CONFIG_OPTS --val "$cam_opt"
 
 #=============================================
@@ -772,7 +770,7 @@ else if ( `lowercase $processor_config` == 'customknl' ) then
   e3sm_print 'using custom layout for cori-knl because $processor_config = '$processor_config
 
 
-  ${xmlchange_exe} MAX_TASKS_PER_NODE="64"
+  ${xmlchange_exe} MAX_TASKS_PER_NODE="36"
  # ${xmlchange_exe} PES_PER_NODE="256"
 
   ${xmlchange_exe} NTASKS_ATM="$natm"
@@ -982,15 +980,14 @@ cat <<EOF >> user_nl_cam
  nhtfrq =   0,-24,-6,-6,-3,-24
  use_hetfrz_classnuc = .false.
  aerodep_flx_type = 'CYCLICAL'
- aerodep_flx_datapath = '/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
- aerodep_flx_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
+ aerodep_flx_datapath = '/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
+ aerodep_flx_file = 'mam4_0.9x1.2_L125_2000clim_c170323.nc'
  aerodep_flx_cycle_yr = 01
- prescribed_aero_type           = 'CYCLICAL'
- prescribed_aero_datapath='/scratch/07088/tg863871/inputdata/atm/cam/inic/homme'
- prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c08242020.nc'
- heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne16pg2_Flag.nc'
- ncdata		= '/scratch/07088/tg863871/inputdata/HICCUP_data_from_walter/HICCUP.atm_era5.ERAYYY-10-01.ne16np4.L125.nc'
+ prescribed_aero_type		= 'CYCLICAL'
+ prescribed_aero_datapath='/scratch/07088/tg863871/E3SM_inputdata/atm/cam/chem/trop_mam/aero'
+ prescribed_aero_file = 'mam4_0.9x1.2_L125_2000clim_c170323.nc'
  prescribed_aero_cycle_yr = 01
+ heavy_load_file = '/scratch/07088/tg863871/inputdata/Liran_Flag/ne4pg2_Flag.nc'
  se_fv_phys_remap_alg = 1
  use_crm_accel    = .true.
  crm_accel_uv     = .true.
@@ -1002,7 +999,7 @@ cat <<EOF >> user_nl_cam
  fexcl1 = 'CFAD_SR532_CAL'
  fincl1 = 'extinct_sw_inp','extinct_lw_bnd7','extinct_lw_inp','CLD_CAL'
  fincl2 = 'FLUT','PRECT','U200','V200','U850','V850','Z500','OMEGA500','UBOT','VBOT','TREFHT','TREFHTMN','TREFHTMX','QREFHT','TS','PS','TMQ','TUQ','TVQ','TIMINGO'
- fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT','CRM_U','CRM_U2'
+ fincl3 = 'PSL','T200','T500','U850','V850','UBOT','VBOT','TREFHT'
  fincl4 = 'FLUT','U200','U850','PRECT','OMEGA500','TGCLDLWP','TGCLDIWP'
  fincl5 = 'PRECT','PRECC'
  fincl6 = 'CLDTOT_ISCCP','MEANCLDALB_ISCCP','MEANTAU_ISCCP','MEANPTOP_ISCCP','MEANTB_ISCCP','CLDTOT_CAL','CLDTOT_CAL_LIQ','CLDTOT_CAL_ICE','CLDTOT_CAL_UN','CLDHGH_CAL','CLDHGH_CAL_LIQ','CLDHGH_CAL_ICE','CLDHGH_CAL_UN','CLDMED_CAL','CLDMED_CAL_LIQ','CLDMED_CAL_ICE','CLDMED_CAL_UN','CLDLOW_CAL','CLDLOW_CAL_LIQ','CLDLOW_CAL_ICE','CLDLOW_CAL_UN'
@@ -1010,45 +1007,6 @@ EOF
 
 cat <<EOF >> user_nl_clm
  check_finidat_year_consistency = .false.
-EOF
-
-
-cat <<EOF >> user_docn.streams.txt.prescribed
-<?xml version="1.0"?>
-<file id="stream" version="1.0">
-<dataSource>
-   GENERIC
-</dataSource>
-<domainInfo>
-  <variableNames>
-     time    time
-        xc      lon
-        yc      lat
-        area    area
-        mask    mask
-  </variableNames>
-  <filePath>
-     /scratch/07088/tg863871/inputdata/ocn/docn7
-  </filePath>
-  <fileNames>
-     domain.ocn.1x1.111007.nc
-  </fileNames>
-</domainInfo>
-<fieldInfo>
-   <variableNames>
-     SST_cpl t
-   </variableNames>
-   <filePath>
-     /scratch/07088/tg863871/inputdata/HICCUP_data_from_walter
-   </filePath>
-   <fileNames>
-    HICCUP.sst_noaa.ERAYYY-10-01.nc 
-   </fileNames>
-   <offset>
-      0
-   </offset>
-</fieldInfo>
-</file>
 EOF
 
 ### NOTES ON COMMON NAMELIST OPTIONS ###
