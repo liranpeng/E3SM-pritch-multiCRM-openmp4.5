@@ -28,7 +28,7 @@ module crm_module
   use coriolis_mod
   use crm_input_module
   use crm_output_module
-
+  use cam_logfile,     only: iulog
   use crm_state_module,       only: crm_state_type
   use crm_rad_module,         only: crm_rad_type
   use crm_ecpp_output_module, only: crm_ecpp_output_type
@@ -1220,6 +1220,7 @@ end if
            !$omp atomic update
 #endif
             crm_output_gliqwp(icrm,l) = crm_output_gliqwp(icrm,l) + qcl(icrm,i,j,k)
+            write(iulog,*) "gliqwp: ",ncrms,icrm,crm_output_gliqwp(icrm,l),qcl(icrm,i,j,k)
 #if defined(_OPENACC)
             !$acc atomic update
 #elif defined(_OPENMP)
