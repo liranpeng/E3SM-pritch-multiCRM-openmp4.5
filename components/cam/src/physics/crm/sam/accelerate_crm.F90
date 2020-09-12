@@ -23,7 +23,7 @@ module accelerate_crm_mod
     use grid, only: nx, ny
     use shr_kind_mod, only: r8=>shr_kind_r8
     use params, only: asyncid, rc=>crm_rknd
-
+    use cam_logfile,     only: iulog
     implicit none
 
     ! private module variables
@@ -428,6 +428,7 @@ module accelerate_crm_mod
                     !$omp atomic update
 #endif
                     qcl(icrm,i,j,k) = qcl(icrm,i,j,k) * factor
+                    write(iulog,*) "qcl_acce: ",ncrms,icrm,i,j,k,qcl(icrm,i,j,k),factor
 #if defined(_OPENACC)
                    !$acc atomic update
 #elif defined(_OPENMP)
