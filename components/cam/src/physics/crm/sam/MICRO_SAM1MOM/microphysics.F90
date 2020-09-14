@@ -5,7 +5,7 @@ module microphysics
 
   ! module for original SAM bulk microphysics
   ! Marat Khairoutdinov, 2006
-  use cam_logfile,     only: iulog
+
   use grid, only: nx,ny,nzm,nz, dimx1_s,dimx2_s,dimy1_s,dimy2_s ! subdomain grid information
   use params, only: doprecip, docloud, crm_rknd, asyncid
   use micro_params
@@ -366,7 +366,6 @@ CONTAINS
             qv(icrm,i,j,k) = micro_field(icrm,i,j,k,1) - qn(icrm,i,j,k)
             omn = max(real(0.,crm_rknd),min(real(1.,crm_rknd),(tabs(icrm,i,j,k)-tbgmin)*a_bg))
             qcl(icrm,i,j,k) = qn(icrm,i,j,k)*omn
-            write(iulog,*) "qcl_micro: ",ncrms,icrm,i,j,k,qcl(icrm,i,j,k),omn
             qci(icrm,i,j,k) = qn(icrm,i,j,k)*(1.-omn)
             omp = max(real(0.,crm_rknd),min(real(1.,crm_rknd),(tabs(icrm,i,j,k)-tprmin)*a_pr))
             qpl(icrm,i,j,k) = micro_field(icrm,i,j,k,2)*omp
