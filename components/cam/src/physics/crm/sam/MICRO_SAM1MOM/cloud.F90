@@ -34,7 +34,7 @@ contains
     fac1 = fac_cond+(1+bp)*fac_fus
     fac2 = fac_fus*ap
     ag = 1./(tgrmax-tgrmin)
-    write(iulog,*) "loop_size: ",nx,ny,nzm,ncrms,loop_size
+
 #if defined(_OPENACC)
     !$acc parallel loop collapse(4) async(asyncid)
 #elif defined(_OPENMP)
@@ -62,7 +62,6 @@ contains
         om = an*tabs1-bn
         qsatt = om*qsatw_crm(tabs1,pres(icrm,k))+(1.-om)*qsati_crm(tabs1,pres(icrm,k))
       endif
-      write(iulog,*) "qsatt: ",ncrms,icrm,i,j,k,qsatt,tabs1
       !  Test if condensation is possible:
       if(q(icrm,i,j,k).gt.qsatt) then
         niter=0
@@ -107,7 +106,6 @@ contains
           tabs1=tabs1+dtabs
         end do
         qsatt = qsatt + dqsat * dtabs
-        write(iulog,*) "qn: ",ncrms,icrm,i,j,k,qn(icrm,i,j,k),qsatt
         qn(icrm,i,j,k) = max(real(0.,crm_rknd),q(icrm,i,j,k)-qsatt)
       else
         qn(icrm,i,j,k) = 0.
