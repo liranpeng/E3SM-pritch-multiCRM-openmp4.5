@@ -12,7 +12,7 @@ contains
     use micro_params
     use params
     use sat_mod
-    use cam_logfile,     only: iulog
+
     implicit none
     integer, intent(in) :: ncrms
     real(crm_rknd) :: q(ncrms,dimx1_s:dimx2_s, dimy1_s:dimy2_s, nzm)
