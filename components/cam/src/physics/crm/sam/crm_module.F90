@@ -347,7 +347,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   crm_state_qp          = crm_state%qp(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_qn          = crm_state%qn(1:ncrms,1:crmnx,1:crmny,1:crmnz)
 
-  crm_accel_ceaseflag = .false.
+  crm_accel_ceaseflag = .true.
 
   !Loop over "vector columns"
   do icrm = 1 , ncrms
@@ -880,9 +880,9 @@ end if
   crm_run_time  = dt_gl
   icrm_run_time = 1._r8/crm_run_time
 
-  !if (use_crm_accel) then
-  !  call crm_accel_nstop(nstop)  ! reduce nstop by factor of (1 + crm_accel_factor)
-  !end if
+  if (use_crm_accel) then
+    call crm_accel_nstop(nstop)  ! reduce nstop by factor of (1 + crm_accel_factor)
+  end if
 
 #if defined(_OPENACC)
   !$acc wait(asyncid)
@@ -1047,11 +1047,11 @@ end if
 
       !-----------------------------------------------------------
       !       Apply mean-state acceleration
-      !if (use_crm_accel .and. .not. crm_accel_ceaseflag) then
+      if (use_crm_accel .and. .not. crm_accel_ceaseflag) then
         ! Use Jones-Bretherton-Pritchard methodology to accelerate
         ! CRM horizontal mean evolution artificially.
-      !  call accelerate_crm(ncrms, nstep, nstop, crm_accel_ceaseflag)
-      !endif
+        call accelerate_crm(ncrms, nstep, nstop, crm_accel_ceaseflag)
+      endif
 
       !-----------------------------------------------------------
       !    Compute diagnostics fields:
