@@ -2131,9 +2131,9 @@ end function radiation_nextsw_cday
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
                   if(ncol.eq.1) then
                     ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    call outfld('QRS2'//diag(icall),ftem  ,pcols,lchnk)
+                    call outfld('QRS2'//diag(icall),ftem  ,ncol,lchnk)
                     ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-                    call outfld('QRSC2'//diag(icall),ftem  ,pcols,lchnk)
+                    call outfld('QRSC2'//diag(icall),ftem  ,ncol,lchnk)
                   else
                     ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
                     call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)

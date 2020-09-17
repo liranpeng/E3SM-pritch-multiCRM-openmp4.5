@@ -393,6 +393,7 @@ subroutine diag_init()
    ! This field is added by radiation when full physics is used
    if ( ideal_phys )then
       call addfld('QRS', (/ 'lev' /), 'A', 'K/s', 'Solar heating rate')
+      call addfld('QRS2', (/ 'lev' /), 'A', 'K/s', 'Solar heating rate')
    end if
  
    ! ----------------------------
@@ -511,6 +512,7 @@ subroutine diag_init()
    ! This field is added by radiation when full physics is used
    if ( ideal_phys )then
       call add_default('QRS     ', 1, ' ')
+      call add_default('QRS2    ', 1, ' ')
    end if
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
