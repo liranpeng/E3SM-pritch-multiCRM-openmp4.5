@@ -214,7 +214,7 @@ end subroutine radiation_readnl
         call pbuf_add_field('LU'  , 'global',dtype_r8,(/1,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
         call pbuf_add_field('LD'  , 'global',dtype_r8,(/1,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
       end if
-    end
+    end if
 
   end subroutine radiation_register
 
