@@ -192,29 +192,28 @@ end subroutine radiation_readnl
 !-----------------------------------------------------------------------
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
-    if(ncol.eq.1) then
-      call pbuf_add_field('QRS2' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
-      call pbuf_add_field('QRL2' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
+
+      call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
+      call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
       ! If the namelist has been configured for preserving the spectral fluxes, then create
       ! physics buffer variables to store the results.
       if (spectralflux) then
-        call pbuf_add_field('SU2'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
-        call pbuf_add_field('SD2'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
-        call pbuf_add_field('LU2'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
-        call pbuf_add_field('LD2'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
+        call pbuf_add_field('SU'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
+        call pbuf_add_field('SD'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
+        call pbuf_add_field('LU'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
+        call pbuf_add_field('LD'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
       end if
-    else
-      call pbuf_add_field('QRS' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
-      call pbuf_add_field('QRL' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
+
+      call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
+      call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
       ! If the namelist has been configured for preserving the spectral fluxes, then create
       ! physics buffer variables to store the results.
       if (spectralflux) then
-        call pbuf_add_field('SU'  , 'global',dtype_r8,(/1,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
-        call pbuf_add_field('SD'  , 'global',dtype_r8,(/1,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
-        call pbuf_add_field('LU'  , 'global',dtype_r8,(/1,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
-        call pbuf_add_field('LD'  , 'global',dtype_r8,(/1,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
+        call pbuf_add_field('SU2'  , 'global',dtype_r8,(/1,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
+        call pbuf_add_field('SD2'  , 'global',dtype_r8,(/1,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
+        call pbuf_add_field('LU2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
+        call pbuf_add_field('LD2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
       end if
-    end if
 
   end subroutine radiation_register
 
