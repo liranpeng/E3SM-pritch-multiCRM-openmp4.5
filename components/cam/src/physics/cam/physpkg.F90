@@ -299,7 +299,7 @@ subroutine phys_register
        call convect_shallow_register
 
        ! radiation
-       call radiation_register
+       !call radiation_register
        call cloud_diagnostics_register
 
        ! COSP
@@ -846,7 +846,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     endif
 
     call tsinti(tmelt, latvap, rair, stebol, latice)
-
+    call radiation_register(phys_state)
     call radiation_init(phys_state)
 
     call rad_solar_var_init()

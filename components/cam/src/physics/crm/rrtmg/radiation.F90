@@ -184,7 +184,7 @@ subroutine radiation_readnl(nlfile, dtime_in)
 end subroutine radiation_readnl
 
 
-  subroutine radiation_register
+  subroutine radiation_register(phys_state)
 !-----------------------------------------------------------------------
 ! 
 ! Register radiation fields in the physics buffer
@@ -193,8 +193,10 @@ end subroutine radiation_readnl
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
     use cam_logfile,  only: iulog
-
-    write(iulog,*) 'Liran Radiation Here crm rrtmg'
+    type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
+    integer :: lchnk, ncol
+    ncol = phys_state(lchnk)%ncol
+    write(iulog,*) 'Liran Radiation Here crm rrtmg',ncol
     if(ncol.eq.1) then
       call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
       call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
