@@ -95,9 +95,10 @@ contains
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
 
+    call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
+    call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
     call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
     call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
-
   end subroutine radiation_register
 
 !================================================================================================
@@ -393,6 +394,9 @@ end function radiation_nextsw_cday
     call addfld ('SOLSD',horiz_only,    'A','W/m2','Solar downward visible diffuse to surface', sampling_seq='rad_lwsw')
     call addfld ('QRS',(/ 'lev' /), 'A','K/s','Solar heating rate', sampling_seq='rad_lwsw')
     call addfld ('QRSC',(/ 'lev' /), 'A','K/s','Clearsky solar heating rate', sampling_seq='rad_lwsw')
+    call addfld ('QRS2',(/ 'lev' /), 'A','K/s','Solar heating rate (heavy)', sampling_seq='rad_lwsw')
+    call addfld ('QRSC2',(/ 'lev' /), 'A','K/s','Clearsky solar heating rate (heavy)', sampling_seq='rad_lwsw')
+
     call addfld ('FSNS',horiz_only,    'A','W/m2','Net solar flux at surface', sampling_seq='rad_lwsw')
     call addfld ('FSNT',horiz_only,    'A','W/m2','Net solar flux at top of model', sampling_seq='rad_lwsw')
     call addfld ('FSNTOA',horiz_only,    'A','W/m2','Net solar flux at top of atmosphere', sampling_seq='rad_lwsw')
@@ -460,6 +464,7 @@ end function radiation_nextsw_cday
        ! Shortwave variables
        call add_default ('SOLIN   ', 1, ' ')
        call add_default ('QRS     ', 1, ' ')
+       call add_default ('QRS2    ', 1, ' ')
        call add_default ('FSNS    ', 1, ' ')
        call add_default ('FSNT    ', 1, ' ')
        call add_default ('FSDTOA  ', 1, ' ')
@@ -826,13 +831,21 @@ end function radiation_nextsw_cday
              fsn200c(i) = fsn200c(i)*cgs2mks
              swcf(i)=fsntoa(i) - fsntoac(i)
           end do
-          ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
 
+          if(ncol.eq.1) then
+            ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+            ! Dump shortwave radiation information to history buffer (diagnostics)
+            call outfld('QRS2     ',ftem  ,pcols,lchnk)
+            ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
+            call outfld('QRSC2    ',ftem  ,pcols,lchnk)
+          else
+            ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+            ! Dump shortwave radiation information to history buffer (diagnostics)
+            call outfld('QRS     ',ftem  ,pcols,lchnk)
+            ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
+            call outfld('QRSC    ',ftem  ,pcols,lchnk)
+          endif
 
-          ! Dump shortwave radiation information to history buffer (diagnostics)
-          call outfld('QRS     ',ftem  ,pcols,lchnk)
-          ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-          call outfld('QRSC    ',ftem  ,pcols,lchnk)
           call outfld('SOLIN   ',solin ,pcols,lchnk)
           call outfld('FSDS    ',fsds  ,pcols,lchnk)
           call outfld('FSNIRTOA',fsnirt,pcols,lchnk)
