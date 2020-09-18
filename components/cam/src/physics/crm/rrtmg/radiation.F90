@@ -194,7 +194,7 @@ end subroutine radiation_readnl
     use physics_buffer,  only: pbuf_add_field, dtype_r8
     use cam_logfile,  only: iulog
 
-    write(iulog,*) 'Liran Radiation Here rrtmg'
+    write(iulog,*) 'Liran Radiation Here crm rrtmg'
 
       call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
       call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
