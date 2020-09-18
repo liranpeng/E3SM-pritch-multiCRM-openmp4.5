@@ -749,6 +749,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
        call physics_state_set_grid(lchnk, phys_state(lchnk))
     end do
 
+    call radiation_register(phys_state)
     !-------------------------------------------------------------------------------------------
     ! Initialize any variables in physconst which are not temporally and/or spatially constant
     !------------------------------------------------------------------------------------------- 
@@ -827,7 +828,6 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
        call co2_init(phys_state, pbuf2d)
     end if
 
-    call radiation_register(phys_state)
     ! CAM3 prescribed ozone
     if (cam3_ozone_data_on) call cam3_ozone_data_init(phys_state)
 
