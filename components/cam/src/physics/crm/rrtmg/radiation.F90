@@ -710,11 +710,8 @@ end function radiation_nextsw_cday
              call add_default('FSDS'//diag(icall),    1, ' ')
              call add_default('SWCF'//diag(icall),    1, ' ')
              
-             if(ncol.eq.1) then
-               call add_default('QRS2'//diag(icall),     1, ' ')
-             else   
-               call add_default('QRS'//diag(icall),     1, ' ')
-             endif 
+            call add_default('QRS2'//diag(icall),     1, ' ')
+            call add_default('QRS'//diag(icall),     1, ' ')
           endif
 
        end if
