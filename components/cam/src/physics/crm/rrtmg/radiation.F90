@@ -653,16 +653,12 @@ end function radiation_nextsw_cday
                                                                                  sampling_seq='rad_lwsw')
           call addfld('SOLSD'//diag(icall),  horiz_only,     'A',   'W/m2', 'Solar downward visible diffuse to surface', &
                                                                                  sampling_seq='rad_lwsw')
-          if(ncol.eq.1) then
-            call addfld('QRS2'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate', sampling_seq='rad_lwsw')
-            call addfld('QRSC2'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate', &
+          call addfld('QRS2'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate', sampling_seq='rad_lwsw')
+          call addfld('QRSC2'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate', &
                                                                                 sampling_seq='rad_lwsw')
-          else
-            call addfld('QRS'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate (heavy)', sampling_seq='rad_lwsw')
-            call addfld('QRSC'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate (heavy)', &
+          call addfld('QRS'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate (heavy)', sampling_seq='rad_lwsw')
+          call addfld('QRSC'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate (heavy)', &
                                                                                 sampling_seq='rad_lwsw')
-          endif
-
           call addfld('FSNS'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at surface', &
                                                                                  sampling_seq='rad_lwsw')
           call addfld('FSNT'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at top of model', &
