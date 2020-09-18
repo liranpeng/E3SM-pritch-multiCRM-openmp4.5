@@ -92,9 +92,11 @@ contains
 ! Register radiation fields in the physics buffer
 !
 !-----------------------------------------------------------------------
-
+    
     use physics_buffer,  only: pbuf_add_field, dtype_r8
+    use cam_logfile,  only: iulog
 
+    write(iulog,*) 'Liran Radiation Here camrt'
     call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
     call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
     call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
@@ -501,9 +503,16 @@ end function radiation_nextsw_cday
        call add_default ('FDLC    ', 1, ' ')
     endif
 
-    if ( history_budget .and. history_budget_histfile_num > 1 ) then
-       call add_default ('QRL     ', history_budget_histfile_num, ' ')
-       call add_default ('QRS     ', history_budget_histfile_num, ' ')
+     if(ncol.eq.1) then
+      if ( history_budget .and. history_budget_histfile_num > 1 ) then
+         call add_default ('QRL2     ', history_budget_histfile_num, ' ')
+         call add_default ('QRS2     ', history_budget_histfile_num, ' ')
+      end if
+    else
+      if ( history_budget .and. history_budget_histfile_num > 1 ) then
+         call add_default ('QRL     ', history_budget_histfile_num, ' ')
+         call add_default ('QRS     ', history_budget_histfile_num, ' ')
+      end if
     end if
  
     if (history_vdiag) then

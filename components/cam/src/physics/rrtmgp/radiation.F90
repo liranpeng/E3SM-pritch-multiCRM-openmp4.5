@@ -284,7 +284,9 @@ contains
       !----------------------------------------------------------------------------
 
       use physics_buffer, only: pbuf_add_field, dtype_r8
+       use cam_logfile,  only: iulog
 
+       write(iulog,*) 'Liran Radiation Here camrt'
       integer :: idx  ! dummy index for adding fields to physics buffer
 
       ! Heating rate profiles; QRS is the shortwave radiative heating rate, and QRL
