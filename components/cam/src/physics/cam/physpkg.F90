@@ -827,6 +827,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
        call co2_init(phys_state, pbuf2d)
     end if
 
+    call radiation_register(phys_state)
     ! CAM3 prescribed ozone
     if (cam3_ozone_data_on) call cam3_ozone_data_init(phys_state)
 
@@ -846,7 +847,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     endif
 
     call tsinti(tmelt, latvap, rair, stebol, latice)
-    call radiation_register(phys_state)
+    
     call radiation_init(phys_state)
 
     call rad_solar_var_init()
