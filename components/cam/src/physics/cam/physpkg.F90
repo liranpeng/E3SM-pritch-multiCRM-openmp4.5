@@ -728,7 +728,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     use rad_solar_var,      only: rad_solar_var_init
     use nudging,            only: Nudge_Model,nudging_init
     use output_aerocom_aie, only: output_aerocom_aie_init, do_aerocom_ind3
-
+    use radiation,          only: radiation_register
 
     ! Input/output arguments
     type(physics_state), pointer       :: phys_state(:)
