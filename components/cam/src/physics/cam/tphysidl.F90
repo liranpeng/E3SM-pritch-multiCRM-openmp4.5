@@ -425,7 +425,11 @@ subroutine tphysidl(ztodt, state, tend)
    ! changing the total energy.
    call check_energy_chng(state, tend, "tphysidl", nstep, ztodt, zero, zero, zero, zero)
 
-   call outfld('QRS', tend%dtdt, pcols, lchnk)
+   if(ncol.eq.1) then
+     call outfld('QRS2', tend%dtdt, 1, lchnk)
+   else
+     call outfld('QRS', tend%dtdt, pcols, lchnk)
+   endif
 
 end subroutine tphysidl
 
