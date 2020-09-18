@@ -162,7 +162,7 @@ subroutine radiation_readnl(nlfile, dtime_in)
 end subroutine radiation_readnl
 
 
-  subroutine radiation_register
+  subroutine radiation_register(phys_state)
 !-----------------------------------------------------------------------
 ! 
 ! Register radiation fields in the physics buffer
@@ -171,6 +171,9 @@ end subroutine radiation_readnl
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
     use cam_logfile,  only: iulog
+    type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
+    integer :: lchnk, ncol
+    ncol = phys_state(lchnk)%ncol
 
     write(iulog,*) 'Liran Radiation Here rrtmg'
 

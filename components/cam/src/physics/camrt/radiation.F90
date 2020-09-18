@@ -86,15 +86,18 @@ real(r8) :: dt_avg=0  ! time step to use for the shr_orb_cosz calculation, if us
 contains
 !===============================================================================
 
-  subroutine radiation_register
+  subroutine radiation_register(phys_state)
 !-----------------------------------------------------------------------
 ! 
 ! Register radiation fields in the physics buffer
 !
 !-----------------------------------------------------------------------
-    
+
     use physics_buffer,  only: pbuf_add_field, dtype_r8
     use cam_logfile,  only: iulog
+    type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
+    integer :: lchnk, ncol
+    ncol = phys_state(lchnk)%ncol
 
     write(iulog,*) 'Liran Radiation Here camrt'
     call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
