@@ -787,8 +787,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     do lchnk = begchunk, endchunk
        call physics_state_set_grid(lchnk, phys_state(lchnk))
     end do
-  write(iulog,*) 'Liran test radiation_register crm'
-    call radiation_register(phys_state)
+
     !-------------------------------------------------------------------------------------------
     ! Initialize any variables in physconst which are not temporally and/or spatially constant
     !------------------------------------------------------------------------------------------- 
@@ -873,6 +872,9 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     call gw_init()
 
     call rayleigh_friction_init()
+
+    write(iulog,*) 'Liran test radiation_register crm'
+    call radiation_register(phys_state)
 
     call pbl_utils_init(gravit, karman, cpair, rair, zvir)
     if (.not. do_clubb_sgs) call vertical_diffusion_init(pbuf2d)
