@@ -583,8 +583,11 @@ contains
     end if
      ! ----------------------------
    
-
-     qrl_idx   = pbuf_get_index('QRL')
+    if(ncol.eq.1) then
+      qrl_idx   = pbuf_get_index('QRL2')
+    else
+      qrl_idx   = pbuf_get_index('QRL')
+    endif
      wsedl_idx = pbuf_get_index('WSEDL')
 
 
