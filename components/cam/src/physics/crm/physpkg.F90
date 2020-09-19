@@ -168,6 +168,7 @@ subroutine phys_register
     use subcol_utils,       only: is_subcol_on
     use output_aerocom_aie, only: output_aerocom_aie_register, do_aerocom_ind3
     use crm_physics,        only: crm_physics_register
+    use radiation,          only: radiation_register
 
     !---------------------------Local variables-----------------------------
     !
@@ -195,6 +196,7 @@ subroutine phys_register
     call phys_getopts( use_MMF_out = use_MMF )
     call phys_getopts( MMF_microphysics_scheme_out = MMF_microphysics_scheme)
 
+    call radiation_register
     ! Initialize dyn_time_lvls
     call pbuf_init_time()
 
@@ -330,7 +332,6 @@ subroutine phys_register
        if (use_MMF) call crm_physics_register
 
        ! radiation
-       call radiation_register
        call cloud_diagnostics_register
 
        ! COSP
