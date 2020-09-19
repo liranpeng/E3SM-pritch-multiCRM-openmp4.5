@@ -192,12 +192,12 @@ end subroutine radiation_readnl
 !-----------------------------------------------------------------------
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
+    use phys_grid,      only: npchunks
     use cam_logfile,  only: iulog
     type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
-    integer :: lchnk, ncol
-    ncol = phys_state(lchnk)%ncol
-    write(iulog,*) 'Liran Radiation Here crm rrtmg',ncol
-    if(ncol.eq.1) then
+
+    write(iulog,*) 'Liran Radiation Here crm rrtmg'
+
       call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
       call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
       ! If the namelist has been configured for preserving the spectral fluxes, then create
@@ -208,7 +208,7 @@ end subroutine radiation_readnl
         call pbuf_add_field('LU2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
         call pbuf_add_field('LD2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
       end if
-    else  
+
       call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
       call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
       ! If the namelist has been configured for preserving the spectral fluxes, then create
@@ -219,7 +219,7 @@ end subroutine radiation_readnl
         call pbuf_add_field('LU'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
         call pbuf_add_field('LD'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
       end if
-    end if  
+
   end subroutine radiation_register
 
 !================================================================================================
