@@ -168,7 +168,6 @@ subroutine phys_register
     use subcol_utils,       only: is_subcol_on
     use output_aerocom_aie, only: output_aerocom_aie_register, do_aerocom_ind3
     use crm_physics,        only: crm_physics_register
-    use radiation,          only: radiation_register
 
     !---------------------------Local variables-----------------------------
     !
@@ -196,7 +195,6 @@ subroutine phys_register
     call phys_getopts( use_MMF_out = use_MMF )
     call phys_getopts( MMF_microphysics_scheme_out = MMF_microphysics_scheme)
 
-    call radiation_register
     ! Initialize dyn_time_lvls
     call pbuf_init_time()
 
@@ -761,7 +759,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     use nudging,            only: Nudge_Model,nudging_init
     use output_aerocom_aie, only: output_aerocom_aie_init, do_aerocom_ind3
     use dyn_grid,           only: fv_nphys
-
+    use radiation,          only: radiation_register
 
     use cam_history,        only: addfld, add_default, horiz_only 
     use crm_physics,        only: crm_physics_init 
