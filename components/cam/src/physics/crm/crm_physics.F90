@@ -1124,7 +1124,8 @@ print *,"00_crm_physics, end crm"
       !---------------------------------------------------------------------------------------------
       ! Write out data for history files
       !---------------------------------------------------------------------------------------------
-
+write(iulog,*) "spww = ",spww
+write(iulog,*) "spbuoya = ",spbuoya
       call crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya,timing_ex)
 
       ! Convert heating rate to Q*dp to conserve energy across timesteps
