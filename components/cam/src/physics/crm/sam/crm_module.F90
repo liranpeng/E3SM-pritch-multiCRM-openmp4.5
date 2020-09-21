@@ -1111,13 +1111,14 @@ end if
       enddo
     enddo
     wbaraux = wbaraux*factor_xy ! Mean w at each
-    write(iulog,*) "wbaraux = ",wbaraux
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
+            write(iulog,*) "wbaraux = ",ncrms,l,wbaraux(l)
             crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            write(iulog,*) "wbaraux = ",ncrms,icrm,k,tkelebuoy(icrm,k)
             crm_ww_inst(icrm,l) = 0.D0 
             crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(l))**2
             crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(l))**2
