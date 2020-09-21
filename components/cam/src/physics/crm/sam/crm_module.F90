@@ -1110,8 +1110,8 @@ end if
             wbaraux(icrm,l) = wbaraux(icrm,l) + w(icrm,i,j,k)
             crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
             !            end hparish, mspritch
-            write(iulog,*) "crm_ww_inst = ",ncrms,icrm,l,crm_ww_inst(icrm,l)
-            write(iulog,*) "crm_buoya = ",ncrms,icrm,l,crm_buoya(icrm,l),tkelebuoy(icrm,k) 
+            !write(iulog,*) "crm_ww_inst = ",ncrms,icrm,l,crm_ww_inst(icrm,l)
+            !write(iulog,*) "crm_buoya = ",ncrms,icrm,l,crm_buoya(icrm,l),tkelebuoy(icrm,k) 
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
             !$acc atomic update
