@@ -160,7 +160,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qt         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
-    real(r8) wbaraux
+    real(r8), dimension(plev)        :: wbaraux
     real(r8), dimension(ncrms, plev) :: crm_ww      ! w'w'2 from CRM, mspritch, hparish
     real(r8), dimension(ncrms, plev) :: crm_buoya   ! buoyancy flux profile, mwyant
     real(r8), dimension(ncrms, plev) :: crm_ww_inst
