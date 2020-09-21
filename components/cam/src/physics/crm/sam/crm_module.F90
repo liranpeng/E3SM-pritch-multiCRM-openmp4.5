@@ -28,7 +28,7 @@ module crm_module
   use coriolis_mod
   use crm_input_module
   use crm_output_module
-  use cam_logfile,     only: iulog
+
   use crm_state_module,       only: crm_state_type
   use crm_rad_module,         only: crm_rad_type
   use crm_ecpp_output_module, only: crm_ecpp_output_type
@@ -160,7 +160,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qt         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
-    real(r8), dimension(plev)        :: wbaraux
+    real(r8), dimension(ncrms, plev) :: wbaraux
     real(r8), dimension(ncrms, plev) :: crm_ww      ! w'w'2 from CRM, mspritch, hparish
     real(r8), dimension(ncrms, plev) :: crm_buoya   ! buoyancy flux profile, mwyant
     real(r8), dimension(ncrms, plev) :: crm_ww_inst
@@ -774,6 +774,7 @@ end if
   sub1a  = 0.
   dep1a  = 0.
   con1a  = 0.
+  wbaraux = 0.
 #endif /* m2005 */
 #if defined(_OPENACC)
   !$acc parallel loop collapse(2) async(asyncid)
@@ -1097,32 +1098,20 @@ end if
 #elif defined(_OPENMP)
     !$omp target teams distribute parallel do collapse(3)
 #endif
-    wbaraux = 0.
+    
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
+            crm_ww_inst(icrm,l) = 0.D0 
             crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
-             wbaraux(l) = wbaraux(l) + w(icrm,i,j,k)
-          enddo
-        enddo
-      enddo
-    enddo
-    wbaraux = wbaraux*factor_xy ! Mean w at each
-    do j=1,ny
-      do i=1,nx
-        do icrm = 1 , ncrms
-          do k=1,nzm
-            l = plev-k+1
-            write(iulog,*) "wbaraux = ",ncrms,l,wbaraux(l)
-            crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
-            write(iulog,*) "wbaraux = ",ncrms,icrm,k,tkelebuoy(icrm,k)
-            crm_ww_inst(icrm,l) = 0.D0 
-            crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(l))**2
-            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(l))**2
+            wbaraux(icrm,l) = wbaraux(icrm,l) + w(icrm,i,j,k)
+            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
             !            end hparish, mspritch
+            write(iulog,*) "crm_ww_inst = ",ncrms,icrm,l,crm_ww_inst(icrm,l)
+            write(iulog,*) "crm_buoya = ",ncrms,icrm,l,crm_buoya(icrm,l),tkelebuoy(icrm,k) 
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
             !$acc atomic update
@@ -1241,6 +1230,8 @@ end if
         enddo
       enddo
     enddo
+    wbaraux = wbaraux*factor_xy ! Mean w at each
+
 #if defined(_OPENACC)
     !$acc parallel loop gang vector collapse(4) async(asyncid)
 #elif defined(_OPENMP)
@@ -1539,7 +1530,9 @@ end if
       do j=1,ny
         do icrm=1,ncrms
           l = plev-k+1
-
+          write(iulog,*) "wbaraux = ",ncrms,icrm,l,wbaraux(icrm,l)
+          crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
+          write(iulog,*) "crm_ww = ",ncrms,icrm,l,crm_ww(icrm,l)
           tmp = (qpl(icrm,i,j,k)+qpi(icrm,i,j,k))*crm_input_pdel(icrm,plev-k+1)
 #if defined(_OPENACC)
           !$acc atomic update
