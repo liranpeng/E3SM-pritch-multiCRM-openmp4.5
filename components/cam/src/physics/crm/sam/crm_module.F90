@@ -1530,9 +1530,9 @@ end if
       do j=1,ny
         do icrm=1,ncrms
           l = plev-k+1
-          write(iulog,*) "wbaraux = ",ncrms,icrm,l,wbaraux(icrm,l)
+          !write(iulog,*) "wbaraux = ",ncrms,icrm,l,wbaraux(icrm,l)
           crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
-          write(iulog,*) "crm_ww = ",ncrms,icrm,l,crm_ww(icrm,l)
+          !write(iulog,*) "crm_ww = ",ncrms,icrm,l,crm_ww(icrm,l)
           tmp = (qpl(icrm,i,j,k)+qpi(icrm,i,j,k))*crm_input_pdel(icrm,plev-k+1)
 #if defined(_OPENACC)
           !$acc atomic update
@@ -1886,7 +1886,7 @@ end if
       crm_output_mcdn  (icrm,k) = crm_output_mcdn (icrm,k) * factor_xyt
       crm_output_mcuup (icrm,k) = crm_output_mcuup(icrm,k) * factor_xyt
       crm_output_mcudn (icrm,k) = crm_output_mcudn(icrm,k) * factor_xyt
-      crm_ww = crm_ww / factor_xyt ! mspritch,hparish
+      crm_ww = crm_ww * factor_xy ! mspritch,hparish
       crm_buoya = crm_buoya / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
       crm_output_mctot (icrm,k) = crm_output_mcup(icrm,k) + crm_output_mcdn(icrm,k) + crm_output_mcuup(icrm,k) + crm_output_mcudn(icrm,k)
 
