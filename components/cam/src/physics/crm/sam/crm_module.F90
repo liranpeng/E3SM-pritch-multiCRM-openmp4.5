@@ -28,7 +28,7 @@ module crm_module
   use coriolis_mod
   use crm_input_module
   use crm_output_module
-
+  use cam_logfile,     only: iulog
   use crm_state_module,       only: crm_state_type
   use crm_rad_module,         only: crm_rad_type
   use crm_ecpp_output_module, only: crm_ecpp_output_type
@@ -1111,6 +1111,7 @@ end if
       enddo
     enddo
     wbaraux = wbaraux*factor_xy ! Mean w at each
+    write(iulog,*) "wbaraux = ",wbaraux
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
