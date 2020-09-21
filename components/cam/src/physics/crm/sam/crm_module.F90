@@ -1886,7 +1886,8 @@ end if
       crm_output_mcdn  (icrm,k) = crm_output_mcdn (icrm,k) * factor_xyt
       crm_output_mcuup (icrm,k) = crm_output_mcuup(icrm,k) * factor_xyt
       crm_output_mcudn (icrm,k) = crm_output_mcudn(icrm,k) * factor_xyt
-      crm_ww = crm_ww * factor_xy ! mspritch,hparish
+      crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
+      crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
       crm_buoya = crm_buoya / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
       crm_output_mctot (icrm,k) = crm_output_mcup(icrm,k) + crm_output_mcdn(icrm,k) + crm_output_mcuup(icrm,k) + crm_output_mcudn(icrm,k)
 
