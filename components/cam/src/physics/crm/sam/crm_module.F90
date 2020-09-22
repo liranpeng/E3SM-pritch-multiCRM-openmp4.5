@@ -781,6 +781,7 @@ end if
   dep1a  = 0.
   con1a  = 0.
   wbaraux = 0.
+  crm_buoya = 0.
 #endif /* m2005 */
 #if defined(_OPENACC)
   !$acc parallel loop collapse(2) async(asyncid)
@@ -1903,7 +1904,7 @@ end if
     do icrm = 1 , ncrms
       crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
       crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
-      crm_buoya(icrm,k)         = crm_buoya(icrm,k) / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
+      crm_buoya(icrm,k)         = crm_buoya(icrm,k) * factor_xyt  ! mwyant - xy factor included when calculated in stat_tke.F90
     enddo
   enddo
 
