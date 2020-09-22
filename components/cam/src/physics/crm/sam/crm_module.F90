@@ -1102,19 +1102,26 @@ end if
     !$omp target teams distribute parallel do collapse(3)
 #endif
     
+    do icrm = 1 , ncrms
+      do k=1,nzm
+        crm_ww_inst(icrm,k) = 0.D0 
+        do j=1,ny
+          do i=1,nx
+            crm_buoya(icrm,k) = crm_buoya(icrm,k) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
+            wbaraux(icrm,k) = wbaraux(icrm,k) + w(icrm,i,j,k)
+            crm_ww_inst(icrm,k) = crm_ww_inst(icrm,k) + (w(icrm,i,j,k) - wbaraux(icrm,k))**2
+          enddo  
+        enddo  
+      enddo
+    enddo    
+    wbaraux = wbaraux*factor_xy ! Mean w at each
+
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
           do k=1,nzm
             l = plev-k+1
-            crm_ww_inst(icrm,l) = 0.D0 
-            crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
-            ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
-            wbaraux(icrm,l) = wbaraux(icrm,l) + w(icrm,i,j,k)
-            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
-            !            end hparish, mspritch
-            !write(iulog,*) "crm_ww_inst = ",ncrms,icrm,l,crm_ww_inst(icrm,l)
-            !write(iulog,*) "crm_buoya = ",ncrms,icrm,l,crm_buoya(icrm,l),tkelebuoy(icrm,k) 
             tmp1 = rho(icrm,nz-k)*adz(icrm,nz-k)*dz(icrm)*(qcl(icrm,i,j,nz-k)+qci(icrm,i,j,nz-k))
 #if defined(_OPENACC)
             !$acc atomic update
@@ -1233,7 +1240,6 @@ end if
         enddo
       enddo
     enddo
-    wbaraux = wbaraux*factor_xy ! Mean w at each
 
 #if defined(_OPENACC)
     !$acc parallel loop gang vector collapse(4) async(asyncid)
@@ -1528,14 +1534,22 @@ end if
 #elif defined(_OPENMP)
   !$omp target teams distribute parallel do collapse(4)
 #endif
+
+  do k = 1,nzm
+    do icrm=1,ncrms
+      do i=1,nx
+        do j=1,ny
+          crm_ww(icrm,k) = crm_ww(icrm,k) + (w(icrm,i,j,k) - wbaraux(icrm,k))**2
+        enddo
+      enddo
+    enddo
+  enddo
+
   do k = 1,nzm
     do i=1,nx
       do j=1,ny
         do icrm=1,ncrms
           l = plev-k+1
-          !write(iulog,*) "wbaraux = ",ncrms,icrm,l,wbaraux(icrm,l)
-          crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
-          !write(iulog,*) "crm_ww = ",ncrms,icrm,l,crm_ww(icrm,l)
           tmp = (qpl(icrm,i,j,k)+qpi(icrm,i,j,k))*crm_input_pdel(icrm,plev-k+1)
 #if defined(_OPENACC)
           !$acc atomic update
@@ -1879,6 +1893,16 @@ end if
 #elif defined(_OPENMP)
   !$omp target teams distribute parallel do collapse(2)
 #endif
+
+  do k = 1 , nzm
+    do icrm = 1 , ncrms
+      crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
+      crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
+      crm_buoya(icrm,k)         = crm_buoya(icrm,k) / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
+    enddo
+  enddo
+
+
   do k = 1 , plev
     do icrm = 1 , ncrms
       crm_output_cld   (icrm,k) = min( 1._r8, crm_output_cld   (icrm,k) * factor_xyt )
@@ -1889,9 +1913,6 @@ end if
       crm_output_mcdn  (icrm,k) = crm_output_mcdn (icrm,k) * factor_xyt
       crm_output_mcuup (icrm,k) = crm_output_mcuup(icrm,k) * factor_xyt
       crm_output_mcudn (icrm,k) = crm_output_mcudn(icrm,k) * factor_xyt
-      crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
-      crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
-      crm_buoya = crm_buoya / float(nstop)  ! mwyant - xy factor included when calculated in stat_tke.F90
       crm_output_mctot (icrm,k) = crm_output_mcup(icrm,k) + crm_output_mcdn(icrm,k) + crm_output_mcuup(icrm,k) + crm_output_mcudn(icrm,k)
 
       crm_output_qc_mean(icrm,k) = crm_output_qc_mean(icrm,k) * factor_xy
