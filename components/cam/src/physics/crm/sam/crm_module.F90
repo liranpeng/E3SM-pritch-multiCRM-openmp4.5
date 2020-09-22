@@ -192,7 +192,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   
   allocate( wbaraux(ncrms, plev) )
   !allocate( crm_ww(ncrms, plev) )
-  !allocate( crm_buoya(ncrms, plev) )
+  allocate( crm_buoya(ncrms, plev) )
   allocate( crm_ww_inst(ncrms, plev) )
 
   allocate( t00(ncrms,nz) )
