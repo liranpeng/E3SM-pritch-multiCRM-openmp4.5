@@ -523,8 +523,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    end if
 
    allocate( timing_ex(ncol))
-   allocate( spww(ncol,pver) )
-   allocate( spbuoya(ncol,pver) )
+   
 
    factor_xy = 1._r8/dble(crmnx*crmny)
    call t_startf ('crm')
@@ -546,9 +545,13 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    if (ncol .eq. 1) then
       call crm_input_initialize(1,pver)
       call crm_output_initialize(1,pver)
+      allocate( spww(1,pver) )
+      allocate( spbuoya(1,pver) )
    else
       call crm_input_initialize(pcols,pver)
       call crm_output_initialize(pcols,pver)
+      allocate( spww(pcols,pver) )
+      allocate( spbuoya(pcols,pver) )
    end if
    !------------------------------------------------------------------------------------------------
    ! Set CRM orientation angle
