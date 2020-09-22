@@ -2564,8 +2564,8 @@ end function radiation_nextsw_cday
                 if(ncol.eq.1) then
                   ! Dump longwave radiation information to history tape buffer (diagnostics)
                   if ( (use_MMF .and. last_column ) .or. .not. use_MMF) then
-                    call outfld('QRL2'//diag(icall),qrl (:ncol,:)/cpair,1,lchnk)
-                    call outfld('QRLC2'//diag(icall),qrlc(:ncol,:)/cpair,1,lchnk)
+                    call outfld('QRL2'//diag(icall),qrl/cpair,1,lchnk)
+                    call outfld('QRLC2'//diag(icall),qrlc/cpair,1,lchnk)
                     call outfld('FLNT2'//diag(icall),flnt  ,1,lchnk)
                     call outfld('FLUT2'//diag(icall),flut  ,1,lchnk)
                     call outfld('FLUTC2'//diag(icall),flutc ,1,lchnk)
@@ -2584,8 +2584,8 @@ end function radiation_nextsw_cday
 #endif
                   end if
                 else
-                    call outfld('QRL'//diag(icall),qrl (:ncol,:)/cpair,ncol,lchnk)
-                    call outfld('QRLC'//diag(icall),qrlc(:ncol,:)/cpair,ncol,lchnk)
+                    call outfld('QRL'//diag(icall),qrl/cpair,pcols,lchnk)
+                    call outfld('QRLC'//diag(icall),qrlc/cpair,pcols,lchnk)
                     call outfld('FLNT'//diag(icall),flnt  ,pcols,lchnk)
                     call outfld('FLUT'//diag(icall),flut  ,pcols,lchnk)
                     call outfld('FLUTC'//diag(icall),flutc ,pcols,lchnk)
