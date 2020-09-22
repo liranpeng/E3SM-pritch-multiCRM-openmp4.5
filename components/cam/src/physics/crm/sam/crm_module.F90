@@ -117,7 +117,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     ! variables for radiation grouping method
     real(crm_rknd) :: crm_nx_rad_fac
     real(crm_rknd) :: crm_ny_rad_fac
-    real tkelebuoy(ncrms,nzm)
     integer        :: i_rad
     integer        :: j_rad
     logical :: crm_accel_ceaseflag   ! indicates if accelerate_crm needs to be aborted for remainder of crm call
@@ -940,7 +939,7 @@ end if
 
       !-----------------------------------------------------------
       !       Buoyancy term:
-      call buoyancy(ncrms,tkelebuoy)
+      call buoyancy(ncrms)
 
       !------------------------------------------------------------
       !       Large-scale and surface forcing:
