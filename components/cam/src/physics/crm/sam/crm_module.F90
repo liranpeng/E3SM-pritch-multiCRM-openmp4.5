@@ -190,10 +190,10 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnyrad = crm_ny_rad
    end if
   
-  !allocate( wbaraux(ncrms, plev) )
+  allocate( wbaraux(ncrms, plev) )
   !allocate( crm_ww(ncrms, plev) )
   !allocate( crm_buoya(ncrms, plev) )
-  !allocate( crm_ww_inst(ncrms, plev) )
+  allocate( crm_ww_inst(ncrms, plev) )
 
   allocate( t00(ncrms,nz) )
   allocate( tln(ncrms,plev) )
@@ -365,6 +365,9 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   dostatis  = .false.    ! no statistics are collected.
   idt_gl    = 1._r8/dt_gl
   ptop      = plev-nzm+1
+  write(iulog,*) "plev = ",plev
+  write(iulog,*) "nzm = ",nzm,nz,crmnz,crmnz
+  write(iulog,*) "ptop = ",ptop
   factor_xy = 1._r8/dble(nx*ny)
   crm_rad_temperature = 0.
   crm_rad_qv  = 0.
@@ -1104,13 +1107,14 @@ end if
     
     do icrm = 1 , ncrms
       do k=1,nzm
-        crm_ww_inst(icrm,k) = 0.D0 
+        l = plev-k+1
+        crm_ww_inst(icrm,l) = 0.D0 
         do j=1,ny
           do i=1,nx
-            !crm_buoya(icrm,k) = crm_buoya(icrm,k) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,l)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
-            wbaraux(icrm,k) = wbaraux(icrm,k) + w(icrm,i,j,k)
-            crm_ww_inst(icrm,k) = crm_ww_inst(icrm,k) + (w(icrm,i,j,k) - wbaraux(icrm,k))**2
+            wbaraux(icrm,l) = wbaraux(icrm,l) + w(icrm,i,j,k)
+            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
           enddo  
         enddo  
       enddo
@@ -1536,10 +1540,11 @@ end if
 #endif
 
   do k = 1,nzm
+    l = plev-k+1
     do icrm=1,ncrms
       do i=1,nx
         do j=1,ny
-          crm_ww(icrm,k) = crm_ww(icrm,k) + (w(icrm,i,j,k) - wbaraux(icrm,k))**2
+          crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
         enddo
       enddo
     enddo
@@ -1894,7 +1899,7 @@ end if
   !$omp target teams distribute parallel do collapse(2)
 #endif
 
-  do k = 1 , nzm
+  do k = 1 , plev
     do icrm = 1 , ncrms
       crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
       crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
