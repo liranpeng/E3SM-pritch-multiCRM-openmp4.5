@@ -2226,9 +2226,9 @@ end function radiation_nextsw_cday
                 ! Dump shortwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
                   if(ncol.eq.1) then
-                    ftem(:ncol,:pver) = qrs(:1,:pver)/cpair
+                    ftem(1,:pver) = qrs(:1,:pver)/cpair
                     call outfld('QRS2'//diag(icall),ftem  ,1,lchnk)
-                    ftem(:ncol,:pver) = qrsc(:1,:pver)/cpair
+                    ftem(1,:pver) = qrsc(:1,:pver)/cpair
                     call outfld('QRSC2'//diag(icall),ftem  ,1,lchnk)
                     call outfld('SOLIN2'//diag(icall),solin ,1,lchnk)
                     call outfld('FSDS2'//diag(icall),fsds  ,1,lchnk)
