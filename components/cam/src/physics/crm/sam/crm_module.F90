@@ -1107,7 +1107,7 @@ end if
         crm_ww_inst(icrm,k) = 0.D0 
         do j=1,ny
           do i=1,nx
-            crm_buoya(icrm,k) = crm_buoya(icrm,k) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
+            !crm_buoya(icrm,k) = crm_buoya(icrm,k) + tkelebuoy(icrm,k)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
             wbaraux(icrm,k) = wbaraux(icrm,k) + w(icrm,i,j,k)
             crm_ww_inst(icrm,k) = crm_ww_inst(icrm,k) + (w(icrm,i,j,k) - wbaraux(icrm,k))**2
