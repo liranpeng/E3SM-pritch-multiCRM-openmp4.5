@@ -142,6 +142,10 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), allocatable  :: cmtemp  (:,:,:)
     real(crm_rknd), allocatable  :: chtemp  (:,:,:)
     real(crm_rknd), allocatable  :: cttemp  (:,:,:)
+    real(crm_rknd), allocatable  :: wbaraux    (:,:) 
+    real(crm_rknd), allocatable  :: crm_ww     (:,:)       ! w'w'2 from CRM, mspritch, hparish
+    real(crm_rknd), allocatable  :: crm_buoya  (:,:)    ! buoyancy flux profile, mwyant
+    real(crm_rknd), allocatable  :: crm_ww_inst(:,:) 
 
     real(r8), allocatable :: dd_crm (:,:)     ! mass entraiment from downdraft
     real(r8), allocatable :: mui_crm(:,:)     ! mass flux up at the interface
@@ -160,10 +164,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), pointer :: crm_state_qt         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qp         (:,:,:,:)
     real(crm_rknd), pointer :: crm_state_qn         (:,:,:,:)
-    real(r8), dimension(ncrms, plev) :: wbaraux
-    real(r8), dimension(ncrms, plev) :: crm_ww      ! w'w'2 from CRM, mspritch, hparish
-    real(r8), dimension(ncrms, plev) :: crm_buoya   ! buoyancy flux profile, mwyant
-    real(r8), dimension(ncrms, plev) :: crm_ww_inst
   !-----------------------------------------------------------------------------------------------
   double precision newtime, oldtime,newtime2, oldtime2, elapsetime !bloss wallclocktime
   double precision :: wall(6), sys(6), usr(6)
@@ -189,6 +189,11 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
       crmnxrad = crm_nx_rad
       crmnyrad = crm_ny_rad
    end if
+  
+  allocate( wbaraux(ncrms, plev) )
+  allocate( crm_ww(ncrms, plev) )
+  allocate( crm_buoya(ncrms, plev) )
+  allocate( crm_ww_inst(ncrms, plev) )
 
   allocate( t00(ncrms,nz) )
   allocate( tln(ncrms,plev) )
@@ -219,8 +224,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   allocate( qtot (ncrms,20) )
   allocate( colprec (ncrms) )
   allocate( colprecs(ncrms) )
-
-
 
   allocate( crm_rad_temperature(ncrms,crmnxrad,crmnyrad,crmnz) )
   allocate( crm_rad_qv(ncrms,crmnxrad,crmnyrad,crmnz) )
