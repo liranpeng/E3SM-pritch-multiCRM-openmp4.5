@@ -1004,13 +1004,13 @@ print *,"00_crm_physics, end crm"
       ! Add radiative heating tendency above CRM
       !---------------------------------------------------------------------------------------------
       call pbuf_get_field(pbuf, pbuf_get_index('QRS'), qrs)
-      if(ncol.eq.1) then
-         call pbuf_get_field(pbuf, pbuf_get_index('QRL2'), qrl)
+      !if(ncol.eq.1) then
+         !call pbuf_get_field(pbuf, pbuf_get_index('QRL2'), qrl)
          !call pbuf_get_field(pbuf, pbuf_get_index('QRS2'), qrs)
-      else
+      !else
          call pbuf_get_field(pbuf, pbuf_get_index('QRL'), qrl)
          !call pbuf_get_field(pbuf, pbuf_get_index('QRS'), qrs)
-      endif
+      !endif
 
       do k = 1,pver
          do i = 1,ncol
