@@ -198,7 +198,7 @@ end subroutine radiation_readnl
 
     write(iulog,*) 'Liran Radiation Here crm rrtmg'
 
-      call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
+      !call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
       call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
       ! If the namelist has been configured for preserving the spectral fluxes, then create
       ! physics buffer variables to store the results.
@@ -703,7 +703,7 @@ end function radiation_nextsw_cday
                                                                                  sampling_seq='rad_lwsw (heavy)')
           call addfld('SOLSD2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Solar downward visible diffuse to surface (heavy)', &
                                                                                  sampling_seq='rad_lwsw (heavy)')
-          call addfld('QRS2'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate (heavy)', sampling_seq='rad_lwsw')
+          !call addfld('QRS2'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate (heavy)', sampling_seq='rad_lwsw')
           call addfld('QRSC2'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate (heavy)', &
                                                                                  sampling_seq='rad_lwsw')
           call addfld('FSNS2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at surface (heavy)', &
@@ -757,7 +757,7 @@ end function radiation_nextsw_cday
              call add_default('FSDS'//diag(icall),    1, ' ')
              call add_default('SWCF'//diag(icall),    1, ' ')
              
-             call add_default('QRS2'//diag(icall),     1, ' ')
+             !call add_default('QRS2'//diag(icall),     1, ' ')
              call add_default('SOLIN2'//diag(icall),   1, ' ')
              call add_default('FSNS2'//diag(icall),    1, ' ')
              call add_default('FSNT2'//diag(icall),    1, ' ')
@@ -880,7 +880,7 @@ end function radiation_nextsw_cday
        call addfld ('CRM_TAU    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud optical depth'  )
        call addfld ('CRM_EMS    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
        call addfld ('CRM_QRAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', 'K/s', 'Radiative heating tendency')
-       call addfld ('CRM_QRS2 ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
+       !call addfld ('CRM_QRS2 ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
        call addfld ('CRM_QRSC2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Clearsky shortwave radiative heating rate')
        call addfld ('CRM_QRL2 ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
        call addfld ('CRM_QRLC2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
@@ -931,15 +931,18 @@ end function radiation_nextsw_cday
 
     ! Heating rate needed for d(theta)/dt computation
     call addfld ('HR',(/ 'lev' /), 'A','K/s','Heating rate needed for d(theta)/dt computation')
+    if ( history_budget .and. history_budget_histfile_num > 1 ) then
+      call add_default ('QRS     ', history_budget_histfile_num, ' ')
+    endif
     if(ncol.eq.1) then
       if ( history_budget .and. history_budget_histfile_num > 1 ) then
          call add_default ('QRL2     ', history_budget_histfile_num, ' ')
-         call add_default ('QRS2     ', history_budget_histfile_num, ' ')
+         !call add_default ('QRS2     ', history_budget_histfile_num, ' ')
       end if
     else
       if ( history_budget .and. history_budget_histfile_num > 1 ) then
          call add_default ('QRL     ', history_budget_histfile_num, ' ')
-         call add_default ('QRS     ', history_budget_histfile_num, ' ')
+         !call add_default ('QRS     ', history_budget_histfile_num, ' ')
       end if
     end if
     if (history_vdiag) then
@@ -2225,10 +2228,12 @@ end function radiation_nextsw_cday
 
                 ! Dump shortwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
+                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
                   if(ncol.eq.1) then
-                    ftem(1,:pver) = qrs(1,:pver)/cpair
-                    call outfld('QRS2'//diag(icall),ftem  ,1,lchnk)
-                    ftem(1,:pver) = qrsc(1,:pver)/cpair
+                    !ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    !call outfld('QRS2'//diag(icall),ftem  ,1,lchnk)
+                    ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
                     call outfld('QRSC2'//diag(icall),ftem  ,1,lchnk)
                     call outfld('SOLIN2'//diag(icall),solin ,1,lchnk)
                     call outfld('FSDS2'//diag(icall),fsds  ,1,lchnk)
@@ -2258,8 +2263,8 @@ end function radiation_nextsw_cday
                     call outfld('FSN200C2'//diag(icall),fsn200c,1,lchnk)
                     call outfld('SWCF2'//diag(icall),swcf  ,1,lchnk)
                   else
-                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
+                    !ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    !call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
                     ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
                     call outfld('QRSC'//diag(icall),ftem  ,pcols,lchnk)
                     call outfld('SOLIN'//diag(icall),solin ,pcols,lchnk)
