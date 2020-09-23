@@ -141,6 +141,7 @@ contains
              endif
           enddo
           if (add_pname) then
+             write(unitn,*,iostat=stat) 'Liran Check Here!!!'
              write(unitn,*,iostat=stat) pname
              if( stat > 0 ) then
                 call endrun('Error writing '//pname// 'in '//fname//' file')
