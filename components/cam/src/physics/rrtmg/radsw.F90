@@ -304,8 +304,8 @@ subroutine rad_rrtmg_sw(lchnk,ncol       ,rrtmg_levs   ,r_state      , &
    solsd(1:ncol)    = 0.0_r8
    solld(1:ncol)    = 0.0_r8
 
-   qrs (1:ncol,1:pver) = 0.0_r8
-   qrsc(1:ncol,1:pver) = 0.0_r8
+   qrs (1:pcols,1:pver) = 0.0_r8
+   qrsc(1:pcols,1:pver) = 0.0_r8
    fns(1:ncol,1:pverp) = 0.0_r8
    fcns(1:ncol,1:pverp) = 0.0_r8
    if (single_column.and.scm_crm_mode) then 
