@@ -79,6 +79,7 @@ end module buoyancy_mod
 subroutine stat_tke(du,tkele,ncrms)
 
 use vars
+use cam_logfile,     only: iulog
 implicit none
 real du(ncrms,nx,ny,nz,3)
 real tkele(ncrms,nzm)
@@ -100,6 +101,8 @@ do k=1,nzm
      d_u(icrm,k)=d_u(icrm,k)+(u(icrm,i,j,k)-u0(icrm,k))*du(icrm,i,j,k,1)
      d_v(icrm,k)=d_v(icrm,k)+(v(icrm,i,j,k)-v0(icrm,k))*du(icrm,i,j,k,2)
      d_w(icrm,k)=d_w(icrm,k)+ w(icrm,i,j,k) *      du(icrm,i,j,k,3)
+     write(iulog,*) "Liran Term1 = ",d_u(icrm,k)
+     write(iulog,*) "Liran Term2 = ",d_v(icrm,k)
     end do
   end do
  end do
@@ -109,7 +112,10 @@ do k=1,nzm
 end do
 do k=1,nzm
   do icrm=1,ncrms
+   write(iulog,*) "plev = ",
    tkele(icrm,k)=0.5*(d_w(icrm,k)+d_w(icrm,k+1))+d_u(icrm,k)+d_v(icrm,k)*YES3D
+   write(iulog,*) "Liran Term3 = ",d_u(icrm,k),d_v(icrm,k)
+   write(iulog,*) "Liran Term4 = ",0.5*(d_w(icrm,k)+d_w(icrm,k+1)),d_w(icrm,k),d_w(icrm,k+1)
   end do
 end do
 
