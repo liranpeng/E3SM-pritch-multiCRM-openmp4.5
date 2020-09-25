@@ -112,7 +112,6 @@ do k=1,nzm
 end do
 do k=1,nzm
   do icrm=1,ncrms
-   write(iulog,*) "plev = ",
    tkele(icrm,k)=0.5*(d_w(icrm,k)+d_w(icrm,k+1))+d_u(icrm,k)+d_v(icrm,k)*YES3D
    write(iulog,*) "Liran Term3 = ",d_u(icrm,k),d_v(icrm,k)
    write(iulog,*) "Liran Term4 = ",0.5*(d_w(icrm,k)+d_w(icrm,k+1)),d_w(icrm,k),d_w(icrm,k+1)
