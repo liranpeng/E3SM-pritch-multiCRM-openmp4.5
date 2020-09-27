@@ -365,9 +365,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   dostatis  = .false.    ! no statistics are collected.
   idt_gl    = 1._r8/dt_gl
   ptop      = plev-nzm+1
-  write(iulog,*) "plev = ",plev
-  write(iulog,*) "nzm = ",nzm,nz,crmnz,crmnz
-  write(iulog,*) "ptop = ",ptop
   factor_xy = 1._r8/dble(nx*ny)
   crm_rad_temperature = 0.
   crm_rad_qv  = 0.
