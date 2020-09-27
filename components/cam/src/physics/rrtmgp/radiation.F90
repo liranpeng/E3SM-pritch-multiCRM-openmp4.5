@@ -277,7 +277,7 @@ contains
 
    !================================================================================================
 
-   subroutine radiation_register(phys_state)
+   subroutine radiation_register
 !-----------------------------------------------------------------------
 ! 
 ! Register radiation fields in the physics buffer
@@ -285,12 +285,7 @@ contains
 !-----------------------------------------------------------------------
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
-    use cam_logfile,  only: iulog
-    type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
-    integer :: lchnk, ncol
-    ncol = phys_state(lchnk)%ncol
 
-       write(iulog,*) 'Liran Radiation Here camrt'
       integer :: idx  ! dummy index for adding fields to physics buffer
 
       ! Heating rate profiles; QRS is the shortwave radiative heating rate, and QRL

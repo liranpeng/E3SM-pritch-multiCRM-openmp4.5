@@ -987,10 +987,6 @@ print *,"00_crm_physics, end crm"
       do i = 1,ncol
          timing_ex(i) = wall(1)/ncol
       end do
-      
-!write(iulog,*) "timing_ex = ",timing_ex
-      !state%crm_ww = crm_ww
-      !state%crm_buoya = crm_buoya
 
       !---------------------------------------------------------------------------------------------
       ! Copy tendencies from CRM output to ptend
@@ -1003,14 +999,9 @@ print *,"00_crm_physics, end crm"
       !---------------------------------------------------------------------------------------------
       ! Add radiative heating tendency above CRM
       !---------------------------------------------------------------------------------------------
+
+      call pbuf_get_field(pbuf, pbuf_get_index('QRL'), qrl)
       call pbuf_get_field(pbuf, pbuf_get_index('QRS'), qrs)
-      !if(ncol.eq.1) then
-         !call pbuf_get_field(pbuf, pbuf_get_index('QRL2'), qrl)
-         !call pbuf_get_field(pbuf, pbuf_get_index('QRS2'), qrs)
-      !else
-         call pbuf_get_field(pbuf, pbuf_get_index('QRL'), qrl)
-         !call pbuf_get_field(pbuf, pbuf_get_index('QRS'), qrs)
-      !endif
 
       do k = 1,pver
          do i = 1,ncol
@@ -1128,8 +1119,7 @@ print *,"00_crm_physics, end crm"
       !---------------------------------------------------------------------------------------------
       ! Write out data for history files
       !---------------------------------------------------------------------------------------------
-write(iulog,*) "spww = ",spww
-write(iulog,*) "spbuoya = ",spbuoya
+
       call crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya,timing_ex)
 
       ! Convert heating rate to Q*dp to conserve energy across timesteps

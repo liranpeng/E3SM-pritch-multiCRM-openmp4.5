@@ -159,19 +159,6 @@ contains
     call addfld ('TGCLDIWP',horiz_only,    'A',wpunits,'Total grid-box cloud ice water path'   , &
          sampling_seq=sampling_seq)
     
-    call addfld ('ICLDIWP2', (/ 'lev' /), 'A', wpunits,'In-cloud ice water path'               , sampling_seq=sampling_seq)
-    call addfld ('ICLDTWP2', (/ 'lev' /), 'A',wpunits,'In-cloud cloud total water path (liquid and ice)', &
-         sampling_seq=sampling_seq)
-
-    call addfld ('GCLDLWP2',(/ 'lev' /), 'A',wpunits,'Grid-box cloud water path'             , &
-         sampling_seq=sampling_seq)
-    call addfld ('TGCLDCWP2',horiz_only,    'A',wpunits,'Total grid-box cloud water path (liquid and ice)', &
-         sampling_seq=sampling_seq)
-    call addfld ('TGCLDLWP2',horiz_only,    'A',wpunits,'Total grid-box cloud liquid water path', &
-         sampling_seq=sampling_seq)
-    call addfld ('TGCLDIWP2',horiz_only,    'A',wpunits,'Total grid-box cloud ice water path'   , &
-         sampling_seq=sampling_seq)
-
     if(mg_clouds) then
        call addfld ('lambda_cloud',(/ 'lev' /),'I','1/meter','lambda in cloud')
        call addfld ('mu_cloud',(/ 'lev' /),'I','1','mu in cloud')
@@ -201,9 +188,6 @@ contains
        call add_default ('TGCLDLWP', 1, ' ')
        call add_default ('TGCLDIWP', 1, ' ')
        call add_default ('TGCLDCWP', 1, ' ')
-       call add_default ('TGCLDLWP2', 1, ' ')
-       call add_default ('TGCLDIWP2', 1, ' ')
-       call add_default ('TGCLDCWP2', 1, ' ')
        if (camrt_rad) then
            call add_default ('EMIS', 1, ' ')
        else
@@ -498,12 +482,6 @@ subroutine cloud_diagnostics_calc(state,  pbuf)
     call outfld('ICLDTWP' ,cwp    , pcols,lchnk)
     call outfld('ICLDIWP' ,cicewp , pcols,lchnk)
 
-    call outfld('GCLDLWP2' ,gwp    , pcols,lchnk)
-    call outfld('TGCLDCWP2',tgwp   , pcols,lchnk)
-    call outfld('TGCLDLWP2',tgliqwp, pcols,lchnk)
-    call outfld('TGCLDIWP2',tgicewp, pcols,lchnk)
-    call outfld('ICLDTWP2' ,cwp    , pcols,lchnk)
-    call outfld('ICLDIWP2' ,cicewp , pcols,lchnk)
 ! Compute total preciptable water in column (in mm)
     tpw(:ncol) = 0.0_r8
     rgrav = 1.0_r8/gravit

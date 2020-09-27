@@ -330,6 +330,7 @@ subroutine phys_register
        if (use_MMF) call crm_physics_register
 
        ! radiation
+       call radiation_register
        call cloud_diagnostics_register
 
        ! COSP
@@ -787,9 +788,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     do lchnk = begchunk, endchunk
        call physics_state_set_grid(lchnk, phys_state(lchnk))
     end do
-    
-    write(iulog,*) 'Liran test radiation_register crm'
-    call radiation_register(phys_state)
+
     !-------------------------------------------------------------------------------------------
     ! Initialize any variables in physconst which are not temporally and/or spatially constant
     !------------------------------------------------------------------------------------------- 

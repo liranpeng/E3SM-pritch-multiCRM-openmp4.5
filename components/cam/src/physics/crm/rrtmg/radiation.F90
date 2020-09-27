@@ -184,7 +184,7 @@ subroutine radiation_readnl(nlfile, dtime_in)
 end subroutine radiation_readnl
 
 
-  subroutine radiation_register(phys_state)
+  subroutine radiation_register
 !-----------------------------------------------------------------------
 ! 
 ! Register radiation fields in the physics buffer
@@ -192,33 +192,18 @@ end subroutine radiation_readnl
 !-----------------------------------------------------------------------
 
     use physics_buffer,  only: pbuf_add_field, dtype_r8
-    use phys_grid,      only: npchunks
-    use cam_logfile,  only: iulog
-    type(physics_state), intent(in) :: phys_state(begchunk:endchunk)
 
-    write(iulog,*) 'Liran Radiation Here crm rrtmg'
+    call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
+    call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
 
-      !call pbuf_add_field('QRS2' , 'global',dtype_r8,(/1,pver/), qrs_idx) ! shortwave radiative heating rate 
-      call pbuf_add_field('QRL2' , 'global',dtype_r8,(/1,pver/), qrl_idx) ! longwave  radiative heating rate 
-      ! If the namelist has been configured for preserving the spectral fluxes, then create
-      ! physics buffer variables to store the results.
-      if (spectralflux) then
-        call pbuf_add_field('SU2'  , 'global',dtype_r8,(/1,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
-        call pbuf_add_field('SD2'  , 'global',dtype_r8,(/1,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
-        call pbuf_add_field('LU2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
-        call pbuf_add_field('LD2'  , 'global',dtype_r8,(/1,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
-      end if
-
-      call pbuf_add_field('QRS' , 'global',dtype_r8,(/pcols,pver/), qrs_idx) ! shortwave radiative heating rate 
-      call pbuf_add_field('QRL' , 'global',dtype_r8,(/pcols,pver/), qrl_idx) ! longwave  radiative heating rate 
-      ! If the namelist has been configured for preserving the spectral fluxes, then create
-      ! physics buffer variables to store the results.
-      if (spectralflux) then
-        call pbuf_add_field('SU'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
-        call pbuf_add_field('SD'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
-        call pbuf_add_field('LU'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
-        call pbuf_add_field('LD'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
-      end if
+    ! If the namelist has been configured for preserving the spectral fluxes, then create
+    ! physics buffer variables to store the results.
+    if (spectralflux) then
+      call pbuf_add_field('SU'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), su_idx) ! shortwave upward flux (per band)
+      call pbuf_add_field('SD'  , 'global',dtype_r8,(/pcols,pverp,nswbands/), sd_idx) ! shortwave downward flux (per band)
+      call pbuf_add_field('LU'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), lu_idx) ! longwave upward flux (per band)
+      call pbuf_add_field('LD'  , 'global',dtype_r8,(/pcols,pverp,nlwbands/), ld_idx) ! longwave downward flux (per band)
+    end if
 
   end subroutine radiation_register
 
@@ -657,7 +642,7 @@ end function radiation_nextsw_cday
                                                                                  sampling_seq='rad_lwsw')
           call addfld('QRS'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate ', sampling_seq='rad_lwsw')
           call addfld('QRSC'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate ', &
-                                                                                sampling_seq='rad_lwsw')
+                                                                                 sampling_seq='rad_lwsw')
           call addfld('FSNS'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at surface', &
                                                                                  sampling_seq='rad_lwsw')
           call addfld('FSNT'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at top of model', &
@@ -693,58 +678,10 @@ end function radiation_nextsw_cday
           call addfld('FSNRTOAS'//diag(icall),  horiz_only,     'A','W/m2', &
           'Net near-infrared flux (>= 0.7 microns) at top of atmosphere', sampling_seq='rad_lwsw')
           call addfld ('SWCF'//diag(icall),  horiz_only,     'A',   'W/m2', 'Shortwave cloud forcing', sampling_seq='rad_lwsw')
-          ! ----------------------------------------------------------------------------------------------------------------------------
-          !call addfld('SOLIN2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Solar insolation (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('SOLL2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Solar downward near infrared direct  to surface (heavy)',&
-          ! sampling_seq='rad_lwsw')
-          !call addfld('SOLS2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Solar downward visible direct  to surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw (heavy)')
-          !call addfld('SOLLD2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Solar downward near infrared diffuse to surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw (heavy)')
-          !call addfld('SOLSD2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Solar downward visible diffuse to surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw (heavy)')
-          !call addfld('QRS2'//diag(icall),   (/ 'lev' /),  'A',     'K/s', 'Solar heating rate (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('QRSC2'//diag(icall),   (/ 'lev' /),  'A',    'K/s', 'Clearsky solar heating rate (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNS2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNT2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Net solar flux at top of model (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNTOA2'//diag(icall),  horiz_only,     'A',  'W/m2', 'Net solar flux at top of atmosphere (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSUTOA2'//diag(icall),  horiz_only,     'A',  'W/m2', 'Upwelling solar flux at top of atmosphere (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNTOAC2'//diag(icall),  horiz_only,     'A', 'W/m2', 'Clearsky net solar flux at top of atmosphere (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSUTOAC2'//diag(icall),  horiz_only,     'A',  'W/m2', 'Clearsky upwelling solar flux at top of atmosphere (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSN2002'//diag(icall),  horiz_only,     'A',  'W/m2', 'Net shortwave flux at 200 mb (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSN200C2'//diag(icall),  horiz_only,     'A', 'W/m2', 'Clearsky net shortwave flux at 200 mb (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNTC2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Clearsky net solar flux at top of model (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSNSC2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Clearsky net solar flux at surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSDSC2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Clearsky downwelling solar flux at surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FSDS2'//diag(icall),  horiz_only,     'A',    'W/m2', 'Downwelling solar flux at surface (heavy)', &
-          !                                                                       sampling_seq='rad_lwsw')
-          !call addfld('FUS2'//diag(icall),  (/ 'ilev' /), 'I',     'W/m2', 'Shortwave upward flux (heavy)')
-          !call addfld('FDS2'//diag(icall),  (/ 'ilev' /), 'I',     'W/m2', 'Shortwave downward flux (heavy)')
-          !call addfld('FUSC2'//diag(icall),  (/ 'ilev' /), 'I',    'W/m2', 'Shortwave clear-sky upward flux (heavy)')
-          !call addfld('FDSC2'//diag(icall),  (/ 'ilev' /), 'I',    'W/m2', 'Shortwave clear-sky downward flux (heavy)')
-          !call addfld('FSNIRTOA2'//diag(icall),  horiz_only,     'A','W/m2',&
-          ! 'Net near-infrared flux (Nimbus-7 WFOV) at top of atmosphere (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('FSNRTOAC2'//diag(icall),  horiz_only,     'A','W/m2', &
-          !            'Clearsky net near-infrared flux (Nimbus-7 WFOV) at top of atmosphere (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('FSNRTOAS2'//diag(icall),  horiz_only,     'A','W/m2', &
-          !'Net near-infrared flux (>= 0.7 microns) at top of atmosphere (heavy)', sampling_seq='rad_lwsw')
-          !call addfld ('SWCF2'//diag(icall),  horiz_only,     'A',   'W/m2', 'Shortwave cloud forcing', sampling_seq='rad_lwsw')                                                  
 
           if (history_amwg) then
-             call add_default('QRS'//diag(icall),     1, ' ')
              call add_default('SOLIN'//diag(icall),   1, ' ')
+             call add_default('QRS'//diag(icall),     1, ' ')
              call add_default('FSNS'//diag(icall),    1, ' ')
              call add_default('FSNT'//diag(icall),    1, ' ')
              call add_default('FSNTOA'//diag(icall),  1, ' ')
@@ -756,20 +693,6 @@ end function radiation_nextsw_cday
              call add_default('FSDSC'//diag(icall),   1, ' ')
              call add_default('FSDS'//diag(icall),    1, ' ')
              call add_default('SWCF'//diag(icall),    1, ' ')
-             
-             !call add_default('QRS2'//diag(icall),     1, ' ')
-             !call add_default('SOLIN2'//diag(icall),   1, ' ')
-             !call add_default('FSNS2'//diag(icall),    1, ' ')
-             !call add_default('FSNT2'//diag(icall),    1, ' ')
-             !call add_default('FSNTOA2'//diag(icall),  1, ' ')
-             !call add_default('FSUTOA2'//diag(icall),  1, ' ')
-             !call add_default('FSNTOAC2'//diag(icall), 1, ' ')
-             !call add_default('FSUTOAC2'//diag(icall), 1, ' ')
-             !call add_default('FSNTC2'//diag(icall),   1, ' ')
-             !call add_default('FSNSC2'//diag(icall),   1, ' ')
-             !call add_default('FSDSC2'//diag(icall),   1, ' ')
-             !call add_default('FSDS2'//diag(icall),    1, ' ')
-             !call add_default('SWCF2'//diag(icall),    1, ' ')
           endif
        end if
     end do
@@ -814,36 +737,7 @@ end function radiation_nextsw_cday
           call addfld('FDL'//diag(icall), (/ 'ilev' /),'I',     'W/m2', 'Longwave downward flux')
           call addfld('FULC'//diag(icall), (/ 'ilev' /),'I',    'W/m2', 'Longwave clear-sky upward flux')
           call addfld('FDLC'//diag(icall), (/ 'ilev' /),'I',    'W/m2', 'Longwave clear-sky downward flux')
-          ! ----------------------------------------------------------------------------------------------------------------------------
-          !call addfld('QRL2'//diag(icall),  (/ 'lev' /), 'A',     'K/s', 'Longwave heating rate (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('QRLC2'//diag(icall),  (/ 'lev' /), 'A',    'K/s', 'Clearsky longwave heating rate (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLDS2'//diag(icall), horiz_only,    'A',    'W/m2', 'Downwelling longwave flux at surface (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLDSC2'//diag(icall), horiz_only,    'A',   'W/m2', 'Clearsky Downwelling longwave flux at surface (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLNS2'//diag(icall), horiz_only,    'A',    'W/m2', 'Net longwave flux at surface (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLNT2'//diag(icall), horiz_only,    'A',    'W/m2', 'Net longwave flux at top of model (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLUT2'//diag(icall), horiz_only,    'A',    'W/m2', 'Upwelling longwave flux at top of model (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLUTC2'//diag(icall), horiz_only,    'A',   'W/m2', 'Clearsky upwelling longwave flux at top of model (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLNTC2'//diag(icall), horiz_only,    'A',   'W/m2', 'Clearsky net longwave flux at top of model (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('LWCF2'//diag(icall), horiz_only,    'A',    'W/m2', 'Longwave cloud forcing (heavy)', sampling_seq='rad_lwsw')
-          !call addfld('FLN2002'//diag(icall), horiz_only,    'A',  'W/m2', 'Net longwave flux at 200 mb (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLN200C2'//diag(icall), horiz_only,    'A', 'W/m2', 'Clearsky net longwave flux at 200 mb (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FLNSC2'//diag(icall), horiz_only,    'A',   'W/m2', 'Clearsky net longwave flux at surface (heavy)', &
-          !                                                                 sampling_seq='rad_lwsw')
-          !call addfld('FUL2'//diag(icall), (/ 'ilev' /),'I',     'W/m2', 'Longwave upward flux (heavy)')
-          !call addfld('FDL2'//diag(icall), (/ 'ilev' /),'I',     'W/m2', 'Longwave downward flux (heavy)')
-          !call addfld('FULC2'//diag(icall), (/ 'ilev' /),'I',    'W/m2', 'Longwave clear-sky upward flux (heavy)')
-          !call addfld('FDLC2'//diag(icall), (/ 'ilev' /),'I',    'W/m2', 'Longwave clear-sky downward flux (heavy)')
- 
+
          if (history_amwg) then
             call add_default('QRL' //diag(icall),   1, ' ')
             call add_default('FLNS'//diag(icall),  1, ' ')
@@ -854,16 +748,6 @@ end function radiation_nextsw_cday
             call add_default('FLNTC'//diag(icall), 1, ' ')
             call add_default('FLNSC'//diag(icall), 1, ' ')
             call add_default('LWCF'//diag(icall),  1, ' ')
-
-            !call add_default('QRL2' //diag(icall),   1, ' ')
-            !call add_default('FLNS2'//diag(icall),  1, ' ')
-            !call add_default('FLDS2'//diag(icall),  1, ' ')
-            !call add_default('FLNT2'//diag(icall),  1, ' ')
-            !call add_default('FLUT2'//diag(icall),  1, ' ')
-            !call add_default('FLUTC2'//diag(icall), 1, ' ')
-            !call add_default('FLNTC2'//diag(icall), 1, ' ')
-            !call add_default('FLNSC2'//diag(icall), 1, ' ')
-            !call add_default('LWCF2'//diag(icall),  1, ' ')
          endif
 
        end if  ! active_calls(icall)
@@ -879,14 +763,6 @@ end function radiation_nextsw_cday
        call addfld ('CRM_CLD_RAD', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'I', 'fraction', 'CRM cloud fraction' )
        call addfld ('CRM_TAU    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud optical depth'  )
        call addfld ('CRM_EMS    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
-       call addfld ('CRM_QRAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', 'K/s', 'Radiative heating tendency')
-       !call addfld ('CRM_QRS2 ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
-       call addfld ('CRM_QRSC2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Clearsky shortwave radiative heating rate')
-       call addfld ('CRM_QRL2 ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
-       call addfld ('CRM_QRLC2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
-       call addfld ('CRM_CLD_RAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'fraction', 'CRM cloud fraction' )
-       call addfld ('CRM_TAU2  ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2'/), 'A', '1', 'CRM cloud optical depth'  )
-       call addfld ('CRM_EMS2  ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2'/), 'A', '1', 'CRM cloud longwave emissivity'  )
     end if
 
     call addfld('EMIS', (/ 'lev' /), 'A', '1', 'Cloud longwave emissivity')
@@ -896,10 +772,6 @@ end function radiation_nextsw_cday
        call add_default ('FULC    ', 1, ' ')
        call add_default ('FDL     ', 1, ' ')
        call add_default ('FDLC    ', 1, ' ')
-       !call add_default ('FUL2    ', 1, ' ')
-       !call add_default ('FULC2   ', 1, ' ')
-       !call add_default ('FDL2    ', 1, ' ')
-       !call add_default ('FDLC2   ', 1, ' ')
     endif
 
     ! HIRS/MSU diagnostic brightness temperatures
@@ -931,23 +803,14 @@ end function radiation_nextsw_cday
 
     ! Heating rate needed for d(theta)/dt computation
     call addfld ('HR',(/ 'lev' /), 'A','K/s','Heating rate needed for d(theta)/dt computation')
+
     if ( history_budget .and. history_budget_histfile_num > 1 ) then
-      call add_default ('QRS     ', history_budget_histfile_num, ' ')
-    endif
-    if(ncol.eq.1) then
-      if ( history_budget .and. history_budget_histfile_num > 1 ) then
-         call add_default ('QRL2     ', history_budget_histfile_num, ' ')
-         !call add_default ('QRS2     ', history_budget_histfile_num, ' ')
-      end if
-    else
-      if ( history_budget .and. history_budget_histfile_num > 1 ) then
-         call add_default ('QRL     ', history_budget_histfile_num, ' ')
-         !call add_default ('QRS     ', history_budget_histfile_num, ' ')
-      end if
+       call add_default ('QRL     ', history_budget_histfile_num, ' ')
+       call add_default ('QRS     ', history_budget_histfile_num, ' ')
     end if
     if (history_vdiag) then
-       call add_default('FLUT2', 2, ' ')
-       call add_default('FLUT2', 3, ' ')
+       call add_default('FLUT', 2, ' ')
+       call add_default('FLUT', 3, ' ')
     end if
 
     ! (Almost) net radiative flux at surface, does not have lwup.
@@ -955,6 +818,11 @@ end function radiation_nextsw_cday
     ! call add_default ('SRFRAD  ', 1, ' ')
 
     ! call phys_getopts(history_budget_out = history_budget, history_budget_histfile_num_out = history_budget_histfile_num)
+
+    if ( history_budget .and. history_budget_histfile_num > 1 ) then
+       call add_default ('QRL     ', history_budget_histfile_num, ' ')
+       call add_default ('QRS     ', history_budget_histfile_num, ' ')
+    end if
 
      if (history_vdiag) then
        call add_default('FLUT', 2, ' ')
