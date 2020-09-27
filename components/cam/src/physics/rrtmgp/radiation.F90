@@ -788,7 +788,6 @@ contains
             call addfld('FNLC'//diag(icall),    (/'ilev'/), 'A', 'W/m2', &
                         'Longwave clear-sky net flux')
 
-            call add_default('QRL'//diag(icall),   1, ' ')
             if (history_amwg) then
                call add_default('QRL'//diag(icall),   1, ' ')
                call add_default('FLNS'//diag(icall),  1, ' ')
