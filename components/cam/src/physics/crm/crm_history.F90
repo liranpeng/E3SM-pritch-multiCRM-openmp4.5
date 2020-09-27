@@ -895,21 +895,12 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    tgwp(:ncol) = tgicewp(:ncol) + tgliqwp(:ncol)
    gwp(:ncol,:pver) = crm_output_gicewp(:ncol,:pver) + crm_output_gliqwp(:ncol,:pver)
    cwp(:ncol,:pver) = cicewp(:ncol,:pver) + cliqwp(:ncol,:pver)
-   if (ncol .eq. 1) then
-      call outfld('GCLDLWP2' ,gwp,     1, lchnk)
-      call outfld('TGCLDCWP2',tgwp,    1, lchnk)
-      call outfld('TGCLDLWP2',tgliqwp, 1, lchnk)
-      call outfld('TGCLDIWP2',tgicewp, 1, lchnk)
-      call outfld('ICLDTWP2' ,cwp,     1, lchnk)
-      call outfld('ICLDIWP2' ,cicewp,  1, lchnk)
-   else
-      call outfld('GCLDLWP' ,gwp,     pcols, lchnk)
-      call outfld('TGCLDCWP',tgwp,    pcols, lchnk)
-      call outfld('TGCLDLWP',tgliqwp, pcols, lchnk)
-      call outfld('TGCLDIWP',tgicewp, pcols, lchnk)
-      call outfld('ICLDTWP' ,cwp,     pcols, lchnk)
-      call outfld('ICLDIWP' ,cicewp,  pcols, lchnk)
-   end if
+   call outfld('GCLDLWP' ,gwp,     pcols, lchnk)
+   call outfld('TGCLDCWP',tgwp,    pcols, lchnk)
+   call outfld('TGCLDLWP',tgliqwp, pcols, lchnk)
+   call outfld('TGCLDIWP',tgicewp, pcols, lchnk)
+   call outfld('ICLDTWP' ,cwp,     pcols, lchnk)
+   call outfld('ICLDIWP' ,cicewp,  pcols, lchnk)
 
    !----------------------------------------------------------------------------
    !----------------------------------------------------------------------------
