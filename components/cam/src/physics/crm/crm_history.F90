@@ -750,23 +750,13 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    end if
 
    ! NOTE: these should overwrite cloud outputs from non-MMF routines
-   if (ncol .eq. 1) then
-      call outfld('CLOUD2   ',crm_output_cld,    1, lchnk )
-      call outfld('CLDTOT2  ',crm_output_cltot,  1, lchnk )
-      call outfld('CLDHGH2  ',crm_output_clhgh,  1, lchnk )
-      call outfld('CLDMED2  ',crm_output_clmed,  1, lchnk )
-      call outfld('CLDLOW2  ',crm_output_cllow,  1, lchnk )
-      call outfld('CLOUDTOP2',crm_output_cldtop, 1, lchnk )
-      call outfld('TIMINGF2 ',crm_output_timing_factor  ,1,lchnk)
-   else
-      call outfld('CLOUD   ',crm_output_cld,    pcols, lchnk )
-      call outfld('CLDTOT  ',crm_output_cltot,  pcols, lchnk )
-      call outfld('CLDHGH  ',crm_output_clhgh,  pcols, lchnk )
-      call outfld('CLDMED  ',crm_output_clmed,  pcols, lchnk )
-      call outfld('CLDLOW  ',crm_output_cllow,  pcols, lchnk )
-      call outfld('CLOUDTOP',crm_output_cldtop, pcols, lchnk )
-      call outfld('TIMINGF ',crm_output_timing_factor  ,pcols,lchnk)
-   end if
+   call outfld('CLOUD   ',crm_output_cld,    pcols, lchnk )
+   call outfld('CLDTOT  ',crm_output_cltot,  pcols, lchnk )
+   call outfld('CLDHGH  ',crm_output_clhgh,  pcols, lchnk )
+   call outfld('CLDMED  ',crm_output_clmed,  pcols, lchnk )
+   call outfld('CLDLOW  ',crm_output_cllow,  pcols, lchnk )
+   call outfld('CLOUDTOP',crm_output_cldtop, pcols, lchnk )
+   call outfld('TIMINGF ',crm_output_timing_factor  ,pcols,lchnk)
 
    ! CRM mass flux
    if (ncol .eq. 1) then
