@@ -2096,43 +2096,41 @@ end function radiation_nextsw_cday
 
                 ! Dump shortwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
+                  if(ncol.eq.1) then
+                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
+                    call outfld('QRS'//diag(icall),ftem  ,1,lchnk)
+                    ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
+                    call outfld('QRSC'//diag(icall),ftem  ,1,lchnk)
+                    call outfld('SOLIN'//diag(icall),solin ,1,lchnk)
+                    call outfld('FSDS'//diag(icall),fsds  ,1,lchnk)
+                    call outfld('FSNIRTOA'//diag(icall),fsnirt,1,lchnk)
+                    call outfld('FSNRTOAC'//diag(icall),fsnrtc,1,lchnk)
+                    call outfld('FSNRTOAS'//diag(icall),fsnirtsq,1,lchnk)
+                    call outfld('FSNT'//diag(icall),fsnt  ,1,lchnk)
+                    call outfld('FSNS'//diag(icall),fsns  ,1,lchnk)
+                    call outfld('FSNTC'//diag(icall),fsntc ,1,lchnk)
+                    call outfld('FSNSC'//diag(icall),fsnsc ,1,lchnk)
+                    call outfld('FSDSC'//diag(icall),fsdsc ,1,lchnk)
+                    call outfld('FSNTOA'//diag(icall),fsntoa,1,lchnk)
+                    call outfld('FSUTOA'//diag(icall),fsutoa,1,lchnk)
+                    call outfld('FSNTOAC'//diag(icall),fsntoac,1,lchnk)
+#ifdef MAML
+                    call outfld('SOLS'//diag(icall),sols_loc  ,1,lchnk)
+                    call outfld('SOLL'//diag(icall),soll_loc  ,1,lchnk)
+                    call outfld('SOLSD'//diag(icall),solsd_loc ,1,lchnk)
+                    call outfld('SOLLD'//diag(icall),solld_loc ,1,lchnk)
+#else
+                    call outfld('SOLS'//diag(icall),cam_out%sols  ,1,lchnk)
+                    call outfld('SOLL'//diag(icall),cam_out%soll  ,1,lchnk)
+                    call outfld('SOLSD'//diag(icall),cam_out%solsd ,1,lchnk)
+                    call outfld('SOLLD'//diag(icall),cam_out%solld ,1,lchnk)
+#endif
+                    call outfld('FSN200'//diag(icall),fsn200,1,lchnk)
+                    call outfld('FSN200C'//diag(icall),fsn200c,1,lchnk)
+                    call outfld('SWCF'//diag(icall),swcf  ,1,lchnk)
+                  else
                     ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
                     call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
-                  !if(ncol.eq.1) then
-                    !ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    !call outfld('QRS2'//diag(icall),ftem  ,1,lchnk)
-                    !ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-                    !call outfld('QRSC2'//diag(icall),ftem  ,1,lchnk)
-                    !call outfld('SOLIN2'//diag(icall),solin ,1,lchnk)
-                    !call outfld('FSDS2'//diag(icall),fsds  ,1,lchnk)
-                    !call outfld('FSNIRTOA2'//diag(icall),fsnirt,1,lchnk)
-                    !call outfld('FSNRTOAC2'//diag(icall),fsnrtc,1,lchnk)
-                    !call outfld('FSNRTOAS2'//diag(icall),fsnirtsq,1,lchnk)
-                    !call outfld('FSNT2'//diag(icall),fsnt  ,1,lchnk)
-                    !call outfld('FSNS2'//diag(icall),fsns  ,1,lchnk)
-                    !call outfld('FSNTC2'//diag(icall),fsntc ,1,lchnk)
-                    !call outfld('FSNSC2'//diag(icall),fsnsc ,1,lchnk)
-                    !call outfld('FSDSC2'//diag(icall),fsdsc ,1,lchnk)
-                    !call outfld('FSNTOA2'//diag(icall),fsntoa,1,lchnk)
-                    !call outfld('FSUTOA2'//diag(icall),fsutoa,1,lchnk)
-                    !call outfld('FSNTOAC2'//diag(icall),fsntoac,1,lchnk)
-!#ifdef MAML
-                    !call outfld('SOLS2'//diag(icall),sols_loc  ,1,lchnk)
-                    !call outfld('SOLL2'//diag(icall),soll_loc  ,1,lchnk)
-                    !call outfld('SOLSD2'//diag(icall),solsd_loc ,1,lchnk)
-                    !call outfld('SOLLD2'//diag(icall),solld_loc ,1,lchnk)
-!#else
-                    !call outfld('SOLS2'//diag(icall),cam_out%sols  ,1,lchnk)
-                    !call outfld('SOLL2'//diag(icall),cam_out%soll  ,1,lchnk)
-                    !call outfld('SOLSD2'//diag(icall),cam_out%solsd ,1,lchnk)
-                    !call outfld('SOLLD2'//diag(icall),cam_out%solld ,1,lchnk)
-!#endif
-                    !call outfld('FSN2002'//diag(icall),fsn200,1,lchnk)
-                    !call outfld('FSN200C2'//diag(icall),fsn200c,1,lchnk)
-                    !call outfld('SWCF2'//diag(icall),swcf  ,1,lchnk)
-                  !else
-                    !ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    !call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
                     ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
                     call outfld('QRSC'//diag(icall),ftem  ,pcols,lchnk)
                     call outfld('SOLIN'//diag(icall),solin ,pcols,lchnk)
@@ -2162,7 +2160,7 @@ end function radiation_nextsw_cday
                     call outfld('FSN200'//diag(icall),fsn200,pcols,lchnk)
                     call outfld('FSN200C'//diag(icall),fsn200c,pcols,lchnk)
                     call outfld('SWCF'//diag(icall),swcf  ,pcols,lchnk)
-                  !endif
+                  endif
                 end if  ! (use_MMF .and. last_column) .or .not. use_MMF
 
                 if(do_aerocom_ind3) then
