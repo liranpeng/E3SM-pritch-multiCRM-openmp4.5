@@ -1005,6 +1005,7 @@ end function radiation_nextsw_cday
                                                !    2nd region, etc
     real(r8) :: emis(pcols,pver)               ! Cloud longwave emissivity
     real(r8) :: ftem(pcols,pver)              ! Temporary workspace for outfld variables
+    real(r8) :: ftem1(1,pver)              ! Temporary workspace for outfld variables
 
     ! combined cloud radiative parameters are "in cloud" not "in cell"
     real(r8) :: c_cld_tau    (nbndsw,pcols,pver) ! cloud extinction optical depth
@@ -2097,10 +2098,11 @@ end function radiation_nextsw_cday
                 ! Dump shortwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
                   if(ncol.eq.1) then
-                    ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    call outfld('QRS'//diag(icall),ftem  ,1,lchnk)
-                    ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-                    call outfld('QRSC'//diag(icall),ftem  ,1,lchnk)
+                    ftem1(1,:pver) = qrs(1,:pver)/cpair
+                    !write(iulog,*) 'Liran qrs',ncol,ftem1
+                    call outfld('QRS'//diag(icall),ftem1  ,1,lchnk)
+                    ftem1(1,:pver) = qrsc(1,:pver)/cpair
+                    call outfld('QRSC'//diag(icall),ftem1  ,1,lchnk)
                     call outfld('SOLIN'//diag(icall),solin ,1,lchnk)
                     call outfld('FSDS'//diag(icall),fsds  ,1,lchnk)
                     call outfld('FSNIRTOA'//diag(icall),fsnirt,1,lchnk)
@@ -2130,9 +2132,10 @@ end function radiation_nextsw_cday
                     call outfld('SWCF'//diag(icall),swcf  ,1,lchnk)
                   else
                     ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    call outfld('QRS'//diag(icall),ftem  ,pcols,lchnk)
+                    !write(iulog,*) 'Liran qrs',ncol,ftem(:ncol,:pver)
+                    call outfld('QRS'//diag(icall),qrs/cpair  ,pcols,lchnk)
                     ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
-                    call outfld('QRSC'//diag(icall),ftem  ,pcols,lchnk)
+                    call outfld('QRSC'//diag(icall),qrsc/cpair  ,pcols,lchnk)
                     call outfld('SOLIN'//diag(icall),solin ,pcols,lchnk)
                     call outfld('FSDS'//diag(icall),fsds  ,pcols,lchnk)
                     call outfld('FSNIRTOA'//diag(icall),fsnirt,pcols,lchnk)
@@ -2435,26 +2438,31 @@ end function radiation_nextsw_cday
                 !if(ncol.eq.1) then
                   ! Dump longwave radiation information to history tape buffer (diagnostics)
                 if ( (use_MMF .and. last_column ) .or. .not. use_MMF) then
-                    !call outfld('QRL2'//diag(icall),qrl/cpair,1,lchnk)
-                    !call outfld('QRLC2'//diag(icall),qrlc/cpair,1,lchnk)
-                    !call outfld('FLNT2'//diag(icall),flnt  ,1,lchnk)
-                    !call outfld('FLUT2'//diag(icall),flut  ,1,lchnk)
-                    !call outfld('FLUTC2'//diag(icall),flutc ,1,lchnk)
-                    !call outfld('FLNTC2'//diag(icall),flntc ,1,lchnk)
-                    !call outfld('FLNS2'//diag(icall),flns  ,1,lchnk)
+                  if(ncol.eq.1) then
+                    ftem1(1,:pver) = qrl(1,:pver)/cpair
+                    write(iulog,*) 'Liran qrl',ncol,lchnk,ftem1(1,70)
+                    call outfld('QRL'//diag(icall),ftem1,1,lchnk)
+                    ftem1(1,:pver) = qrlc(1,:pver)/cpair
+                    write(iulog,*) 'Liran qrlc',ncol,lchnk,ftem1(1,70)
+                    call outfld('QRLC'//diag(icall),ftem1,1,lchnk)
+                    call outfld('FLNT'//diag(icall),flnt  ,1,lchnk)
+                    call outfld('FLUT'//diag(icall),flut  ,1,lchnk)
+                    call outfld('FLUTC'//diag(icall),flutc ,1,lchnk)
+                    call outfld('FLNTC'//diag(icall),flntc ,1,lchnk)
+                    call outfld('FLNS'//diag(icall),flns  ,1,lchnk)
                 
-                    !call outfld('FLDSC2'//diag(icall),fldsc ,1,lchnk)
-                    !call outfld('FLNSC2'//diag(icall),flnsc ,1,lchnk)
-                    !call outfld('LWCF2'//diag(icall),lwcf  ,1,lchnk)
-                    !call outfld('FLN2002'//diag(icall),fln200,1,lchnk)
-                    !call outfld('FLN200C2'//diag(icall),fln200c,1,lchnk)
-!#ifdef MAML
-                    !call outfld('FLDS2'//diag(icall),flwds_loc ,1,lchnk)
-!#else
-                    !call outfld('FLDS2'//diag(icall),cam_out%flwds ,1,lchnk)
-!#endif
-                  !end if
-                !else
+                    call outfld('FLDSC'//diag(icall),fldsc ,1,lchnk)
+                    call outfld('FLNSC'//diag(icall),flnsc ,1,lchnk)
+                    call outfld('LWCF'//diag(icall),lwcf  ,1,lchnk)
+                    call outfld('FLN200'//diag(icall),fln200,1,lchnk)
+                    call outfld('FLN200C'//diag(icall),fln200c,1,lchnk)
+#ifdef MAML
+                    call outfld('FLDS'//diag(icall),flwds_loc ,1,lchnk)
+#else
+                    call outfld('FLDS'//diag(icall),cam_out%flwds ,1,lchnk)
+#endif
+                  else
+                    write(iulog,*) 'Liran qrl',ncol,lchnk,qrl(:ncol,70)/cpair
                     call outfld('QRL'//diag(icall),qrl/cpair,pcols,lchnk)
                     call outfld('QRLC'//diag(icall),qrlc/cpair,pcols,lchnk)
                     call outfld('FLNT'//diag(icall),flnt  ,pcols,lchnk)
@@ -2473,6 +2481,7 @@ end function radiation_nextsw_cday
 #else
                     call outfld('FLDS'//diag(icall),cam_out%flwds ,pcols,lchnk)
 #endif
+                  end if
                 end if
                 if (use_MMF .and. last_column ) then
                   if(icall.eq.0) then  ! the climate call
