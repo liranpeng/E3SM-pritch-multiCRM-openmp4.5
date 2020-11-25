@@ -99,7 +99,7 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), parameter :: cwp_threshold = 0.001          ! threshold for cloud condensate for shaded fraction calculation
     integer,        parameter :: perturb_seed_scale = 1000      ! scaling value for setperturb() seed value (seed = gcol * perturb_seed_scale)
     real(r8)        :: crm_run_time                             ! length of CRM integration
-    real(r8)        :: icrm_run_time                            ! = 1 / crm_run_time
+    real(r8)        :: icrm_run_time                           ! = 1 / crm_run_time
     real(r8)        :: factor_xy, factor_xyt, idt_gl
     real(crm_rknd)  :: tmp1, tmp2, tmp
     real(crm_rknd)  :: u2z,v2z,w2z
@@ -191,8 +191,8 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
    end if
   
   allocate( wbaraux(ncrms, plev) )
-  !allocate( crm_ww(ncrms, plev) )
-  !allocate( crm_buoya(ncrms, plev) )
+  allocate( crm_ww(ncrms, plev) )
+  allocate( crm_buoya(ncrms, plev) )
   allocate( crm_ww_inst(ncrms, plev) )
 
   allocate( t00(ncrms,nz) )
@@ -273,6 +273,11 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   call prefetch( crm_rad_cld )
   call prefetch( crm_rad_qrad )
 
+  call prefetch( wbaraux)
+  call prefetch( crm_ww )
+  call prefetch( crm_buoya )
+  call prefetch( crm_ww_inst )
+
   call prefetch( crm_state_u_wind )
   call prefetch( crm_state_v_wind )
   call prefetch( crm_state_w_wind )
@@ -306,14 +311,16 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   !$omp target enter data map(alloc: qtot     )
   !$omp target enter data map(alloc: colprec  )
   !$omp target enter data map(alloc: colprecs )
-
+  !$omp target enter data map(alloc: crm_rad_qrad )
   !$omp target enter data map(alloc: crm_rad_temperature )
   !$omp target enter data map(alloc: crm_rad_qv )
   !$omp target enter data map(alloc: crm_rad_qc )
   !$omp target enter data map(alloc: crm_rad_qi )
   !$omp target enter data map(alloc: crm_rad_cld )
   !$omp target enter data map(alloc: crm_rad_qrad )
-
+  !$omp target enter data map(alloc: wbaraux )
+  !$omp target enter data map(alloc: crm_ww )
+  !$omp target enter data map(alloc: crm_buoya )
   !$omp target enter data map(alloc: crm_state_u_wind )
   !$omp target enter data map(alloc: crm_state_v_wind )
   !$omp target enter data map(alloc: crm_state_w_wind )
@@ -341,7 +348,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   crm_rad_qi          = crm_rad%qi(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
   crm_rad_cld         = crm_rad%cld(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
   crm_rad_qrad        = crm_rad%qrad(1:ncrms,1:crmnxrad,1:crmnyrad,1:crmnz)
-
   crm_state_u_wind      = crm_state%u_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_v_wind      = crm_state%v_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
   crm_state_w_wind      = crm_state%w_wind(1:ncrms,1:crmnx,1:crmny,1:crmnz)
@@ -508,14 +514,12 @@ end if
             !open the crm v component
             v(icrm,i,j,k) = min( umax, max(-umax,v(icrm,i,j,k)) ) 
 #else     
-            v(icrm,i,j,k) = min( umax, max(-umax,v(icrm,i,j,k)) )*YES3D
-#endif
           enddo
         enddo
       enddo
     enddo
   endif
-
+#endif
   ! Populate microphysics array from crm_state
 #if defined(_OPENACC)
   !$acc parallel loop collapse(4) async(asyncid)
@@ -878,10 +882,8 @@ end if
   precr     = 0.0
   precsolid = 0.0
 #endif /* ECPP */
-
   nstop = dt_gl/cdt
   dt = dt_gl/nstop
-
   crm_run_time  = dt_gl
   icrm_run_time = 1._r8/crm_run_time
 
@@ -894,7 +896,7 @@ end if
 #elif defined(_OPENMP)
   !$omp taskwait
 #endif
-
+  call t_stampf(wall(1), usr(1), sys(1))
   !========================================================================================
   !----------------------------------------------------------------------------------------
   !   Main time loop
@@ -1435,7 +1437,9 @@ end if
   ! End main time loop
   !----------------------------------------------------------------------------------------
   !========================================================================================
-
+  call t_stampf(wall(2), usr(2), sys(2))
+  wall(1) = wall(2)-wall(1)
+  write(iulog,*) '=== Liran Timing===',ncrms,wall(1)
   tmp1 = crm_nx_rad_fac * crm_ny_rad_fac / real(nstop,crm_rknd)
 #if defined(_OPENACC)
   !$acc parallel loop collapse(4) async(asyncid)
@@ -1547,7 +1551,7 @@ end if
       enddo
     enddo
   enddo
-
+  crm_ww            = crm_ww * factor_xy ! mspritch,hparish
   do k = 1,nzm
     do i=1,nx
       do j=1,ny
@@ -1899,12 +1903,12 @@ end if
 
   do k = 1 , plev
     do icrm = 1 , ncrms
-      crm_ww(icrm,k)            = crm_ww(icrm,k) * factor_xy ! mspritch,hparish
       crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
       crm_buoya(icrm,k)         = crm_buoya(icrm,k) * factor_xyt  ! mwyant - xy factor included when calculated in stat_tke.F90
+      !crm_state%spww(icrm,k)       = crm_ww_inst(icrm,k)
+      !crm_state%spbuoya(icrm,k)       = crm_buoya(icrm,k) 
     enddo
   enddo
-
 
   do k = 1 , plev
     do icrm = 1 , ncrms

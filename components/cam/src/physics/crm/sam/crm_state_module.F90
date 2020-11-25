@@ -42,7 +42,8 @@ module crm_state_module
       real(crm_rknd), pointer :: qg(:,:,:,:)
       real(crm_rknd), pointer :: ng(:,:,:,:)
       real(crm_rknd), pointer :: qc(:,:,:,:)
-
+      real(crm_rknd), pointer :: spww(:,:)  ! CRM temperuture
+      real(crm_rknd), pointer :: spbuoya(:,:)
       ! for sam1mom...
       real(crm_rknd), pointer :: qp(:,:,:,:)
       real(crm_rknd), pointer :: qn(:,:,:,:)
@@ -70,6 +71,8 @@ contains
 
       this%qt => null()
       this%qc => null()
+      this%spww => null()
+      this%spbuoya => null()
       this%qi => null()
       this%qr => null()
       this%qs => null()
@@ -97,6 +100,8 @@ contains
 #ifdef m2005
       this%qt => null()
       this%qc => null()
+      this%spww => null()
+      this%spbuoya => null()
       this%qi => null()
       this%qr => null()
       this%qs => null()

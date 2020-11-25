@@ -554,7 +554,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    use physconst,              only: cpair
    use cam_history,            only: outfld
    use crm_output_module
-   
+   use cam_logfile,     only: iulog 
    !----------------------------------------------------------------------------
    ! interface variables
    type(physics_state),              intent(in) :: state             ! Global model state 
@@ -635,11 +635,13 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    end if
 
    if (ncol .eq. 1) then
-      call outfld('SPWW2   ',spww, 1, lchnk )
-      call outfld('SPBUOYA2   ',spbuoya, 1, lchnk )
+   !   write(iulog,*) "Liran check",ncol, crm_state%spww
+      call outfld('SPWW2   ',crm_state%spww, 1, lchnk )
+      call outfld('SPBUOYA2   ',crm_state%spbuoya, 1, lchnk )
    else
-      call outfld('SPWW   ',spww, pcols, lchnk )
-      call outfld('SPBUOYA   ',spbuoya, pcols, lchnk )
+      !write(iulog,*) "Liran check 2",ncol, spww
+      call outfld('SPWW   ', crm_state%spww, pcols, lchnk )
+      call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
    end if
 
    ! Why do we output this here?

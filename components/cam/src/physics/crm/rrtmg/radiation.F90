@@ -763,6 +763,14 @@ end function radiation_nextsw_cday
        call addfld ('CRM_CLD_RAD', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'I', 'fraction', 'CRM cloud fraction' )
        call addfld ('CRM_TAU    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud optical depth'  )
        call addfld ('CRM_EMS    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
+       call addfld ('CRM_QRAD2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', 'K/s', 'Radiative heating tendency')
+       call addfld ('CRM_QRS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
+       call addfld ('CRM_QRSC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Clearsky shortwave radiative heating rate')
+       call addfld ('CRM_QRL2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
+       call addfld ('CRM_QRLC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
+       call addfld ('CRM_CLD_RAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'fraction', 'CRM cloud fraction' )
+       call addfld ('CRM_TAU2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud optical depth'  )
+       call addfld ('CRM_EMS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
     end if
 
     call addfld('EMIS', (/ 'lev' /), 'A', '1', 'Cloud longwave emissivity')
@@ -1596,9 +1604,13 @@ end function radiation_nextsw_cday
          endif
 
          ! Get cloud fraction averaged over the CRM time integration
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD'), cld_rad)
-         call outfld('CRM_CLD_RAD', cld_rad(1:ncol,:,:,:), state%ncol, state%lchnk)
-
+         if (ncol .eq. 1) then
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD2'), cld_rad)
+           call outfld('CRM_CLD_RAD2', cld_rad(1:ncol,:,:,:), state%ncol, state%lchnk)
+         else
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD'), cld_rad)
+           call outfld('CRM_CLD_RAD', cld_rad(1:ncol,:,:,:), state%ncol,state%lchnk)
+         end if
          cicewp(1:ncol,1:pver) = 0.  
          cliqwp(1:ncol,1:pver) = 0.
 
@@ -2099,7 +2111,6 @@ end function radiation_nextsw_cday
                 if ( (use_MMF .and. last_column) .or. .not. use_MMF) then
                   if(ncol.eq.1) then
                     ftem1(1,:pver) = qrs(1,:pver)/cpair
-                    !write(iulog,*) 'Liran qrs',ncol,ftem1
                     call outfld('QRS'//diag(icall),ftem1  ,1,lchnk)
                     ftem1(1,:pver) = qrsc(1,:pver)/cpair
                     call outfld('QRSC'//diag(icall),ftem1  ,1,lchnk)
@@ -2132,7 +2143,6 @@ end function radiation_nextsw_cday
                     call outfld('SWCF'//diag(icall),swcf  ,1,lchnk)
                   else
                     ftem(:ncol,:pver) = qrs(:ncol,:pver)/cpair
-                    !write(iulog,*) 'Liran qrs',ncol,ftem(:ncol,:pver)
                     call outfld('QRS'//diag(icall),qrs/cpair  ,pcols,lchnk)
                     ftem(:ncol,:pver) = qrsc(:ncol,:pver)/cpair
                     call outfld('QRSC'//diag(icall),qrsc/cpair  ,pcols,lchnk)
@@ -2440,10 +2450,8 @@ end function radiation_nextsw_cday
                 if ( (use_MMF .and. last_column ) .or. .not. use_MMF) then
                   if(ncol.eq.1) then
                     ftem1(1,:pver) = qrl(1,:pver)/cpair
-                    write(iulog,*) 'Liran qrl',ncol,lchnk,ftem1(1,70)
                     call outfld('QRL'//diag(icall),ftem1,1,lchnk)
                     ftem1(1,:pver) = qrlc(1,:pver)/cpair
-                    write(iulog,*) 'Liran qrlc',ncol,lchnk,ftem1(1,70)
                     call outfld('QRLC'//diag(icall),ftem1,1,lchnk)
                     call outfld('FLNT'//diag(icall),flnt  ,1,lchnk)
                     call outfld('FLUT'//diag(icall),flut  ,1,lchnk)
@@ -2462,7 +2470,6 @@ end function radiation_nextsw_cday
                     call outfld('FLDS'//diag(icall),cam_out%flwds ,1,lchnk)
 #endif
                   else
-                    write(iulog,*) 'Liran qrl',ncol,lchnk,qrl(:ncol,70)/cpair
                     call outfld('QRL'//diag(icall),qrl/cpair,pcols,lchnk)
                     call outfld('QRLC'//diag(icall),qrlc/cpair,pcols,lchnk)
                     call outfld('FLNT'//diag(icall),flnt  ,pcols,lchnk)

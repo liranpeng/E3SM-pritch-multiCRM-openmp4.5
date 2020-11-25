@@ -250,8 +250,13 @@ subroutine crm_physics_register()
    ! ACLDY_CEN has to be global in the physcal buffer to be saved in the restart file
    ! total (all sub-classes) cloudy fractional area in previous time step 
    call pbuf_add_field('ACLDY_CEN','global', dtype_r8, dims_gcm_2D, idx) 
-   call pbuf_add_field('ACLDY_CEN2','global', dtype_r8, dims_gcm_2D2, idx) 
+   call pbuf_add_field('ACLDY_CEN2','global', dtype_r8, dims_gcm_2D2, idx)
+ 
+   call pbuf_add_field('SPWW','global', dtype_r8, dims_gcm_2D, idx)
+   call pbuf_add_field('SPBUOYA','global', dtype_r8, dims_gcm_2D2, idx)
 
+   call pbuf_add_field('SPWW2','global', dtype_r8, dims_gcm_2D, idx)
+   call pbuf_add_field('SPBUOYA2','global', dtype_r8, dims_gcm_2D2, idx)
 #ifdef MAML
    ! special vars for passing CRM-scale precipition/snow into CLM
    call pbuf_add_field('CRM_PCP', 'physpkg', dtype_r8, dims_crm_2D, crm_pcp_idx)
@@ -545,13 +550,13 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    if (ncol .eq. 1) then
       call crm_input_initialize(1,pver)
       call crm_output_initialize(1,pver)
-      allocate( spww(1,pver) )
-      allocate( spbuoya(1,pver) )
+      !allocate( spww(1,pver) )
+      !allocate( spbuoya(1,pver) )
    else
       call crm_input_initialize(pcols,pver)
       call crm_output_initialize(pcols,pver)
-      allocate( spww(pcols,pver) )
-      allocate( spbuoya(pcols,pver) )
+      !allocate( spww(pcols,pver) )
+      !allocate( spbuoya(pcols,pver) )
    end if
    !------------------------------------------------------------------------------------------------
    ! Set CRM orientation angle
@@ -696,6 +701,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    ! Set pointers to microphysics fields in crm_state
    if (ncol .eq. 1) then
      call pbuf_get_field(pbuf, pbuf_get_index('CRM_QT2'), crm_state%qt)
+     call pbuf_get_field(pbuf, pbuf_get_index('SPWW2'), crm_state%spww)
+     call pbuf_get_field(pbuf, pbuf_get_index('SPBUOYA2'), crm_state%spbuoya)
      if (MMF_microphysics_scheme .eq. 'sam1mom') then
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QP2'), crm_state%qp)
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QN2'), crm_state%qn)
@@ -713,6 +720,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
      end if ! if (SPCAM_microp_scheme .eq. 'sam1mom') then
    else ! if (ncol .eq. 1) then
      call pbuf_get_field(pbuf, pbuf_get_index('CRM_QT'), crm_state%qt)
+     call pbuf_get_field(pbuf, pbuf_get_index('SPWW'), crm_state%spww)
+     call pbuf_get_field(pbuf, pbuf_get_index('SPBUOYA'), crm_state%spbuoya)
      if (MMF_microphysics_scheme .eq. 'sam1mom') then
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QP'), crm_state%qp)
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QN'), crm_state%qn)
@@ -772,6 +781,8 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
                crm_state%ns(i,:,:,k) = 0.0_r8
                crm_state%qg(i,:,:,k) = 0.0_r8
                crm_state%ng(i,:,:,k) = 0.0_r8
+               crm_state%spww(i,k) = 0.0_r8
+               crm_state%spbuoya(i,k) = 0.0_r8
             endif
 
          end do
@@ -1119,7 +1130,8 @@ print *,"00_crm_physics, end crm"
       !---------------------------------------------------------------------------------------------
       ! Write out data for history files
       !---------------------------------------------------------------------------------------------
-
+      crm_state%spww       = spww
+      crm_state%spbuoya      = spbuoya
       call crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qrs, qrl, spww, spbuoya,timing_ex)
 
       ! Convert heating rate to Q*dp to conserve energy across timesteps

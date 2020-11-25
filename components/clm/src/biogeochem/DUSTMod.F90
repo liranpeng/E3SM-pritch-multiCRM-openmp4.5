@@ -165,6 +165,7 @@ contains
     !
     ! !ARGUMENTS:
     class (dust_type) :: this
+    type(bounds_type), intent(in) :: bounds
     ! !LOCAL VARIABLES:
     integer :: c,l
     !-----------------------------------------------------------------------
@@ -319,8 +320,6 @@ contains
             else
                lnd_frc_mbl(p) = 0.0_r8
             endif
-            write(iulog,*)'lnd_frc_mbl(p) =',p,lnd_frc_mbl(p)
-            write(iulog,*)' frac_sno(c)=',c,frac_sno(c)
             lnd_frc_mbl(p) = lnd_frc_mbl(p) * (1.0_r8 - frac_sno(c))
          else          
             lnd_frc_mbl(p) = 0.0_r8   
