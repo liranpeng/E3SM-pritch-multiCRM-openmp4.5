@@ -822,8 +822,8 @@ end function radiation_nextsw_cday
     end if
 
     ! (Almost) net radiative flux at surface, does not have lwup.
-    ! call addfld ('SRFRAD  ','W/m2    ',1,    'A','Net radiative flux at surface',phys_decomp)
-    ! call add_default ('SRFRAD  ', 1, ' ')
+     !call addfld ('SRFRAD  ','W/m4    ',1,    'A','Net radiative flux at surface',phys_decomp)
+     !call add_default ('SRFRAD  ', 1, ' ')
 
     ! call phys_getopts(history_budget_out = history_budget, history_budget_histfile_num_out = history_budget_histfile_num)
 
@@ -1499,9 +1499,13 @@ end function radiation_nextsw_cday
        ! Get CRM radiative heating from the physics buffer; we need to do this regardless of whether
        ! or not we are going to do radiative calculations this timestep, because this is still
        ! accessed outside the dosw .or. dolw logical block.
-       crm_qrad_idx = pbuf_get_index('CRM_QRAD')
-       call pbuf_get_field(pbuf, crm_qrad_idx, crm_qrad)
-
+       if (ncol .eq. 1) then
+         crm_qrad_idx = pbuf_get_index('CRM_QRAD2')
+         call pbuf_get_field(pbuf, crm_qrad_idx, crm_qrad)
+       else
+         crm_qrad_idx = pbuf_get_index('CRM_QRAD')
+         call pbuf_get_field(pbuf, crm_qrad_idx, crm_qrad)
+       end if
        ! Only zero SP fields when we are going to update the longwave or
        ! shortwave in case we are NOT going to update the radiation each
        ! timestep.

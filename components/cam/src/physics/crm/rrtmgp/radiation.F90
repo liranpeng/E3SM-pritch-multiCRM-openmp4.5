@@ -21,6 +21,7 @@ module radiation
       set_sw_spectral_boundaries, set_lw_spectral_boundaries, &
       get_sw_spectral_midpoints, get_lw_spectral_midpoints
    use cam_history_support, only: add_hist_coord
+   use cam_logfile,     only: iulog
 
    ! RRTMGP gas optics object to store coefficient information. This is imported
    ! here so that we can make the k_dist objects module data and only load them
@@ -35,8 +36,8 @@ module radiation
                               handle_error, clip_values
 
    ! For MMF
-   use crmdims, only: crm_nx_rad, crm_ny_rad, crm_nz
-
+   use crmdims,              only: crm_nx, crm_ny, crm_nz, crm_nx_rad,crm_ny_rad, &
+                                    crm_nx2, crm_ny2, crm_nz2, crm_nx_rad2,crm_ny_rad2
    implicit none
    private
    save
@@ -300,7 +301,6 @@ contains
       ! module, just overwritten, so they may not need to be written to restarts.
       call pbuf_add_field('QRS', 'global', dtype_r8, (/pcols,pver/), idx)
       call pbuf_add_field('QRL', 'global', dtype_r8, (/pcols,pver/), idx)
-
       ! If the namelist has been configured for preserving the spectral fluxes, then create
       ! physics buffer variables to store the results. These are fluxes per
       ! spectral band, as follows:
@@ -824,6 +824,12 @@ contains
          call addfld('CRM_QRL ', dims_crm_rad, 'I', 'K/s', 'CRM Longwave radiative heating rate' )
          call addfld('CRM_QRLC', dims_crm_rad, 'I', 'K/s', 'CRM clear-sky longwave radiative heating rate' )
          call addfld('CRM_CLD_RAD', dims_crm_rad, 'I', 'fraction', 'CRM cloud fraction')
+         call addfld('CRM_QRAD2', dims_crm_rad, 'A', 'K/s', 'Radiative heating tendency')
+         call addfld('CRM_QRS2 ', dims_crm_rad, 'I', 'K/s', 'CRM Shortwave radiative heating rate')
+         call addfld('CRM_QRSC2', dims_crm_rad, 'I', 'K/s', 'CRM clear-sky shortwave radiative heating rate')
+         call addfld('CRM_QRL2 ', dims_crm_rad, 'I', 'K/s', 'CRM Longwave radiative heating rate' )
+         call addfld('CRM_QRLC2', dims_crm_rad, 'I', 'K/s', 'CRM clear-sky longwave radiative heating rate' )
+         call addfld('CRM_CLD_RAD2', dims_crm_rad, 'I', 'fraction', 'CRM cloud fraction')
       end if
 
       call addfld('EMIS', (/ 'lev' /), 'A', '1', 'Cloud longwave emissivity')
@@ -1175,7 +1181,7 @@ contains
       ! Number of columns; ncol is number of GCM columns in current chunk,
       ! ncol_tot is product of GCM and CRM columns (for packing GCM and CRM
       ! columns into a single dimension)
-      integer :: ncol, ncol_tot
+      integer :: ncol, ncol_tot, crmnxrad, crmnyrad, crmnz
 
       ! Loop indices
       integer :: icall, ic, ix, iy, iz, ilev, j, igas, iband, igpt
@@ -1290,8 +1296,16 @@ contains
       ! transfer solvers. When using superparameterization, this will be ncol
       ! times the total number of CRM columns so that we can pack all of the
       ! data together into one call.
-      ncol_tot = ncol * crm_nx_rad * crm_ny_rad
-
+      if (ncol .eq. 1) then
+        crmnxrad = crm_nx_rad2
+        crmnyrad = crm_ny_rad2
+        crmnz = crm_nz2
+      else
+        crmnxrad = crm_nx_rad
+        crmnyrad = crm_ny_rad
+        crmnz = crm_nz
+      end if
+      ncol_tot = ncol * crmnxrad * crmnyrad
       ! Set flags for MMF/SP
       call phys_getopts(use_MMF_out=use_MMF)
       call phys_getopts(MMF_microphysics_scheme_out=MMF_microphysics_scheme)
@@ -1327,17 +1341,31 @@ contains
 #endif
       ! CRM fields
       if (use_MMF) then
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_T_RAD'  ), crm_t  )
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QV_RAD' ), crm_qv )
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QC_RAD' ), crm_qc )
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QI_RAD' ), crm_qi )
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD'), crm_cld)
+         if(ncol.eq.1) then
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_T_RAD2'  ), crm_t  )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QV_RAD2' ), crm_qv )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QC_RAD2' ), crm_qc )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QI_RAD2' ), crm_qi )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD2'), crm_cld)
 #ifdef MODAL_AERO
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QAERWAT' ), crm_qaerwat )
-         call pbuf_get_field(pbuf, pbuf_get_index('CRM_DGNUMWET'), crm_dgnumwet)
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QAERWAT2' ), crm_qaerwat)
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_DGNUMWET2'),crm_dgnumwet)
 #endif
-         ! Output CRM cloud fraction
-         call outfld('CRM_CLD_RAD', crm_cld(1:ncol,:,:,:), state%ncol, state%lchnk)
+           ! Output CRM cloud fraction
+           call outfld('CRM_CLD_RAD2', crm_cld(1:ncol,:,:,:), state%ncol,state%lchnk)
+         else
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_T_RAD'  ), crm_t  )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QV_RAD' ), crm_qv )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QC_RAD' ), crm_qc )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QI_RAD' ), crm_qi )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD'), crm_cld)
+#ifdef MODAL_AERO
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_QAERWAT' ), crm_qaerwat )
+           call pbuf_get_field(pbuf, pbuf_get_index('CRM_DGNUMWET'), crm_dgnumwet)
+#endif
+           ! Output CRM cloud fraction
+           call outfld('CRM_CLD_RAD', crm_cld(1:ncol,:,:,:), state%ncol, state%lchnk)
+        end if
       end if
 
       ! Set surface emissivity to 1 here. There is a note in the RRTMG
@@ -1454,13 +1482,13 @@ contains
                ! pbuf/state over ncol columns for each CRM column index, and pack
                ! into arrays dimensioned ncol_tot = ncol * ncrms
                j = 1
-               do iy = 1,crm_ny_rad
-                  do ix = 1,crm_nx_rad
+               do iy = 1,crmnyrad
+                  do ix = 1,crmnxrad
 
                      ! Overwrite state and pbuf with CRM
                      if (use_MMF) then
                         call t_startf('rad_overwrite_state')
-                        do iz = 1,crm_nz
+                        do iz = 1,crmnz
                            ilev = pver - iz + 1
                            do ic = 1,ncol
                               ! NOTE: I do not think these are used by optics
@@ -1676,14 +1704,21 @@ contains
 
                ! Calculate heating rates
                call t_startf('rad_heating_rate_sw')
+               !write(iulog,*) 'Liran Test Here1 fluxup',ncol_tot,ktop,kbot,fluxes_allsky_all%flux_up(1:ncol_tot,kbot+1)
+               !write(iulog,*) 'Liran Test Here1 fluxdn',ncol_tot,ktop,kbot,fluxes_allsky_all%flux_dn(1:ncol_tot,kbot+1)
+               !write(iulog,*) 'Liran Test Here1 pint',ncol_tot,ktop,kbot,pint(1:ncol_tot,kbot+1)
                call calculate_heating_rate(fluxes_allsky_all%flux_up(1:ncol_tot,ktop:kbot+1), &
                                            fluxes_allsky_all%flux_dn(1:ncol_tot,ktop:kbot+1), &
                                            pint(1:ncol_tot,ktop:kbot+1), &
                                            qrs_all(1:ncol_tot,1:pver))
+               !write(iulog,*) 'Liran Test Here1 qrs_all',ncol_tot,ktop,qrs_all(1:ncol_tot,1:5)
+               !write(iulog,*) 'Liran Test Here2 fluxup clear',ncol_tot,ktop,kbot,fluxes_clrsky_all%flux_up(1:ncol_tot,ktop:kbot+1)
+               !write(iulog,*) 'Liran Test Here2 fluxdn clear',ncol_tot,ktop,kbot,fluxes_clrsky_all%flux_dn(1:ncol_tot,ktop:kbot+1)
                call calculate_heating_rate(fluxes_clrsky_all%flux_up(1:ncol_tot,ktop:kbot+1), &
                                            fluxes_clrsky_all%flux_dn(1:ncol_tot,ktop:kbot+1), &
                                            pint(1:ncol_tot,ktop:kbot+1), &
                                            qrsc_all(1:ncol_tot,1:pver))
+               !write(iulog,*) 'Liran Test Here2 qrsc_all',ncol_tot,ktop,qrsc_all(1:ncol_tot,1:5)
                call t_stopf('rad_heating_rate_sw')
 
                ! Calculate CRM domain averages
@@ -1718,10 +1753,10 @@ contains
                ! Map to CRM columns
                if (use_MMF) then
                   j = 1
-                  do iy = 1,crm_ny_rad
-                     do ix = 1,crm_nx_rad
+                  do iy = 1,crmnyrad
+                     do ix = 1,crmnxrad
                         do ic = 1,ncol
-                           do iz = 1,crm_nz
+                           do iz = 1,crmnz
                               ilev = pver - iz + 1
                               crm_qrs (ic,ix,iy,iz) = qrs_all(j,ilev)
                               crm_qrsc(ic,ix,iy,iz) = qrsc_all(j,ilev)
@@ -1730,8 +1765,13 @@ contains
                         end do
                      end do
                   end do
-                  call outfld('CRM_QRS' , crm_qrs (1:ncol,:,:,:)/cpair, ncol, state%lchnk)
-                  call outfld('CRM_QRSC', crm_qrsc(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                  if(ncol.eq.1) then
+                    call outfld('CRM_QRS2' , crm_qrs (1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                    call outfld('CRM_QRSC2', crm_qrsc(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                  else
+                    call outfld('CRM_QRS' , crm_qrs (1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                    call outfld('CRM_QRSC', crm_qrsc(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                  end if
                end if
 
                ! Set net fluxes used by other components (land?) 
@@ -1812,10 +1852,10 @@ contains
                ! Map to CRM columns
                if (use_MMF) then
                   j = 1
-                  do iy = 1,crm_ny_rad
-                     do ix = 1,crm_nx_rad
+                  do iy = 1,crmnyrad
+                     do ix = 1,crmnxrad
                         do ic = 1,ncol
-                           do iz = 1,crm_nz
+                           do iz = 1,crmnz
                               ilev = pver - iz + 1
                               crm_qrl(ic,ix,iy,iz) = qrl_all(j,ilev)
                               crm_qrlc(ic,ix,iy,iz) = qrlc_all(j,ilev)
@@ -1824,8 +1864,13 @@ contains
                         end do
                      end do
                   end do
-                  call outfld('CRM_QRL', crm_qrl(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
-                  call outfld('CRM_QRLC', crm_qrlc(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                  if(ncol.eq.1) then
+                    call outfld('CRM_QRL2', crm_qrl(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                    call outfld('CRM_QRLC2', crm_qrlc(1:ncol,:,:,:)/cpair, ncol, state%lchnk)
+                  else
+                    call outfld('CRM_QRL', crm_qrl(1:ncol,:,:,:)/cpair, ncol,state%lchnk)
+                    call outfld('CRM_QRLC', crm_qrlc(1:ncol,:,:,:)/cpair, ncol,state%lchnk)
+                  end if
                end if
 
                ! Set net fluxes used in other components
@@ -1885,11 +1930,15 @@ contains
       if (use_MMF) then
          call t_startf('rad_update_crm_heating')
          if (radiation_do('sw') .or. radiation_do('lw')) then
-            call pbuf_get_field(pbuf, pbuf_get_index('CRM_QRAD'), crm_qrad)
+            if(ncol.eq.1) then
+              call pbuf_get_field(pbuf, pbuf_get_index('CRM_QRAD2'), crm_qrad)
+            else
+              call pbuf_get_field(pbuf, pbuf_get_index('CRM_QRAD'), crm_qrad)
+            end if
             crm_qrad = 0
-            do iz = 1,crm_nz
-               do iy = 1,crm_ny_rad
-                  do ix = 1,crm_nx_rad
+            do iz = 1,crmnz
+               do iy = 1,crmnyrad
+                  do ix = 1,crmnxrad
                      do ic = 1,ncol
                         crm_qrad(ic,ix,iy,iz) = (crm_qrs(ic,ix,iy,iz) + crm_qrl(ic,ix,iy,iz)) / cpair
                         if (conserve_energy) then
@@ -1900,7 +1949,11 @@ contains
                   end do
                end do
             end do
-            call outfld('CRM_QRAD', crm_qrad(1:ncol,:,:,:), ncol, state%lchnk)
+            if(ncol.eq.1) then
+              call outfld('CRM_QRAD2', crm_qrad(1:ncol,:,:,:), ncol, state%lchnk)
+            else
+              call outfld('CRM_QRAD2', crm_qrad(1:ncol,:,:,:), ncol, state%lchnk)
+            end if
          end if
          call t_stopf('rad_update_crm_heating')
       end if  ! use_MMF
@@ -2145,24 +2198,31 @@ contains
    subroutine average_packed_array(array_packed, array_avg)
       real(r8), intent(in) :: array_packed(:,:)
       real(r8), intent(out) :: array_avg(:,:)
-      integer :: ncol, ncol_tot
+      integer :: ncol, ncol_tot,crmnxrad,crmnyrad
       real(r8) :: area_factor
       integer :: ic, ix, iy, iz, j
-
-      if (crm_nx_rad * crm_ny_rad > 1) then
-         area_factor = 1._r8 / (crm_nx_rad * crm_ny_rad)
+      ncol = size(array_avg, 1)
+      if(ncol.eq.1) then
+        crmnxrad = crm_nx_rad2
+        crmnyrad = crm_ny_rad2
+      else
+        crmnxrad = crm_nx_rad
+        crmnyrad = crm_ny_rad
+      end if
+      if (crmnxrad * crmnyrad > 1) then
+         area_factor = 1._r8 / (crmnxrad * crmnyrad)
       else
          area_factor = 1
       end if
       array_avg = 0
       ncol = size(array_avg, 1)
-      ncol_tot = ncol * crm_nx_rad * crm_ny_rad
+      ncol_tot = ncol * crmnxrad * crmnyrad
       call assert(size(array_packed,1) == ncol_tot, 'size(array_packed,1) /= ncol_tot')
       call assert(size(array_packed,2) == size(array_avg,2), 'size(array_packed,2) /= size(array_avg,2)')
       do iz = 1,size(array_packed,2)
          j = 1
-         do iy = 1,crm_ny_rad
-            do ix = 1,crm_nx_rad
+         do iy = 1,crmnyrad
+            do ix = 1,crmnxrad
                do ic = 1,ncol
                   array_avg(ic,iz) = array_avg(ic,iz) + array_packed(j,iz) * area_factor
                   j = j + 1
