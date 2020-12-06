@@ -634,15 +634,18 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
       call outfld('SPQRS   ',qrs/cpair, pcols, lchnk )
    end if
 
-   if (ncol .eq. 1) then
+   !if (ncol .eq. 1) then
    !   write(iulog,*) "Liran check",ncol, crm_state%spww
-      call outfld('SPWW2   ',crm_state%spww, 1, lchnk )
-      call outfld('SPBUOYA2   ',crm_state%spbuoya, 1, lchnk )
-   else
+   !   call outfld('SPWW2   ',crm_state%spww, 1, lchnk )
+   !   call outfld('SPBUOYA2   ',crm_state%spbuoya, 1, lchnk )
+   !else
       !write(iulog,*) "Liran check 2",ncol, spww
+   !   call outfld('SPWW   ', crm_state%spww, pcols, lchnk )
+   !   call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
+   !end if
+
       call outfld('SPWW   ', crm_state%spww, pcols, lchnk )
       call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
-   end if
 
    ! Why do we output this here?
    if (ncol .eq. 1) then
