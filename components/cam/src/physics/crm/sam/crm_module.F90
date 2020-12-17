@@ -377,8 +377,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   crm_rad_qc  = 0.
   crm_rad_qi  = 0.
   crm_rad_cld = 0.
-  crm_ww = 0. ! mspritch, hparish
-  crm_buoya = 0. ! mwyant. hparish debugged and confirmed operational. 
 #ifdef m2005
   crm_rad%nc = 0.0
   crm_rad%ni = 0.0
@@ -781,8 +779,6 @@ end if
   sub1a  = 0.
   dep1a  = 0.
   con1a  = 0.
-  wbaraux = 0.
-  crm_buoya = 0.
 #endif /* m2005 */
 #if defined(_OPENACC)
   !$acc parallel loop collapse(2) async(asyncid)
@@ -828,6 +824,9 @@ end if
         crm_output_qt_ls     (icrm,k) = 0.
         crm_output_t_ls      (icrm,k) = 0.
         dd_crm               (icrm,k) = 0.
+        wbaraux              (icrm,k) = 0. 
+        crm_ww               (icrm,k) = 0. ! mspritch, hparish
+        crm_buoya            (icrm,k) = 0. ! mwyant. hparish debugged and confirmed operational.
       endif
       mui_crm(icrm,k) = 0.
       mdi_crm(icrm,k) = 0.
@@ -1108,19 +1107,32 @@ end if
     do icrm = 1 , ncrms
       do k=1,nzm
         l = plev-k+1
-        crm_ww_inst(icrm,l) = 0.D0 
         do j=1,ny
           do i=1,nx
-            crm_buoya(icrm,l) = crm_buoya(icrm,l) + tkelebuoy(icrm,l)   !  mwyant, accumulate buoyancy flux profile diagnostic 
             ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
             wbaraux(icrm,l) = wbaraux(icrm,l) + w(icrm,i,j,k)
-            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
+            !write(iulog,*) 'Liran check2 ww=>',ncrms,icrm,l,w(icrm,i,j,k),wbaraux(icrm,l)
           enddo  
-        enddo  
+        enddo 
+        wbaraux(icrm,l) = wbaraux(icrm,l)*factor_xy 
       enddo
     enddo    
-    wbaraux = wbaraux*factor_xy ! Mean w at each
-
+    do icrm = 1 , ncrms
+      do k=1,nzm
+        l = plev-k+1
+        crm_ww_inst(icrm,l) = 0.D0
+        do j=1,ny
+          do i=1,nx
+            ! ---- hparish, mspritch, new CRM w'w'2 dianostic:
+            crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
+          enddo
+        enddo
+        crm_ww_inst(icrm,l) = crm_ww_inst(icrm,l)*factor_xy ! Mean w at each
+        crm_ww(icrm,l) = crm_ww(icrm,l) + crm_ww_inst(icrm,l)
+        !write(iulog,*) 'Liran check ww=>',ncrms,icrm,l,crm_ww_inst(icrm,l),wbaraux(icrm,l)
+      enddo
+    enddo
+    crm_buoya = crm_buoya + tkelebuoy   !  mwyant,accumulate buoyancy flux profile diagnostic 
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
@@ -1439,7 +1451,7 @@ end if
   !========================================================================================
   call t_stampf(wall(2), usr(2), sys(2))
   wall(1) = wall(2)-wall(1)
-  write(iulog,*) '=== Liran Timing===',ncrms,wall(1)
+  !write(iulog,*) '=== Liran Timing===',ncrms,wall(1)
   tmp1 = crm_nx_rad_fac * crm_ny_rad_fac / real(nstop,crm_rknd)
 #if defined(_OPENACC)
   !$acc parallel loop collapse(4) async(asyncid)
@@ -1541,17 +1553,10 @@ end if
   !$omp target teams distribute parallel do collapse(4)
 #endif
 
-  do k = 1,nzm
-    l = plev-k+1
-    do icrm=1,ncrms
-      do i=1,nx
-        do j=1,ny
-          crm_ww(icrm,l) = crm_ww(icrm,l) + (w(icrm,i,j,k) - wbaraux(icrm,l))**2
-        enddo
-      enddo
-    enddo
-  enddo
-  crm_ww            = crm_ww * factor_xy ! mspritch,hparish
+  crm_ww            = crm_ww / real(nstop,crm_rknd)  ! mspritch,hparish
+  crm_buoya         = crm_buoya / real(nstop,crm_rknd)  ! mspritch,hparish
+  write(iulog,*) "Liran check 3",ncrms,nstop,crm_ww
+
   do k = 1,nzm
     do i=1,nx
       do j=1,ny
@@ -1901,14 +1906,6 @@ end if
   !$omp target teams distribute parallel do collapse(2)
 #endif
 
-  do k = 1 , plev
-    do icrm = 1 , ncrms
-      crm_ww_inst(icrm,k)       = crm_ww_inst(icrm,k) * factor_xyt
-      crm_buoya(icrm,k)         = crm_buoya(icrm,k) * factor_xyt  ! mwyant - xy factor included when calculated in stat_tke.F90
-      !crm_state%spww(icrm,k)       = crm_ww_inst(icrm,k)
-      !crm_state%spbuoya(icrm,k)       = crm_buoya(icrm,k) 
-    enddo
-  enddo
 
   do k = 1 , plev
     do icrm = 1 , ncrms

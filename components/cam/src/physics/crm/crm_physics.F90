@@ -699,9 +699,10 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
    end if ! if (ncol .eq. 1) then
 
    ! Set pointers to microphysics fields in crm_state
+   call pbuf_get_field(pbuf, pbuf_get_index('SPWW'), crm_state%spww)
    if (ncol .eq. 1) then
      call pbuf_get_field(pbuf, pbuf_get_index('CRM_QT2'), crm_state%qt)
-     call pbuf_get_field(pbuf, pbuf_get_index('SPWW2'), crm_state%spww)
+     !call pbuf_get_field(pbuf, pbuf_get_index('SPWW2'), crm_state%spww)
      call pbuf_get_field(pbuf, pbuf_get_index('SPBUOYA2'), crm_state%spbuoya)
      if (MMF_microphysics_scheme .eq. 'sam1mom') then
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QP2'), crm_state%qp)
@@ -720,7 +721,7 @@ subroutine crm_physics_tend(ztodt, state, tend, ptend, pbuf, cam_in, cam_out, &
      end if ! if (SPCAM_microp_scheme .eq. 'sam1mom') then
    else ! if (ncol .eq. 1) then
      call pbuf_get_field(pbuf, pbuf_get_index('CRM_QT'), crm_state%qt)
-     call pbuf_get_field(pbuf, pbuf_get_index('SPWW'), crm_state%spww)
+     !call pbuf_get_field(pbuf, pbuf_get_index('SPWW'), crm_state%spww)
      call pbuf_get_field(pbuf, pbuf_get_index('SPBUOYA'), crm_state%spbuoya)
      if (MMF_microphysics_scheme .eq. 'sam1mom') then
         call pbuf_get_field(pbuf, pbuf_get_index('CRM_QP'), crm_state%qp)

@@ -575,6 +575,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    real(r8) :: cicewp   (pcols,pver)   ! in-cloud cloud ice water path (kg/m2)
    real(r8) :: cliqwp   (pcols,pver)   ! in-cloud cloud liquid water path (kg/m2)
    real(r8) :: tgicewp  (pcols)        ! Vertically integrated ice water path (kg/m2
+   real(r8) :: spww2    (pcols,pver)   ! test spww
    real(r8) :: tgliqwp  (pcols)        ! Vertically integrated liquid water path (kg/m2)
    real(r8) :: tgwp     (pcols)        ! Vertically integrated (total) cloud water path  (kg/m2)
    real(r8) :: SPDT_out (pcols,pver)   ! CRM heating tendency
@@ -595,7 +596,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
 
    lchnk = state%lchnk
    ncol  = state%ncol
-
+   spww2 = crm_state%spww
    ! Subtract radiative heating for SPDT output
    SPDT_out(:ncol,:pver) = ( ptend%s(:ncol,:pver) - qrs(:ncol,:pver) - qrl(:ncol,:pver) )/cpair
 
@@ -635,17 +636,18 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    end if
 
    !if (ncol .eq. 1) then
-   !   write(iulog,*) "Liran check",ncol, crm_state%spww
+      !write(iulog,*) "Liran check",ncol, spww2
+      write(iulog,*) "Liran check2",ncol, spww
    !   call outfld('SPWW2   ',crm_state%spww, 1, lchnk )
    !   call outfld('SPBUOYA2   ',crm_state%spbuoya, 1, lchnk )
    !else
       !write(iulog,*) "Liran check 2",ncol, spww
-   !   call outfld('SPWW   ', crm_state%spww, pcols, lchnk )
-   !   call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
+      call outfld('SPWW   ', spww, ncol, lchnk )
+      !call outfld('SPBUOYA   ',crm_state%spbuoya(:ncol,:pver), pcols, lchnk )
    !end if
 
-      call outfld('SPWW   ', crm_state%spww, pcols, lchnk )
-      call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
+      !call outfld('SPWW   ', spww, pcols, lchnk )
+      !call outfld('SPBUOYA   ',crm_state%spbuoya, pcols, lchnk )
 
    ! Why do we output this here?
    if (ncol .eq. 1) then
