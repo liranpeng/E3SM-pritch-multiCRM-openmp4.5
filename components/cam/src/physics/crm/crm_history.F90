@@ -643,7 +643,7 @@ subroutine crm_history_out(state, ptend, crm_state, crm_rad, crm_ecpp_output, qr
    !else
       !write(iulog,*) "Liran check 2",ncol, spww
       call outfld('SPWW   ', spww, ncol, lchnk )
-      !call outfld('SPBUOYA   ',crm_state%spbuoya(:ncol,:pver), pcols, lchnk )
+      call outfld('SPBUOYA   ',spbuoya, pcols, lchnk )
    !end if
 
       !call outfld('SPWW   ', spww, pcols, lchnk )
