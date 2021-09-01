@@ -533,6 +533,9 @@ contains
           endif
         enddo
       endif
+      if (extracount .eq. 0) then
+        multicrm_onethird_heavy = .false.
+      endif   
       if (minval(cost_d) .ne. maxval(cost_d)) use_cost_d = .true.
     endif
 
@@ -5150,11 +5153,25 @@ logical function phys_grid_initialized ()
             else
                ! For opt==4, find next chunk with space
                ! (maxcol_chks > 0 test necessary for opt==4 block map)
-               if (chunks(cid)%ncols .gt. maxcol_chk(smp)) then ! peng & pritch
-                  maxcol_chks(smp) = maxcol_chks(smp) - 1
-                  cid = cid_offset(smp) + local_cid(smp)               
-               end if
-	       if (maxcol_chks(smp) > 0) then
+               if (multicrm_onethird_heavy) then
+                 if (chunks(cid)%ncols .gt. maxcol_chk(smp)) then ! peng & pritch
+                    maxcol_chks(smp) = maxcol_chks(smp) - 1
+                    cid = cid_offset(smp) + local_cid(smp)               
+                 end if
+	         if (maxcol_chks(smp) > 0) then
+                    do while (chunks(cid)%ncols >=  maxcol_chk(smp))
+                       local_cid(smp) = mod(local_cid(smp)+1,nvsmpchunks(smp))
+                       cid = cid_offset(smp) + local_cid(smp)
+                    enddo
+                 else
+                    do while (chunks(cid)%ncols >=  maxcol_chk(smp)-1)
+                       local_cid(smp) = mod(local_cid(smp)+1,nvsmpchunks(smp))
+                       cid = cid_offset(smp) + local_cid(smp)
+                    enddo
+                 endif
+              else
+               cid = cid_offset(smp) + local_cid(smp)
+               if (maxcol_chks(smp) > 0) then
                   do while (chunks(cid)%ncols >=  maxcol_chk(smp))
                      local_cid(smp) = mod(local_cid(smp)+1,nvsmpchunks(smp))
                      cid = cid_offset(smp) + local_cid(smp)
@@ -5165,14 +5182,11 @@ logical function phys_grid_initialized ()
                      cid = cid_offset(smp) + local_cid(smp)
                   enddo
                endif
-
+              endif
             endif
 
             ! Update chunk with new column
             chunks(cid)%ncols = chunks(cid)%ncols + 1
-	    ! peng & pritch:
-            chunk_cost = chunks(cid)%estcost
-            column_cost = cost_d(curgcol)
 
             !write(iulog,*) "---------------1----------------"
             !write(iulog,*) "chunk_cost = ",i,chunk_cost
@@ -5182,20 +5196,27 @@ logical function phys_grid_initialized ()
             !write(iulog,*) "large_count = ",large_count,extracount
             !write(iulog,*) "---------------1---------------"
 
-            if (multicrm_onethird_heavy) then 
+            if (multicrm_onethird_heavy) then
+              ! peng & pritch:
+              chunk_cost = chunks(cid)%estcost
+              column_cost = cost_d(curgcol)
+ 
               if (column_cost .lt. 2) then
                  maxcol_chk(smp) = (ngcols-extracount)/(nchunks-extracount)
                                                      ! For small cost column, 
                                                      ! increase the maximum
                                                      ! column size
               endif
-            if (column_cost .gt. 2) then
-               maxcol_chk(smp) = 1                   ! For large cost column,
-                                                     ! reduce the maximum  
-                                                     ! column size
-               large_count = large_count + 1
+              if (column_cost .gt. 2) then
+                maxcol_chk(smp) = 1                   ! For large cost column,
+                                                      ! reduce the maximum  
+                                                      ! column size
+                large_count = large_count + 1
+              endif
+            else
+              if (chunks(cid)%ncols .eq. maxcol_chk(smp)) &
+                maxcol_chks(smp) = maxcol_chks(smp) - 1 
             endif
-          endif
             lcol = chunks(cid)%ncols
             chunks(cid)%gcol(lcol) = curgcol
             chunks(cid)%estcost = chunks(cid)%estcost + cost_d(curgcol)
@@ -5212,27 +5233,27 @@ logical function phys_grid_initialized ()
 
                ! If space available, look to assign a load-balancing
                ! "twin" to same chunk
-               if ( (chunks(cid)%ncols <  maxcol_chk(smp)) .and. &
-                    (maxcol_chks(smp) > 0) .and. (twin_alg > 0)) then
+               !if ( (chunks(cid)%ncols <  maxcol_chk(smp)) .and. &
+               !     (maxcol_chks(smp) > 0) .and. (twin_alg > 0)) then
 
-                  call find_twin(curgcol, smp, &
-                                 proc_vsmp_map, twingcol)
+               !   call find_twin(curgcol, smp, &
+               !                  proc_vsmp_map, twingcol)
 
-                  if (twingcol > 0) then
+               !   if (twingcol > 0) then
 
                      ! Update chunk with twin column
-                     chunks(cid)%ncols = chunks(cid)%ncols + 1
-                     if (chunks(cid)%ncols .eq. maxcol_chk(smp)) &
-                        maxcol_chks(smp) = maxcol_chks(smp) - 1
+               !      chunks(cid)%ncols = chunks(cid)%ncols + 1
+               !      if (chunks(cid)%ncols .eq. maxcol_chk(smp)) &
+               !         maxcol_chks(smp) = maxcol_chks(smp) - 1
 
-                      lcol = chunks(cid)%ncols
-                      chunks(cid)%gcol(lcol) = twingcol
-                      chunks(cid)%estcost = chunks(cid)%estcost + cost_d(twingcol)
-                      knuhcs(twingcol)%chunkid = cid
-                      knuhcs(twingcol)%col = lcol
-                  endif
+               !      lcol = chunks(cid)%ncols
+               !       chunks(cid)%gcol(lcol) = twingcol
+               !       chunks(cid)%estcost = chunks(cid)%estcost + cost_d(twingcol)
+               !       knuhcs(twingcol)%chunkid = cid
+               !       knuhcs(twingcol)%col = lcol
+               !   endif
 
-               endif
+               !endif
 
                if ((use_cost_d).and.(chunks(cid)%ncols.eq.maxcol_chk(smp))) then
 

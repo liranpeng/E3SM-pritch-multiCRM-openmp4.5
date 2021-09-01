@@ -145,7 +145,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
     real(crm_rknd), allocatable  :: wbaraux    (:,:) 
     real(crm_rknd), allocatable  :: crm_ww     (:,:)       ! w'w'2 from CRM, mspritch, hparish
     real(crm_rknd), allocatable  :: crm_buoya  (:,:)    ! buoyancy flux profile, mwyant
-    real(crm_rknd), allocatable  :: buoya_tot  (:,:)
     real(crm_rknd), allocatable  :: crm_ww_inst(:,:) 
     
     real(r8), allocatable :: dd_crm (:,:)     ! mass entraiment from downdraft
@@ -194,7 +193,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   allocate( wbaraux(ncrms, plev) )
   allocate( crm_ww(ncrms, plev) )
   allocate( crm_buoya(ncrms, plev) )
-  allocate( buoya_tot(ncrms, plev) )
   allocate( crm_ww_inst(ncrms, plev) )
 
   allocate( t00(ncrms,nz) )
@@ -278,7 +276,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   call prefetch( wbaraux)
   call prefetch( crm_ww )
   call prefetch( crm_buoya )
-  call prefetch( buoya_tot )
   call prefetch( crm_ww_inst )
 
   call prefetch( crm_state_u_wind )
@@ -324,7 +321,6 @@ subroutine crm(nx_gl_in,ny_gl_in,nz_gl_in,dx_gl_in,dy_gl_in,&
   !$omp target enter data map(alloc: wbaraux )
   !$omp target enter data map(alloc: crm_ww )
   !$omp target enter data map(alloc: crm_buoya )
-  !$omp target enter data map(alloc: buoya_tot )
   !$omp target enter data map(alloc: crm_state_u_wind )
   !$omp target enter data map(alloc: crm_state_v_wind )
   !$omp target enter data map(alloc: crm_state_w_wind )
@@ -831,7 +827,6 @@ end if
         wbaraux              (icrm,k) = 0. 
         crm_ww               (icrm,k) = 0. ! mspritch, hparish
         crm_buoya            (icrm,k) = 0. ! mwyant. hparish debugged and confirmed operational.
-        buoya_tot            (icrm,k) = 0.
       endif
       mui_crm(icrm,k) = 0.
       mdi_crm(icrm,k) = 0.
@@ -1120,8 +1115,6 @@ end if
           enddo  
         enddo 
         wbaraux(icrm,l) = wbaraux(icrm,l)*factor_xy 
-        crm_buoya(icrm,l) = crm_buoya(icrm,l)*factor_xy/nstop
-        buoya_tot(icrm,l) = buoya_tot(icrm,l)*factor_xy/dt/nstop
       enddo
     enddo    
     do icrm = 1 , ncrms
@@ -1139,7 +1132,7 @@ end if
         !write(iulog,*) 'Liran check ww=>',ncrms,icrm,l,crm_ww_inst(icrm,l),wbaraux(icrm,l)
       enddo
     enddo
-
+    crm_buoya = crm_buoya + tkelebuoy   !  mwyant,accumulate buoyancy flux profile diagnostic 
     do j=1,ny
       do i=1,nx
         do icrm = 1 , ncrms
@@ -1561,8 +1554,7 @@ end if
 #endif
 
   crm_ww            = crm_ww / real(nstop,crm_rknd)  ! mspritch,hparish
-
-  write(iulog,*) "Liran check 3",ncrms,nstop,crm_ww
+  crm_buoya         = crm_buoya / real(nstop,crm_rknd)  ! mspritch,hparish
 
   do k = 1,nzm
     do i=1,nx

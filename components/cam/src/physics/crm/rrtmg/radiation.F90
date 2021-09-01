@@ -763,14 +763,14 @@ end function radiation_nextsw_cday
        call addfld ('CRM_CLD_RAD', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'I', 'fraction', 'CRM cloud fraction' )
        call addfld ('CRM_TAU    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud optical depth'  )
        call addfld ('CRM_EMS    ', (/'crm_nx_rad','crm_ny_rad','crm_nz    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
-       call addfld ('CRM_QRAD2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', 'K/s', 'Radiative heating tendency')
-       call addfld ('CRM_QRS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
-       call addfld ('CRM_QRSC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Clearsky shortwave radiative heating rate')
-       call addfld ('CRM_QRL2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
-       call addfld ('CRM_QRLC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
-       call addfld ('CRM_CLD_RAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'fraction', 'CRM cloud fraction' )
-       call addfld ('CRM_TAU2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud optical depth'  )
-       call addfld ('CRM_EMS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
+       !call addfld ('CRM_QRAD2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', 'K/s', 'Radiative heating tendency')
+       !call addfld ('CRM_QRS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Shortwave radiative heating rate')
+       !call addfld ('CRM_QRSC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Clearsky shortwave radiative heating rate')
+       !call addfld ('CRM_QRL2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
+       !call addfld ('CRM_QRLC2   ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'K/s', 'CRM Longwave radiative heating rate' )
+       !call addfld ('CRM_CLD_RAD2', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'I', 'fraction', 'CRM cloud fraction' )
+       !call addfld ('CRM_TAU2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud optical depth'  )
+       !call addfld ('CRM_EMS2    ', (/'crm_nx_rad2','crm_ny_rad2','crm_nz2    '/), 'A', '1', 'CRM cloud longwave emissivity'  )
     end if
 
     call addfld('EMIS', (/ 'lev' /), 'A', '1', 'Cloud longwave emissivity')
@@ -1562,16 +1562,16 @@ end function radiation_nextsw_cday
            call pbuf_get_field(pbuf, i_icswp, csnowp)
            csnowp_save = csnowp     ! save to restore later
          end if
-         if(ncol.eq.1) then
-           crm_t_rad_idx   = pbuf_get_index('CRM_T_RAD2')
-           crm_qc_rad_idx  = pbuf_get_index('CRM_QC_RAD2')
-           crm_qi_rad_idx  = pbuf_get_index('CRM_QI_RAD2')
-           crm_qv_rad_idx  = pbuf_get_index('CRM_QV_RAD2')
-           call pbuf_get_field(pbuf, crm_t_rad_idx,  t_rad)
-           call pbuf_get_field(pbuf, crm_qc_rad_idx, qc_rad)
-           call pbuf_get_field(pbuf, crm_qi_rad_idx, qi_rad)
-           call pbuf_get_field(pbuf, crm_qv_rad_idx, qv_rad)
-         else
+         !if(ncol.eq.1) then
+         !  crm_t_rad_idx   = pbuf_get_index('CRM_T_RAD2')
+         !  crm_qc_rad_idx  = pbuf_get_index('CRM_QC_RAD2')
+         !  crm_qi_rad_idx  = pbuf_get_index('CRM_QI_RAD2')
+         !  crm_qv_rad_idx  = pbuf_get_index('CRM_QV_RAD2')
+         !  call pbuf_get_field(pbuf, crm_t_rad_idx,  t_rad)
+         !  call pbuf_get_field(pbuf, crm_qc_rad_idx, qc_rad)
+         !  call pbuf_get_field(pbuf, crm_qi_rad_idx, qi_rad)
+         !  call pbuf_get_field(pbuf, crm_qv_rad_idx, qv_rad)
+         !else
            crm_t_rad_idx   = pbuf_get_index('CRM_T_RAD')
            crm_qc_rad_idx  = pbuf_get_index('CRM_QC_RAD')
            crm_qi_rad_idx  = pbuf_get_index('CRM_QI_RAD')
@@ -1580,22 +1580,22 @@ end function radiation_nextsw_cday
            call pbuf_get_field(pbuf, crm_qc_rad_idx, qc_rad)
            call pbuf_get_field(pbuf, crm_qi_rad_idx, qi_rad)
            call pbuf_get_field(pbuf, crm_qv_rad_idx, qv_rad)
-         end if
+         !end if
 
          ! Zero out radiative heating
          crm_qrad=0.
 
          if (MMF_microphysics_scheme .eq. 'm2005') then 
-          if(ncol.eq.1) then
-             crm_nc_rad_idx  = pbuf_get_index('CRM_NC_RAD2')
-             call pbuf_get_field(pbuf, crm_nc_rad_idx, nc_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
-             crm_ni_rad_idx  = pbuf_get_index('CRM_NI_RAD2')
-             call pbuf_get_field(pbuf, crm_ni_rad_idx, ni_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
-             crm_qs_rad_idx  = pbuf_get_index('CRM_QS_RAD2')
-             call pbuf_get_field(pbuf, crm_qs_rad_idx, qs_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
-             crm_ns_rad_idx  = pbuf_get_index('CRM_NS_RAD2')
-             call pbuf_get_field(pbuf, crm_ns_rad_idx, ns_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
-           else
+          !if(ncol.eq.1) then
+          !   crm_nc_rad_idx  = pbuf_get_index('CRM_NC_RAD2')
+          !   call pbuf_get_field(pbuf, crm_nc_rad_idx, nc_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
+          !   crm_ni_rad_idx  = pbuf_get_index('CRM_NI_RAD2')
+          !   call pbuf_get_field(pbuf, crm_ni_rad_idx, ni_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
+          !   crm_qs_rad_idx  = pbuf_get_index('CRM_QS_RAD2')
+          !   call pbuf_get_field(pbuf, crm_qs_rad_idx, qs_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
+          !   crm_ns_rad_idx  = pbuf_get_index('CRM_NS_RAD2')
+          !   call pbuf_get_field(pbuf, crm_ns_rad_idx, ns_rad, start=(/1,1,1,1/), kount=(/1,crm_nx_rad2, crm_ny_rad2, crm_nz2/))
+          ! else
              crm_nc_rad_idx  = pbuf_get_index('CRM_NC_RAD')
              call pbuf_get_field(pbuf, crm_nc_rad_idx, nc_rad, start=(/1,1,1,1/), kount=(/pcols,crm_nx_rad, crm_ny_rad, crm_nz/))
              crm_ni_rad_idx  = pbuf_get_index('CRM_NI_RAD')
@@ -1604,17 +1604,17 @@ end function radiation_nextsw_cday
              call pbuf_get_field(pbuf, crm_qs_rad_idx, qs_rad, start=(/1,1,1,1/), kount=(/pcols,crm_nx_rad, crm_ny_rad, crm_nz/))
              crm_ns_rad_idx  = pbuf_get_index('CRM_NS_RAD')
              call pbuf_get_field(pbuf, crm_ns_rad_idx, ns_rad, start=(/1,1,1,1/), kount=(/pcols,crm_nx_rad, crm_ny_rad, crm_nz/))
-           end if
+          ! end if
          endif
 
          ! Get cloud fraction averaged over the CRM time integration
-         if (ncol .eq. 1) then
-           call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD2'), cld_rad)
-           call outfld('CRM_CLD_RAD2', cld_rad(1:ncol,:,:,:), state%ncol, state%lchnk)
-         else
+         !if (ncol .eq. 1) then
+         !  call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD2'), cld_rad)
+         !  call outfld('CRM_CLD_RAD2', cld_rad(1:ncol,:,:,:), state%ncol, state%lchnk)
+         !else
            call pbuf_get_field(pbuf, pbuf_get_index('CRM_CLD_RAD'), cld_rad)
            call outfld('CRM_CLD_RAD', cld_rad(1:ncol,:,:,:), state%ncol,state%lchnk)
-         end if
+         !end if
          cicewp(1:ncol,1:pver) = 0.  
          cliqwp(1:ncol,1:pver) = 0.
 

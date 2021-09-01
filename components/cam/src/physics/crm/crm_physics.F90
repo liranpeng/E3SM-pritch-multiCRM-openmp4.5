@@ -269,7 +269,7 @@ subroutine crm_physics_register()
    ! CRM orientation angle needs to persist for MAML 
    ! (to pass crm info to coupler) and MMF_ORIENT_RAND
    call pbuf_add_field('CRM_ANGLE', 'global', dtype_r8, dims_gcm_1D, idx)
-   call pbuf_add_field('CRM_ANGLE2', 'global', dtype_r8, dims_gcm_1D2, idx)
+   !call pbuf_add_field('CRM_ANGLE2', 'global', dtype_r8, dims_gcm_1D2, idx)
 end subroutine crm_physics_register
 
 !===================================================================================================
